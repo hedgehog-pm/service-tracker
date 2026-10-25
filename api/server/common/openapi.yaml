@@ -1,0 +1,69 @@
+openapi: 3.0.3
+info:
+  title: Tracker common types
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - error
+      properties:
+        code:
+          type: string
+          enum:
+          - invalid_input
+          - not_found
+          - conflict
+          - internal_error
+          x-go-type: string
+        error:
+          type: string
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        format: int32
+        x-go-type: int
+        minimum: 1
+        maximum: 200
+        default: 50
+    Offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+        format: int32
+        x-go-type: int
+        minimum: 0
+        default: 0
+  responses:
+    BadRequest:
+      description: Неверный JSON, параметры или значения полей
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    NotFound:
+      description: Проект или запрошенный ресурс не найден
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    Conflict:
+      description: Уникальный ключ занят или ресурс используется задачей
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    InternalError:
+      description: Внутренняя ошибка
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"

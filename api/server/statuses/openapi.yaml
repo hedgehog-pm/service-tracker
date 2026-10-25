@@ -1,0 +1,269 @@
+openapi: 3.0.3
+info:
+  title: Tracker statuses
+  version: 0.1.0
+paths:
+  /projects/{project_id}/statuses:
+    $ref: "#/x-paths/collection"
+  /projects/{project_id}/statuses/{status_id}:
+    $ref: "#/x-paths/item"
+components:
+  schemas:
+    StatusCategory:
+      type: string
+      enum:
+      - todo
+      - in_progress
+      - done
+    Status:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - project_id
+      - name
+      - category
+      properties:
+        id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        project_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+        category:
+          $ref: "#/components/schemas/StatusCategory"
+    CreateStatus:
+      type: object
+      additionalProperties: false
+      required:
+      - name
+      - category
+      properties:
+        name:
+          type: string
+          minLength: 1
+        category:
+          $ref: "#/components/schemas/StatusCategory"
+    UpdateStatus:
+      type: object
+      additionalProperties: false
+      required:
+      - name
+      - category
+      properties:
+        name:
+          type: string
+          minLength: 1
+        category:
+          $ref: "#/components/schemas/StatusCategory"
+    StatusList:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - limit
+      - offset
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Status"
+        limit:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+          maximum: 200
+        offset:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 0
+x-paths:
+  collection:
+    get:
+      operationId: listStatuses
+      tags:
+      - statuses
+      summary: 'Список: statuses'
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - $ref: ../common/openapi.yaml#/components/parameters/Limit
+      - $ref: ../common/openapi.yaml#/components/parameters/Offset
+      description: 'Порядок id ASC. Пустой список передаётся как items: [].'
+      responses:
+        '200':
+          description: Список ресурсов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusList"
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+    post:
+      operationId: createStatus
+      tags:
+      - statuses
+      summary: 'Статус: создание'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStatus"
+      responses:
+        '201':
+          description: Ресурс создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '409':
+          $ref: ../common/openapi.yaml#/components/responses/Conflict
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+  item:
+    get:
+      operationId: getStatus
+      tags:
+      - statuses
+      summary: 'Статус: чтение'
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - name: status_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      responses:
+        '200':
+          description: Статус
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+    put:
+      operationId: updateStatus
+      tags:
+      - statuses
+      summary: 'Статус: замена изменяемых полей'
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - name: status_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatus"
+      responses:
+        '200':
+          description: Ресурс изменён
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '409':
+          $ref: ../common/openapi.yaml#/components/responses/Conflict
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+    delete:
+      operationId: deleteStatus
+      tags:
+      - statuses
+      summary: 'Статус: удаление'
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - name: status_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      responses:
+        '204':
+          description: Ресурс удалён
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+        '409':
+          $ref: ../common/openapi.yaml#/components/responses/Conflict
+      description: Если ресурс используется хотя бы одной задачей, возвращается 409.
+        Ресурс другого проекта даёт 404.

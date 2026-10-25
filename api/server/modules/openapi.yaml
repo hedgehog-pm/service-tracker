@@ -1,0 +1,254 @@
+openapi: 3.0.3
+info:
+  title: Tracker modules
+  version: 0.1.0
+paths:
+  /projects/{project_id}/modules:
+    $ref: "#/x-paths/collection"
+  /projects/{project_id}/modules/{module_id}:
+    $ref: "#/x-paths/item"
+components:
+  schemas:
+    Module:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - project_id
+      - name
+      properties:
+        id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        project_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+    CreateModule:
+      type: object
+      additionalProperties: false
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+    UpdateModule:
+      type: object
+      additionalProperties: false
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+    ModuleList:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - limit
+      - offset
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Module"
+        limit:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+          maximum: 200
+        offset:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 0
+x-paths:
+  collection:
+    get:
+      operationId: listModules
+      tags:
+      - modules
+      summary: 'Список: modules'
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - $ref: ../common/openapi.yaml#/components/parameters/Limit
+      - $ref: ../common/openapi.yaml#/components/parameters/Offset
+      description: 'Порядок id ASC. Пустой список передаётся как items: [].'
+      responses:
+        '200':
+          description: Список ресурсов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModuleList"
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+    post:
+      operationId: createModule
+      tags:
+      - modules
+      summary: 'Модуль: создание'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateModule"
+      responses:
+        '201':
+          description: Ресурс создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Module"
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '409':
+          $ref: ../common/openapi.yaml#/components/responses/Conflict
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+  item:
+    get:
+      operationId: getModule
+      tags:
+      - modules
+      summary: 'Модуль: чтение'
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - name: module_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      responses:
+        '200':
+          description: Модуль
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Module"
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+    put:
+      operationId: updateModule
+      tags:
+      - modules
+      summary: 'Модуль: замена изменяемых полей'
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - name: module_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateModule"
+      responses:
+        '200':
+          description: Ресурс изменён
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Module"
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '409':
+          $ref: ../common/openapi.yaml#/components/responses/Conflict
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+    delete:
+      operationId: deleteModule
+      tags:
+      - modules
+      summary: 'Модуль: удаление'
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - name: module_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      responses:
+        '204':
+          description: Ресурс удалён
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+        '409':
+          $ref: ../common/openapi.yaml#/components/responses/Conflict
+      description: Если ресурс используется хотя бы одной задачей, возвращается 409.
+        Ресурс другого проекта даёт 404.

@@ -1,0 +1,15 @@
+no_tests: true
+type_system: database/sql
+plugins_preset: none
+types:
+  int32:
+    alias_of: int
+  int64:
+    alias_of: int
+psql:
+  driver: github.com/jackc/pgx/v5/stdlib
+  queries:
+    - internal/generated/bob/task
+    - internal/generated/bob/project
+    - internal/generated/bob/status
+    - internal/generated/bob/module

@@ -1,0 +1,21 @@
+openapi: 3.0.3
+info:
+  title: Tracker API
+  version: 0.1.0
+paths:
+  /projects:
+    $ref: ./projects/openapi.yaml#/x-paths/collection
+  /projects/{project_id}:
+    $ref: ./projects/openapi.yaml#/x-paths/item
+  /projects/{project_id}/statuses:
+    $ref: ./statuses/openapi.yaml#/x-paths/collection
+  /projects/{project_id}/statuses/{status_id}:
+    $ref: ./statuses/openapi.yaml#/x-paths/item
+  /projects/{project_id}/modules:
+    $ref: ./modules/openapi.yaml#/x-paths/collection
+  /projects/{project_id}/modules/{module_id}:
+    $ref: ./modules/openapi.yaml#/x-paths/item
+  /projects/{project_id}/tasks:
+    $ref: ./tasks/openapi.yaml#/x-paths/collection
+  /projects/{project_id}/tasks/{task_id}:
+    $ref: ./tasks/openapi.yaml#/x-paths/item

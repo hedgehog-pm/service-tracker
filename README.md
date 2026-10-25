@@ -40,6 +40,8 @@ GET/POST коллекции и GET/PUT/DELETE объекта:
 | Задачи | `/projects/{project_id}/tasks` | `/projects/{project_id}/tasks/{task_id}` |
 
 Все списки принимают limit и offset; список задач — ещё status_id и module_id.
+Defaults limit=50 и offset=0 заданы в OpenAPI. Middleware подставляет их
+до биндинга параметров, поэтому обработчики получают заполненные значения.
 PUT задачи требует title, description, status_id и module_id; null снимает модуль.
 Ключ проекта неизменяем. Удаление проекта каскадно удаляет его данные.
 Используемые задачами статусы и модули удалить нельзя: API возвращает 409.

@@ -58,7 +58,7 @@ func (h *StatusHandler) UpdateStatus(ctx *echo.Context, projectID int, id int) e
 }
 
 func (h *StatusHandler) ListStatuses(ctx *echo.Context, projectID int, params generated.ListStatusesParams) error {
-	limit, offset := pagination(params.Limit, params.Offset)
+	limit, offset := *params.Limit, *params.Offset
 
 	values, err := h.listStatus.Do(ctx.Request().Context(), projectID, limit, offset)
 	if err != nil {

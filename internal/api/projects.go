@@ -56,7 +56,7 @@ func (h *ProjectHandler) UpdateProject(ctx *echo.Context, projectID int) error {
 }
 
 func (h *ProjectHandler) ListProjects(ctx *echo.Context, params generated.ListProjectsParams) error {
-	limit, offset := pagination(params.Limit, params.Offset)
+	limit, offset := *params.Limit, *params.Offset
 
 	values, err := h.projects.List(ctx.Request().Context(), limit, offset)
 	if err != nil {

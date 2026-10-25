@@ -53,7 +53,7 @@ func (h *TaskHandler) GetTask(ctx *echo.Context, projectID, taskID int) error {
 }
 
 func (h *TaskHandler) ListTasks(ctx *echo.Context, projectID int, params generated.ListTasksParams) error {
-	limit, offset := pagination(params.Limit, params.Offset)
+	limit, offset := *params.Limit, *params.Offset
 
 	tasks, err := h.listTasks.Do(ctx.Request().Context(), listtasks.Params{
 		ProjectID: projectID, StatusID: params.StatusID, ModuleID: params.ModuleID, Limit: limit, Offset: offset,

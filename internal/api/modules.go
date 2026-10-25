@@ -58,7 +58,7 @@ func (h *ModuleHandler) UpdateModule(ctx *echo.Context, projectID int, id int) e
 }
 
 func (h *ModuleHandler) ListModules(ctx *echo.Context, projectID int, params generated.ListModulesParams) error {
-	limit, offset := pagination(params.Limit, params.Offset)
+	limit, offset := *params.Limit, *params.Offset
 
 	values, err := h.listModule.Do(ctx.Request().Context(), projectID, limit, offset)
 	if err != nil {

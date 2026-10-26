@@ -63,12 +63,12 @@ func (r *Postgres) ListTransitions(
 
 // GetInitialStatus выбирает workflow по правилу для типа задачи в схеме
 // и возвращает его начальный статус.
-// Если правило не найдено, возвращает ErrIssueTypeUnavailable.
+// Если правило не найдено, возвращает ErrTaskTypeUnavailable.
 func (r *Postgres) GetInitialStatus(
 	ctx context.Context,
-	schemeID, issueTypeID int,
+	schemeID, taskTypeID int,
 ) (domain.InitialStatus, error) {
-	q := bobgen.GetInitialStatus(schemeID, issueTypeID)
+	q := bobgen.GetInitialStatus(schemeID, taskTypeID)
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
@@ -80,7 +80,7 @@ func (r *Postgres) GetInitialStatus(
 
 	row, err := pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
 	if errors.Is(err, sql.ErrNoRows) {
-		return domain.InitialStatus{}, domain.ErrIssueTypeUnavailable
+		return domain.InitialStatus{}, domain.ErrTaskTypeUnavailable
 	}
 
 	if err != nil {

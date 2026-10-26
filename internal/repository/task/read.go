@@ -65,7 +65,7 @@ func (r *Postgres) GetTaskForUpdate(
 func (r *Postgres) ListTasks(
 	ctx context.Context,
 	projectID int,
-	statusID, moduleID, issueTypeID, priorityID *int,
+	statusID, moduleID, taskTypeID, priorityID *int,
 	limit, offset int,
 ) ([]domain.Task, error) {
 	q := bobgen.ListTasks(projectID).With(
@@ -80,8 +80,8 @@ func (r *Postgres) ListTasks(
 		q.Apply(sm.Where(psql.Quote("t", "module_id").EQ(psql.Arg(*moduleID))))
 	}
 
-	if issueTypeID != nil {
-		q.Apply(sm.Where(psql.Quote("t", "issue_type_id").EQ(psql.Arg(*issueTypeID))))
+	if taskTypeID != nil {
+		q.Apply(sm.Where(psql.Quote("t", "task_type_id").EQ(psql.Arg(*taskTypeID))))
 	}
 
 	if priorityID != nil {

@@ -1,4 +1,4 @@
-package issuetype
+package tasktype
 
 import (
 	"context"
@@ -11,9 +11,9 @@ type (
 		GetProject(ctx context.Context, projectID int) (domain.Project, error)
 	}
 	reader interface {
-		ListIssueTypes(
+		ListTaskTypes(
 			ctx context.Context,
 			schemeID int,
-		) ([]domain.IssueTypeWithInitialStatus, error)
+		) ([]domain.TaskTypeWithInitialStatus, error)
 	}
 )

@@ -6,12 +6,12 @@ import (
 	"github.com/labstack/echo/v5"
 	echomiddleware "github.com/oapi-codegen/echo-v5-middleware"
 
-	"github.com/hedgehog-pm/service-tracker/internal/generated/api/issuetypes"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/modules"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/priorities"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/projects"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/statuses"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/tasks"
+	"github.com/hedgehog-pm/service-tracker/internal/generated/api/tasktypes"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/transitions"
 )
 
@@ -21,7 +21,7 @@ func NewServer(
 	moduleHandler modules.StrictServerInterface,
 	taskHandler tasks.StrictServerInterface,
 	transitionHandler transitions.StrictServerInterface,
-	issueTypeHandler issuetypes.StrictServerInterface,
+	taskTypeHandler tasktypes.StrictServerInterface,
 	priorityHandler priorities.StrictServerInterface,
 ) (*echo.Echo, error) {
 	projectSpec, err := projects.GetSpec()
@@ -49,9 +49,9 @@ func NewServer(
 		return nil, fmt.Errorf("load transitions OpenAPI contract: %w", err)
 	}
 
-	issuetypesSpec, err := issuetypes.GetSpec()
+	tasktypesSpec, err := tasktypes.GetSpec()
 	if err != nil {
-		return nil, fmt.Errorf("load issuetypes OpenAPI contract: %w", err)
+		return nil, fmt.Errorf("load tasktypes OpenAPI contract: %w", err)
 	}
 
 	prioritiesSpec, err := priorities.GetSpec()
@@ -82,9 +82,9 @@ func NewServer(
 		server.Group("", echomiddleware.OapiRequestValidator(transitionsSpec)),
 		transitions.NewStrictHandler(transitionHandler, nil),
 	)
-	issuetypes.RegisterHandlers(
-		server.Group("", echomiddleware.OapiRequestValidator(issuetypesSpec)),
-		issuetypes.NewStrictHandler(issueTypeHandler, nil),
+	tasktypes.RegisterHandlers(
+		server.Group("", echomiddleware.OapiRequestValidator(tasktypesSpec)),
+		tasktypes.NewStrictHandler(taskTypeHandler, nil),
 	)
 	priorities.RegisterHandlers(
 		server.Group("", echomiddleware.OapiRequestValidator(prioritiesSpec)),

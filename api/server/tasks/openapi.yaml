@@ -23,7 +23,7 @@ components:
       - description
       - created_at
       - updated_at
-      - issue_type_id
+      - task_type_id
       - priority_id
       properties:
         id:
@@ -67,7 +67,7 @@ components:
         updated_at:
           type: string
           format: date-time
-        issue_type_id:
+        task_type_id:
           type: integer
           format: int32
           x-go-type: int
@@ -82,7 +82,7 @@ components:
       additionalProperties: false
       required:
       - title
-      - issue_type_id
+      - task_type_id
       properties:
         title:
           type: string
@@ -95,7 +95,7 @@ components:
           x-go-type: int
           minimum: 1
           nullable: true
-        issue_type_id:
+        task_type_id:
           type: integer
           format: int32
           x-go-type: int
@@ -185,7 +185,7 @@ x-paths:
           format: int32
           x-go-type: int
           minimum: 1
-      - name: issue_type_id
+      - name: task_type_id
         in: query
         schema:
           type: integer

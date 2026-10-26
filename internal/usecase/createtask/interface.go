@@ -16,7 +16,7 @@ type projects interface {
 }
 
 type workflows interface {
-	GetInitialStatus(ctx context.Context, schemeID, issueTypeID int) (domain.InitialStatus, error)
+	GetInitialStatus(ctx context.Context, schemeID, taskTypeID int) (domain.InitialStatus, error)
 }
 
 type priorities interface {

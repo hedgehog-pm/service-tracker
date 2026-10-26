@@ -14,7 +14,7 @@ func taskToAPI(task domain.Task) generated.Task {
 		Title:       task.Title,
 		Description: task.Description,
 		StatusID:    task.StatusID,
-		IssueTypeID: task.IssueTypeID,
+		TaskTypeID:  task.TaskTypeID,
 		PriorityID:  task.PriorityID,
 		ModuleID:    task.ModuleID,
 		CreatedAt:   task.CreatedAt,

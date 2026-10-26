@@ -39,11 +39,11 @@ func (h *TaskHandler) CreateTask(
 	body := request.Body
 
 	params := createtask.Params{
-		ProjectID:   request.ProjectID,
-		Title:       body.Title,
-		ModuleID:    body.ModuleID,
-		IssueTypeID: body.IssueTypeID,
-		PriorityID:  body.PriorityID,
+		ProjectID:  request.ProjectID,
+		Title:      body.Title,
+		ModuleID:   body.ModuleID,
+		TaskTypeID: body.TaskTypeID,
+		PriorityID: body.PriorityID,
 	}
 	if body.Description != nil {
 		params.Description = *body.Description
@@ -76,13 +76,13 @@ func (h *TaskHandler) ListTasks(
 	limit, offset := *request.Params.Limit, *request.Params.Offset
 
 	tasks, err := h.listTasks.Do(ctx, listtasks.Params{
-		ProjectID:   request.ProjectID,
-		StatusID:    request.Params.StatusID,
-		ModuleID:    request.Params.ModuleID,
-		IssueTypeID: request.Params.IssueTypeID,
-		PriorityID:  request.Params.PriorityID,
-		Limit:       limit,
-		Offset:      offset,
+		ProjectID:  request.ProjectID,
+		StatusID:   request.Params.StatusID,
+		ModuleID:   request.Params.ModuleID,
+		TaskTypeID: request.Params.TaskTypeID,
+		PriorityID: request.Params.PriorityID,
+		Limit:      limit,
+		Offset:     offset,
 	})
 	if err != nil {
 		return nil, err

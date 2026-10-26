@@ -13,7 +13,7 @@ type (
 		TaskID       int
 		TransitionID int
 	}
-	// Usecase смены статуса задачи через переход workflow.
+	// Usecase смены статуса задачи через переход по workflow.
 	//
 	// Переход выбирается по [Params.TransitionID].
 	//

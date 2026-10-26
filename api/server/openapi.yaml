@@ -19,7 +19,7 @@ paths:
     $ref: ./tasks/openapi.yaml#/x-paths/item
   /projects/{project_id}/tasks/{task_id}/transitions:
     $ref: ./transitions/openapi.yaml#/x-paths/collection
-  /projects/{project_id}/issue-types:
-    $ref: ./issue-types/openapi.yaml#/x-paths/collection
+  /projects/{project_id}/task-types:
+    $ref: ./task-types/openapi.yaml#/x-paths/collection
   /projects/{project_id}/priorities:
     $ref: ./priorities/openapi.yaml#/x-paths/collection

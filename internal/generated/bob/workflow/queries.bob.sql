@@ -46,26 +46,26 @@ FROM
   JOIN statuses AS status ON status.id = workflow.initial_status_id
 WHERE
   rule.scheme_id = $1
-  AND rule.issue_type_id = $2;
+  AND rule.task_type_id = $2;
 
--- ListIssueTypes
+-- ListTaskTypes
 SELECT
-  issue_type.id,
-  issue_type.name,
-  issue_type.position AS position,
+  task_type.id,
+  task_type.name,
+  task_type.position AS position,
   status.id AS status_id,
   status.name AS status_name,
   status.category AS status_category
 FROM
   workflow_scheme_rules AS rule
-  JOIN issue_types AS issue_type ON issue_type.id = rule.issue_type_id
+  JOIN task_types AS task_type ON task_type.id = rule.task_type_id
   JOIN workflows AS workflow ON workflow.id = rule.workflow_id
   JOIN statuses AS status ON status.id = workflow.initial_status_id
 WHERE
   rule.scheme_id = $1
 ORDER BY
-  issue_type.position,
-  issue_type.id;
+  task_type.position,
+  task_type.id;
 
 -- GetDefaultWorkflowScheme
 SELECT

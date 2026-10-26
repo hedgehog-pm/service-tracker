@@ -30,8 +30,8 @@ func initialStatusToDomain(row bobgen.GetInitialStatusRow) domain.InitialStatus 
 	}
 }
 
-func issueTypeToDomain(row bobgen.ListIssueTypesRow) domain.IssueTypeWithInitialStatus {
-	return domain.IssueTypeWithInitialStatus{
+func taskTypeToDomain(row bobgen.ListTaskTypesRow) domain.TaskTypeWithInitialStatus {
+	return domain.TaskTypeWithInitialStatus{
 		ID:       row.ID,
 		Name:     row.Name,
 		Position: row.Position,

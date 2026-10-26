@@ -33,9 +33,9 @@ var (
 		CodeConflict,
 		"transition is not available from the current state",
 	)
-	ErrIssueTypeUnavailable = NewError(
+	ErrTaskTypeUnavailable = NewError(
 		CodeInvalidInput,
-		"issue type is not available in this project",
+		"task type is not available in this project",
 	)
 	ErrModuleNotFound   = NewError(CodeNotFound, "module not found")
 	ErrInvalidReference = NewError(

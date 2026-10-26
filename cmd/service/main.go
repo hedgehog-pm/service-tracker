@@ -24,7 +24,6 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/storage/postgres"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/createproject"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/createtask"
-	"github.com/hedgehog-pm/service-tracker/internal/usecase/issuetype"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/listmodules"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/listtasks"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/listtasktransitions"
@@ -33,6 +32,7 @@ import (
 	projectusecase "github.com/hedgehog-pm/service-tracker/internal/usecase/project"
 	statususecase "github.com/hedgehog-pm/service-tracker/internal/usecase/status"
 	taskusecase "github.com/hedgehog-pm/service-tracker/internal/usecase/task"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/tasktype"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/transitiontask"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/updatetask"
 )
@@ -91,7 +91,7 @@ func run(ctx context.Context) error {
 		listtasktransitions.New(tasks, workflows),
 		transitiontask.New(tasks, workflows, transactor),
 	)
-	issueTypeHandler := api.NewIssueTypeHandler(issuetype.New(workflows, projects))
+	taskTypeHandler := api.NewTaskTypeHandler(tasktype.New(workflows, projects))
 	priorityHandler := api.NewPriorityHandler(priority.New(priorities, projects))
 
 	server, err := api.NewServer(
@@ -100,7 +100,7 @@ func run(ctx context.Context) error {
 		moduleHandler,
 		taskHandler,
 		transitionHandler,
-		issueTypeHandler,
+		taskTypeHandler,
 		priorityHandler,
 	)
 	if err != nil {

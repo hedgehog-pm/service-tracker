@@ -1,4 +1,4 @@
-package issuetype
+package tasktype
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 // Usecase получения доступных типов задач проекта.
 //
 // Типы задач выбираются из схемы в [domain.Project.WorkflowSchemeID].
-// [domain.IssueTypeWithInitialStatus.InitialStatus] берётся из workflow,
+// [domain.TaskTypeWithInitialStatus.InitialStatus] берётся из workflow,
 // выбранного для типа задачи в этой схеме.
 type Usecase struct {
 	reader   reader
@@ -26,11 +26,11 @@ func New(reader reader, projects projects) *Usecase {
 func (u *Usecase) List(
 	ctx context.Context,
 	projectID int,
-) ([]domain.IssueTypeWithInitialStatus, error) {
+) ([]domain.TaskTypeWithInitialStatus, error) {
 	project, err := u.projects.GetProject(ctx, projectID)
 	if err != nil {
 		return nil, err
 	}
 
-	return u.reader.ListIssueTypes(ctx, project.WorkflowSchemeID)
+	return u.reader.ListTaskTypes(ctx, project.WorkflowSchemeID)
 }

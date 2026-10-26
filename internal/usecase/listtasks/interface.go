@@ -11,7 +11,7 @@ type reader interface {
 	ListTasks(
 		ctx context.Context,
 		projectID int,
-		statusID, moduleID, issueTypeID, priorityID *int,
+		statusID, moduleID, taskTypeID, priorityID *int,
 		limit, offset int,
 	) ([]domain.Task, error)
 }

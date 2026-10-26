@@ -28,6 +28,6 @@ generate-sql:
 		go tool bobgen-psql -c bobgen.yaml
 
 generate-api:
-	@for part in common projects statuses modules tasks transitions issue-types priorities; do \
+	@for part in common projects statuses modules tasks transitions task-types priorities; do \
 		go tool oapi-codegen -config api/server/$$part/oapi-codegen.yaml api/server/$$part/openapi.yaml || exit $$?; \
 	done

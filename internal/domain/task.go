@@ -27,13 +27,13 @@ func (f TaskFields) Validate() error {
 }
 
 type Task struct {
-	ID          int
-	ProjectID   int
-	ProjectKey  string
-	Number      int
-	IssueTypeID int
-	WorkflowID  int
-	StatusID    int
+	ID         int
+	ProjectID  int
+	ProjectKey string
+	Number     int
+	TaskTypeID int
+	WorkflowID int
+	StatusID   int
 	TaskFields
 	CreatedAt time.Time
 	UpdatedAt time.Time

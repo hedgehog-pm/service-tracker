@@ -199,15 +199,15 @@ func (o listTransitions) WriteSQL(ctx context.Context, w io.StringWriter, d bob.
 	return o.subExpr(0, len(listTransitionsSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var getInitialStatusSQL = formattedQueries_queries[917:1272]
+var getInitialStatusSQL = formattedQueries_queries[917:1271]
 
 type GetInitialStatusQuery = orm.ModQuery[*dialect.SelectQuery, getInitialStatus, GetInitialStatusRow, []GetInitialStatusRow, getInitialStatusTransformer]
 
-func GetInitialStatus(SchemeID int, IssueTypeID int) *GetInitialStatusQuery {
+func GetInitialStatus(SchemeID int, TaskTypeID int) *GetInitialStatusQuery {
 	var expressionTypArgs getInitialStatus
 
 	expressionTypArgs.SchemeID = psql.Arg(SchemeID)
-	expressionTypArgs.IssueTypeID = psql.Arg(IssueTypeID)
+	expressionTypArgs.TaskTypeID = psql.Arg(TaskTypeID)
 
 	return &GetInitialStatusQuery{
 		Query: orm.Query[getInitialStatus, GetInitialStatusRow, []GetInitialStatusRow, getInitialStatusTransformer]{
@@ -234,7 +234,7 @@ func GetInitialStatus(SchemeID int, IssueTypeID int) *GetInitialStatusQuery {
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
 			q.AppendSelect(expressionTypArgs.subExpr(9, 129))
 			q.SetTable(expressionTypArgs.subExpr(137, 297))
-			q.AppendWhere(expressionTypArgs.subExpr(306, 355))
+			q.AppendWhere(expressionTypArgs.subExpr(306, 354))
 		}),
 		Build: psql.Select,
 	}
@@ -250,8 +250,8 @@ type GetInitialStatusRow = struct {
 type getInitialStatusTransformer = bob.SliceTransformer[GetInitialStatusRow, []GetInitialStatusRow]
 
 type getInitialStatus struct {
-	SchemeID    bob.Expression
-	IssueTypeID bob.Expression
+	SchemeID   bob.Expression
+	TaskTypeID bob.Expression
 }
 
 func (o getInitialStatus) args() iter.Seq[orm.ArgWithPosition] {
@@ -266,10 +266,10 @@ func (o getInitialStatus) args() iter.Seq[orm.ArgWithPosition] {
 		}
 
 		if !yield(orm.ArgWithPosition{
-			Name:       "issueTypeID",
-			Start:      353,
-			Stop:       355,
-			Expression: o.IssueTypeID,
+			Name:       "taskTypeID",
+			Start:      352,
+			Stop:       354,
+			Expression: o.TaskTypeID,
 		}) {
 			return
 		}
@@ -288,27 +288,27 @@ func (o getInitialStatus) WriteSQL(ctx context.Context, w io.StringWriter, d bob
 	return o.subExpr(0, len(getInitialStatusSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var listIssueTypesSQL = formattedQueries_queries[1293:1778]
+var listTaskTypesSQL = formattedQueries_queries[1291:1767]
 
-type ListIssueTypesQuery = orm.ModQuery[*dialect.SelectQuery, listIssueTypes, ListIssueTypesRow, []ListIssueTypesRow, listIssueTypesTransformer]
+type ListTaskTypesQuery = orm.ModQuery[*dialect.SelectQuery, listTaskTypes, ListTaskTypesRow, []ListTaskTypesRow, listTaskTypesTransformer]
 
-func ListIssueTypes(SchemeID int) *ListIssueTypesQuery {
-	var expressionTypArgs listIssueTypes
+func ListTaskTypes(SchemeID int) *ListTaskTypesQuery {
+	var expressionTypArgs listTaskTypes
 
 	expressionTypArgs.SchemeID = psql.Arg(SchemeID)
 
-	return &ListIssueTypesQuery{
-		Query: orm.Query[listIssueTypes, ListIssueTypesRow, []ListIssueTypesRow, listIssueTypesTransformer]{
-			ExecQuery: orm.ExecQuery[listIssueTypes]{
-				BaseQuery: bob.BaseQuery[listIssueTypes]{
+	return &ListTaskTypesQuery{
+		Query: orm.Query[listTaskTypes, ListTaskTypesRow, []ListTaskTypesRow, listTaskTypesTransformer]{
+			ExecQuery: orm.ExecQuery[listTaskTypes]{
+				BaseQuery: bob.BaseQuery[listTaskTypes]{
 					Expression: expressionTypArgs,
 					Dialect:    dialect.Dialect,
 					QueryType:  bob.QueryTypeSelect,
 				},
 			},
-			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (ListIssueTypesRow, error)) {
+			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (ListTaskTypesRow, error)) {
 				return func(row *scan.Row) (any, error) {
-						var t ListIssueTypesRow
+						var t ListTaskTypesRow
 						row.ScheduleScanByIndex(0, &t.ID)
 						row.ScheduleScanByIndex(1, &t.Name)
 						row.ScheduleScanByIndex(2, &t.Position)
@@ -316,22 +316,22 @@ func ListIssueTypes(SchemeID int) *ListIssueTypesQuery {
 						row.ScheduleScanByIndex(4, &t.StatusName)
 						row.ScheduleScanByIndex(5, &t.StatusCategory)
 						return &t, nil
-					}, func(v any) (ListIssueTypesRow, error) {
-						return *v.(*ListIssueTypesRow), nil
+					}, func(v any) (ListTaskTypesRow, error) {
+						return *v.(*ListTaskTypesRow), nil
 					}
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendSelect(expressionTypArgs.subExpr(9, 170))
-			q.SetTable(expressionTypArgs.subExpr(178, 409))
-			q.AppendWhere(expressionTypArgs.subExpr(418, 437))
-			q.AppendOrder(expressionTypArgs.subExpr(449, 485))
+			q.AppendSelect(expressionTypArgs.subExpr(9, 167))
+			q.SetTable(expressionTypArgs.subExpr(175, 402))
+			q.AppendWhere(expressionTypArgs.subExpr(411, 430))
+			q.AppendOrder(expressionTypArgs.subExpr(442, 476))
 		}),
 		Build: psql.Select,
 	}
 }
 
-type ListIssueTypesRow = struct {
+type ListTaskTypesRow = struct {
 	ID             int    `db:"id"`
 	Name           string `db:"name"`
 	Position       int    `db:"position"`
@@ -340,18 +340,18 @@ type ListIssueTypesRow = struct {
 	StatusCategory string `db:"status_category"`
 }
 
-type listIssueTypesTransformer = bob.SliceTransformer[ListIssueTypesRow, []ListIssueTypesRow]
+type listTaskTypesTransformer = bob.SliceTransformer[ListTaskTypesRow, []ListTaskTypesRow]
 
-type listIssueTypes struct {
+type listTaskTypes struct {
 	SchemeID bob.Expression
 }
 
-func (o listIssueTypes) args() iter.Seq[orm.ArgWithPosition] {
+func (o listTaskTypes) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "schemeID",
-			Start:      435,
-			Stop:       437,
+			Start:      428,
+			Stop:       430,
 			Expression: o.SchemeID,
 		}) {
 			return
@@ -359,19 +359,19 @@ func (o listIssueTypes) args() iter.Seq[orm.ArgWithPosition] {
 	}
 }
 
-func (o listIssueTypes) raw(from, to int) string {
-	return listIssueTypesSQL[from:to]
+func (o listTaskTypes) raw(from, to int) string {
+	return listTaskTypesSQL[from:to]
 }
 
-func (o listIssueTypes) subExpr(from, to int) bob.Expression {
-	return orm.ArgsToExpression(listIssueTypesSQL, from, to, o.args())
+func (o listTaskTypes) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(listTaskTypesSQL, from, to, o.args())
 }
 
-func (o listIssueTypes) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
-	return o.subExpr(0, len(listIssueTypesSQL)).WriteSQL(ctx, w, d, start)
+func (o listTaskTypes) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(listTaskTypesSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var getDefaultWorkflowSchemeSQL = formattedQueries_queries[1809:1863]
+var getDefaultWorkflowSchemeSQL = formattedQueries_queries[1798:1852]
 
 type GetDefaultWorkflowSchemeQuery = orm.ModQuery[*dialect.SelectQuery, getDefaultWorkflowScheme, int, []int, getDefaultWorkflowSchemeTransformer]
 

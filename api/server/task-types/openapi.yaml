@@ -1,13 +1,13 @@
 openapi: 3.0.3
 info:
-  title: Tracker issue types
+  title: Tracker task types
   version: 0.2.0
 paths:
-  /projects/{project_id}/issue-types:
+  /projects/{project_id}/task-types:
     $ref: '#/x-paths/collection'
 components:
   schemas:
-    IssueType:
+    TaskType:
       type: object
       additionalProperties: false
       required:
@@ -30,7 +30,7 @@ components:
           minimum: 0
         initial_status:
           $ref: ../statuses/openapi.yaml#/components/schemas/Status
-    IssueTypeList:
+    TaskTypeList:
       type: object
       additionalProperties: false
       required:
@@ -39,13 +39,13 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/IssueType'
+            $ref: '#/components/schemas/TaskType'
 x-paths:
   collection:
     get:
-      operationId: listIssueTypes
+      operationId: listTaskTypes
       tags:
-      - issue-types
+      - task-types
       summary: Доступные типы задач проекта
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
@@ -55,7 +55,7 @@ x-paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IssueTypeList'
+                $ref: '#/components/schemas/TaskTypeList'
         '400':
           $ref: ../common/openapi.yaml#/components/responses/BadRequest
         '404':

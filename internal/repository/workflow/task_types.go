@@ -12,26 +12,26 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/storage/postgres"
 )
 
-// ListIssueTypes возвращает типы задач проекта с их начальными статусами в workflow.
-func (r *Postgres) ListIssueTypes(
+// ListTaskTypes возвращает типы задач проекта с их начальными статусами в workflow.
+func (r *Postgres) ListTaskTypes(
 	ctx context.Context,
 	schemeID int,
-) ([]domain.IssueTypeWithInitialStatus, error) {
-	q := bobgen.ListIssueTypes(schemeID)
+) ([]domain.TaskTypeWithInitialStatus, error) {
+	q := bobgen.ListTaskTypes(schemeID)
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
-		return nil, postgres.MapError(ctx, fmt.Errorf("build issue types query: %w", err))
+		return nil, postgres.MapError(ctx, fmt.Errorf("build task types query: %w", err))
 	}
 
 	rows, err := pgxscan.All(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
 	if err != nil {
-		return nil, postgres.MapError(ctx, fmt.Errorf("list issue types: %w", err))
+		return nil, postgres.MapError(ctx, fmt.Errorf("list task types: %w", err))
 	}
 
-	items := make([]domain.IssueTypeWithInitialStatus, 0, len(rows))
+	items := make([]domain.TaskTypeWithInitialStatus, 0, len(rows))
 	for _, row := range rows {
-		items = append(items, issueTypeToDomain(row))
+		items = append(items, taskTypeToDomain(row))
 	}
 
 	return items, nil

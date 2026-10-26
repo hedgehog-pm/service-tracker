@@ -19,7 +19,7 @@ func (r *Postgres) InsertTask(ctx context.Context, task domain.Task) (domain.Tas
 		task.Number,
 		task.Title,
 		task.Description,
-		task.IssueTypeID,
+		task.TaskTypeID,
 		task.WorkflowID,
 		task.StatusID,
 		task.PriorityID,

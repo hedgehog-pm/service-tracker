@@ -13,13 +13,13 @@ type InitialStatus struct {
 	Status     Status
 }
 
-type IssueType struct {
+type TaskType struct {
 	ID       int
 	Name     string
 	Position int
 }
 
-type IssueTypeWithInitialStatus struct {
-	IssueType
+type TaskTypeWithInitialStatus struct {
+	TaskType
 	InitialStatus Status
 }

@@ -39,7 +39,7 @@ func taskToDomain(row bobgen.GetTaskRow) domain.Task {
 		ProjectID:   row.ProjectID,
 		ProjectKey:  row.ProjectKey,
 		Number:      row.Number,
-		IssueTypeID: row.IssueTypeID,
+		TaskTypeID:  row.TaskTypeID,
 		WorkflowID:  row.WorkflowID,
 		StatusID:    row.StatusID,
 		Title:       row.Title,

@@ -25,9 +25,9 @@ import (
 // CreateTask defines model for CreateTask.
 type CreateTask struct {
 	Description *string `json:"description,omitempty"`
-	IssueTypeID int     `json:"issue_type_id"`
 	ModuleID    *int    `json:"module_id,omitempty"`
 	PriorityID  *int    `json:"priority_id,omitempty"`
+	TaskTypeID  int     `json:"task_type_id"`
 	Title       string  `json:"title"`
 }
 
@@ -36,7 +36,6 @@ type Task struct {
 	CreatedAt   time.Time `json:"created_at"`
 	Description string    `json:"description"`
 	ID          int       `json:"id"`
-	IssueTypeID int       `json:"issue_type_id"`
 
 	// Key Example: WEB-1
 	Key        string    `json:"key"`
@@ -45,6 +44,7 @@ type Task struct {
 	PriorityID int       `json:"priority_id"`
 	ProjectID  int       `json:"project_id"`
 	StatusID   int       `json:"status_id"`
+	TaskTypeID int       `json:"task_type_id"`
 	Title      string    `json:"title"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
@@ -66,12 +66,12 @@ type UpdateTask struct {
 
 // ListTasksParams defines parameters for ListTasks.
 type ListTasksParams struct {
-	Limit       *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset      *externalRef0.Offset `form:"offset,omitempty" json:"offset,omitempty"`
-	StatusID    *int                 `form:"status_id,omitempty" json:"status_id,omitempty"`
-	ModuleID    *int                 `form:"module_id,omitempty" json:"module_id,omitempty"`
-	IssueTypeID *int                 `form:"issue_type_id,omitempty" json:"issue_type_id,omitempty"`
-	PriorityID  *int                 `form:"priority_id,omitempty" json:"priority_id,omitempty"`
+	Limit      *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset     *externalRef0.Offset `form:"offset,omitempty" json:"offset,omitempty"`
+	StatusID   *int                 `form:"status_id,omitempty" json:"status_id,omitempty"`
+	ModuleID   *int                 `form:"module_id,omitempty" json:"module_id,omitempty"`
+	TaskTypeID *int                 `form:"task_type_id,omitempty" json:"task_type_id,omitempty"`
+	PriorityID *int                 `form:"priority_id,omitempty" json:"priority_id,omitempty"`
 }
 
 // CreateTaskJSONRequestBody defines body for CreateTask for application/json ContentType.
@@ -145,11 +145,11 @@ func (w *ServerInterfaceWrapper) ListTasks(ctx *echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter module_id: %s", err))
 	}
 
-	// ------------- Optional query parameter "issue_type_id" -------------
+	// ------------- Optional query parameter "task_type_id" -------------
 
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "issue_type_id", ctx.QueryParams(), &params.IssueTypeID, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "task_type_id", ctx.QueryParams(), &params.TaskTypeID, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter issue_type_id: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter task_type_id: %s", err))
 	}
 
 	// ------------- Optional query parameter "priority_id" -------------
@@ -886,28 +886,28 @@ func (sh *strictHandler) UpdateTask(ctx *echo.Context, projectID int, taskID int
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"7FhPj9tEFP8qq0dPMIm92+2hvtFSUKUKECpCIgrR1H5Jp2vPuDPjqlHkAyDUAweOnPkGe6BqgdJ+Becb",
-	"oRknjp11sknjtCnry27G9rx5783v/ftNwBdRLDhyrcCbQEwljVCjtCsas4FC+QTlwBdRJPhAxMjN03ss",
-	"Ytp8wjh48DhBOQYCnEYIHoT2JQHlP8SImq8CHNIk1ODdcAkMhYyoBg8Y19dPgEBEn7IoicA7cV0CEeP5",
-	"6piAHseYf4gjlEDgaWckOounkKZkjZZfDYcKV6op8re1etaqOVfM3UixlIBEFQuu8BJn3qLBN/g4QWVV",
-	"9QXXyHW+JQ6ZTzUT3HmkBDfPFspekzgEDz5yFlfo5G+Vs/qwO1IKmasXoPIli4148ADWuvK24MOQ+Qes",
-	"4V2uUXIa5tsPVs0vhf5cJDx4vxqmc9RbaN6WSDXep+rMqhIEzHxIw6+liFFqZgA8pKFCAnHp0aQqdjKP",
-	"CqUl4yPjBqZUggPzeMCsxauDaqNoJxCJIAk3ksaTMKQPQgRPywQ3kx5LJiTT46a01UwbBSZm4z3kI/2w",
-	"vHXuJ5spHidMYgBeb7Zp2Xn9Ypt48Ah9K/4tbsy3Vx0MqK4YGFCNHc0ihOKYxS1eesvNOKt5sJzh2MjB",
-	"pzSKzT3Ad3dudY6BQEy1RsnBgx96n3a+75s/budm/5NO77hzs98zvz++VueL/eKPJ9EDlI3Y3jSUYykM",
-	"7JoSpzTViXq3cUYgiYMt0b8UmyyAiiuKK8vBVsZH2UZSBHU5lkg5GivKLQdD9TpXpYJ7TOkt0wHTGFV/",
-	"rCs15hBIi9OplHRs1uG8G2y0tSPzDs2b7NyMLd2iNZYUjersnDq/fmsvZQ+l8QoVsirmyxFyGaov6222",
-	"rH0isDYgN5b3gPEnNGTBgPE40UCACz0Y2t6MgD/vdwmwWWM5QHtmf9nsqsMWN4xzFdd7yWpFYFn43Anm",
-	"c8aHwgrKbwHuS+qfoTzSVJ0ZHD9BqfLOzu2edF0bOrmfwIPrXbd7Pa95D60bnFn+Us5kkclSJxfmTWCU",
-	"h5zxnO1H7wbggckt92fHlYfE3my2MtIXo1UlQy6MzfG7aGt3hGVK6tPVQj/nsgl2JxGz8TIlMx8szZfl",
-	"9N+ozXWHVerOvg9bLk57P7CcJ5o8rr80o5+4bmNzWVGRV4yIp667SkShk7MRaWCFne4irBhKUwI3dtOr",
-	"OobbQTOJIirH4EH2R/Ymezn9MXud/e0V2UvTkbLlwq77pnoJVZOCSlPqAeWgfi4clb4lgnFj6CkZm6bp",
-	"sgHpBdweN4rbDw2zp+7NXUQV5Nae4f97dp79mZ1Pn2Xn3pENgxdmnf2bvcye10RCStYWa2di/pl13nCG",
-	"qPFi2Hxmnx9a2JDaw2f27D9gK7FzeqFfv7IJuorQny06/8mer0Qoqe8Wv0DdAu5dNRltg7EKv8+mP63F",
-	"bpzUYLc08bfw3V+DU3LzRg2O2zY4H1iDk73IzrNXNgDPj7KX2Yt8Mf0te569mv46/eUoe5O9tuXlr7rm",
-	"JzVoLFgLX4Qh+nM6rbbqhIfNUXS7Tu5LZ+bL7phG4Sra4QI/sd32lptouYmmuIkNkLfIHOtS4FaCVrcM",
-	"W4nZHx/ht3zEYfER7x+n1TK9lZjVJbo5uL8F/8A0RuvYhaBlF5pgF/6/KbYhRmHUMgqHxihcFcy+FYuQ",
-	"tCxCyyK0bcn24bYza5D+NwA=",
+	"7FjNbttGEH4VY5pTuxJpxzmEtyZNiwBBWxQpClRQhQ05kjcmd+nl0rAg8NAWRQ499Nhz38CHGnbbNHkF",
+	"6o2KXUoUKVOyZFGJ3PBia0nu7MzsN3/fCFwRhIIjVxE4IwippAEqlGZFQ9aLUJ6i7LkiCATviRC5fvqM",
+	"BUzpTxgHB05ilEMgwGmA4IBvXhKI3CMMqP7Kwz6NfQXOA5tAX8iAKnCAcXX/AAgE9IwFcQDOgW0TCBjP",
+	"VvsE1DDE7EMcoAQCZ62BaM2eQpKQJVp+1e9HuFBNkb2t1LNSzali9kqKJQQkRqHgEd7gzEfU+wZPYoyM",
+	"qq7gCrnKtoQ+c6liglsvI8H1s5my9yT2wYGPrNkVWtnbyFp82BMphczU8zByJQu1eHAAlrryseB9n7k7",
+	"rOFTrlBy6mfbd1bNL4X6XMTce78aJlPUG2g+lkgVPqfRsVHF85j+kPpfSxGiVEwDuE/9CAmEhUejstjR",
+	"NCoiJRkfaDcEwot97DFj7eKA2ifAY9+nL3wER8kYVwkwrQsTkqnhKvJXkadodNzTj2oTyJS2aKQ3PkM+",
+	"UEfFrVM3mURxEjOJHjidyaY5bbr5LvHiJbpG+i3uyzUX7fWoKtnnUYUtxQKE/JjZHd50xzX56hiHWg6e",
+	"0SDUToPvnjxq7QOBkCod2ODAD51PW9939R+79bD7Sauz33rY7ejfH98D8q7Rx+PgBcpabK8byKEUGiR1",
+	"iYsUVXF0x6OMQBx6a4J/LjKZByXf5hjI0FsEXNFpJA/pYiiRYjCWlJtzURkeixLBMxapNZMBUxiUfywr",
+	"M/oQSPLTqZR0qNf+tBOsta0j0+7MGW3ciM1dojGW5E3q5Jwqv35r7qQpi5tUsTLkiwFyE6pv6mvWrHzC",
+	"MzYg15Z3gPFT6jOvx3gYKyDAher1TV9GwJ32ugTYpKnsoTmzO2922WGzG8apisu9ZLQiMC986gT9OeN9",
+	"YQRltwDPJXWPUe7pHKFxfIoyyro6u33Qtk3oZH4CB+637fb9rIYeGTdYk/QVWaNZIkusTJgzgkEWctpz",
+	"phd96oEDOrc8nxxXHBA7k7lKS5+NVaUEOTM2w++spd0QlgmpTlcz/aybpteNRExGy4RMfDA3Wxazf602",
+	"Vx1WKjvbPmyuNm39vGKaqPO47tx4fmDbtY1keUFeMB0e2vYiEblO1kp8gRF2uImwfB5NCDzYTK/yBG5m",
+	"zDgIqByCA+kf6dv0avxj+ib928mTl6KDyFQLs+7q4iWiigxUGFB3KAV1M+EYqUfCG9aGnoKxSZLMG5Bc",
+	"w+1+rbi9a5g9tB9uIirntbYM/9/T8/TP9Hz8Kj139kwYXOp1+m96lV5UREJCltZqa6T/6XXWb/qo8HrY",
+	"fGae71rYkMrDJ/ZsP2BLsXN4rV3/YBN0GaE/G3T+k14sRCipbha/QNUA7l01GU2DsQi/r8Y/LcVuGFdg",
+	"tzDwN/DdXoNTcPNKDY7dNDh3rMFJL9Pz9LUJwPO99Cq9zBbj39KL9PX41/Eve+nb9I0pL39VNT+JRmNO",
+	"WrjC99GdsmmVVcffbYqi3bYyX1oTX7aHNPAXsQ7X6In1tjfURENN1ERNrAC8WeJYlgHXErS4Y1hLzPbo",
+	"CLehI3aLjnj/OC1X6bXELK7Q9cH9FvQDUxgsIxe8hlyog1z4/6bYmgiFQUMo7Bqh8KFg9lYkQtyQCA2J",
+	"0LQl64fbxqRB8t8A",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

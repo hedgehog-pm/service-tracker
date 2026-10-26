@@ -85,7 +85,8 @@ VALUES (1, 'Default workflow scheme', TRUE);
 INSERT INTO workflow_scheme_rules (scheme_id, issue_type_id, workflow_id) VALUES
     (1, 1, 1),
     (1, 2, 1),
-    (1, 3, 1);
+    (1, 3, 1),
+    (1, 4, 1);
 
 -- При вставке явных id последовательности не меняются.
 -- Сдвигаем их, чтобы новые записи не получили занятые id.

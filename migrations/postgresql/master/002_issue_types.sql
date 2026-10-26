@@ -13,9 +13,9 @@ OVERRIDING SYSTEM VALUE
 VALUES
     (1, 'Task', 1),
     (2, 'Bug', 2),
-    (2, 'Stoty', 3),
-    (3, 'Epic', 4);
+    (3, 'Story', 3),
+    (4, 'Epic', 4);
 
 -- При вставке явных id последовательности не меняются.
 -- Сдвигаем их, чтобы новые записи не получили занятые id.
-ALTER SEQUENCE issue_types_id_seq RESTART WITH 4;
+ALTER SEQUENCE issue_types_id_seq RESTART WITH 5;

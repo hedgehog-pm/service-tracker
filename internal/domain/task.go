@@ -13,7 +13,6 @@ type TaskFields struct {
 	Description     string
 	PriorityID      int
 	ModuleID        *int
-	ParentID        *int
 	EstimateSeconds *int
 	DueDate         *time.Time
 }

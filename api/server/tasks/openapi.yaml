@@ -18,7 +18,6 @@ components:
       - number
       - key
       - module_id
-      - parent_id
       - estimate_seconds
       - due_date
       - status_id
@@ -49,12 +48,6 @@ components:
           pattern: "^[A-Z][A-Z0-9]+-[1-9][0-9]*$"
           example: WEB-1
         module_id:
-          type: integer
-          format: int32
-          x-go-type: int
-          minimum: 1
-          nullable: true
-        parent_id:
           type: integer
           format: int32
           x-go-type: int
@@ -113,12 +106,6 @@ components:
           x-go-type: int
           minimum: 1
           nullable: true
-        parent_id:
-          type: integer
-          format: int32
-          x-go-type: int
-          minimum: 1
-          nullable: true
         estimate_seconds:
           type: integer
           format: int32
@@ -153,12 +140,6 @@ components:
         description:
           type: string
         module_id:
-          type: integer
-          format: int32
-          x-go-type: int
-          minimum: 1
-          nullable: true
-        parent_id:
           type: integer
           format: int32
           x-go-type: int

@@ -46,7 +46,6 @@ func taskToDomain(row bobgen.GetTaskRow) domain.Task {
 		Description:     row.Description,
 		PriorityID:      row.PriorityID,
 		ModuleID:        nullToPointer(row.ModuleID),
-		ParentID:        nullToPointer(row.ParentID),
 		EstimateSeconds: nullToPointer(row.EstimateSeconds),
 		DueDate:         nullToPointer(row.DueDate),
 		CreatedAt:       row.CreatedAt,

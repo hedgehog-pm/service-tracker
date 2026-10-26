@@ -21,7 +21,6 @@ func taskToAPI(task domain.Task) generated.Task {
 		TaskTypeID:      task.TaskTypeID,
 		PriorityID:      task.PriorityID,
 		ModuleID:        task.ModuleID,
-		ParentID:        task.ParentID,
 		EstimateSeconds: task.EstimateSeconds,
 		DueDate:         dateToAPI(task.DueDate),
 		CreatedAt:       task.CreatedAt,

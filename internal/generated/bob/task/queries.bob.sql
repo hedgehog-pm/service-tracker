@@ -22,7 +22,6 @@ SELECT
   t.status_id,
   t.priority_id,
   t.module_id,
-  t.parent_id,
   t.estimate_seconds,
   t.due_date,
   t.created_at,
@@ -47,7 +46,6 @@ SELECT
   t.status_id,
   t.priority_id,
   t.module_id,
-  t.parent_id,
   t.estimate_seconds,
   t.due_date,
   t.created_at,
@@ -73,7 +71,6 @@ SELECT
   t.status_id,
   t.priority_id,
   t.module_id,
-  t.parent_id,
   t.estimate_seconds,
   t.due_date,
   t.created_at,
@@ -100,7 +97,6 @@ INSERT INTO
     status_id,
     priority_id,
     module_id,
-    parent_id,
     estimate_seconds,
     due_date,
     created_at,
@@ -121,12 +117,11 @@ SELECT
   $9,
   $10,
   $11,
-  $12,
-  $13
+  $12
 FROM
   projects AS p
 WHERE
-  p.id = $14
+  p.id = $13
 RETURNING
   id,
   created_at,
@@ -140,13 +135,12 @@ SET
   description = $2,
   priority_id = $3,
   module_id = $4,
-  parent_id = $5,
-  estimate_seconds = $6,
-  due_date = $7,
-  updated_at = $8
+  estimate_seconds = $5,
+  due_date = $6,
+  updated_at = $7
 WHERE
-  project_id = $9
-  AND id = $10
+  project_id = $8
+  AND id = $9
 RETURNING
   created_at,
   updated_at;

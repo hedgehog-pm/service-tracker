@@ -14,7 +14,6 @@ type Params struct {
 	Title           string
 	Description     string
 	ModuleID        *int
-	ParentID        *int
 	EstimateSeconds *int
 	DueDate         *time.Time
 }
@@ -54,7 +53,6 @@ func (u *Usecase) Do(ctx context.Context, params Params) (domain.Task, error) {
 		Title:           params.Title,
 		Description:     params.Description,
 		ModuleID:        params.ModuleID,
-		ParentID:        params.ParentID,
 		EstimateSeconds: params.EstimateSeconds,
 		DueDate:         params.DueDate,
 	}

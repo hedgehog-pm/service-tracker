@@ -44,7 +44,6 @@ func (h *TaskHandler) CreateTask(
 		ModuleID:        body.ModuleID,
 		TaskTypeID:      body.TaskTypeID,
 		PriorityID:      body.PriorityID,
-		ParentID:        body.ParentID,
 		EstimateSeconds: body.EstimateSeconds,
 		DueDate:         dateToDomain(body.DueDate),
 	}
@@ -114,7 +113,6 @@ func (h *TaskHandler) UpdateTask(
 		Description:     body.Description,
 		PriorityID:      body.PriorityID,
 		ModuleID:        body.ModuleID,
-		ParentID:        body.ParentID,
 		EstimateSeconds: body.EstimateSeconds,
 		DueDate:         dateToDomain(body.DueDate),
 	})

@@ -86,7 +86,7 @@ func (o getProjectKey) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Di
 	return o.subExpr(0, len(getProjectKeySQL)).WriteSQL(ctx, w, d, start)
 }
 
-var getTaskSQL = formattedQueries_queries[209:571]
+var getTaskSQL = formattedQueries_queries[209:556]
 
 type GetTaskQuery = orm.ModQuery[*dialect.SelectQuery, getTask, GetTaskRow, []GetTaskRow, getTaskTransformer]
 
@@ -119,11 +119,10 @@ func GetTask(ProjectID int, ID int) *GetTaskQuery {
 						row.ScheduleScanByIndex(8, &t.StatusID)
 						row.ScheduleScanByIndex(9, &t.PriorityID)
 						row.ScheduleScanByIndex(10, &t.ModuleID)
-						row.ScheduleScanByIndex(11, &t.ParentID)
-						row.ScheduleScanByIndex(12, &t.EstimateSeconds)
-						row.ScheduleScanByIndex(13, &t.DueDate)
-						row.ScheduleScanByIndex(14, &t.CreatedAt)
-						row.ScheduleScanByIndex(15, &t.UpdatedAt)
+						row.ScheduleScanByIndex(11, &t.EstimateSeconds)
+						row.ScheduleScanByIndex(12, &t.DueDate)
+						row.ScheduleScanByIndex(13, &t.CreatedAt)
+						row.ScheduleScanByIndex(14, &t.UpdatedAt)
 						return &t, nil
 					}, func(v any) (GetTaskRow, error) {
 						return *v.(*GetTaskRow), nil
@@ -131,9 +130,9 @@ func GetTask(ProjectID int, ID int) *GetTaskQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendSelect(expressionTypArgs.subExpr(9, 258))
-			q.SetTable(expressionTypArgs.subExpr(266, 320))
-			q.AppendWhere(expressionTypArgs.subExpr(329, 362))
+			q.AppendSelect(expressionTypArgs.subExpr(9, 243))
+			q.SetTable(expressionTypArgs.subExpr(251, 305))
+			q.AppendWhere(expressionTypArgs.subExpr(314, 347))
 		}),
 		Build: psql.Select,
 	}
@@ -151,7 +150,6 @@ type GetTaskRow = struct {
 	StatusID        int                 `db:"status_id"`
 	PriorityID      int                 `db:"priority_id"`
 	ModuleID        sql.Null[int]       `db:"module_id"`
-	ParentID        sql.Null[int]       `db:"parent_id"`
 	EstimateSeconds sql.Null[int]       `db:"estimate_seconds"`
 	DueDate         sql.Null[time.Time] `db:"due_date"`
 	CreatedAt       time.Time           `db:"created_at"`
@@ -169,8 +167,8 @@ func (o getTask) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      344,
-			Stop:       346,
+			Start:      329,
+			Stop:       331,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -178,8 +176,8 @@ func (o getTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "id",
-			Start:      360,
-			Stop:       362,
+			Start:      345,
+			Stop:       347,
 			Expression: o.ID,
 		}) {
 			return
@@ -199,7 +197,7 @@ func (o getTask) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect,
 	return o.subExpr(0, len(getTaskSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var getTaskForUpdateSQL = formattedQueries_queries[594:972]
+var getTaskForUpdateSQL = formattedQueries_queries[579:942]
 
 type GetTaskForUpdateQuery = orm.ModQuery[*dialect.SelectQuery, getTaskForUpdate, GetTaskForUpdateRow, []GetTaskForUpdateRow, getTaskForUpdateTransformer]
 
@@ -232,11 +230,10 @@ func GetTaskForUpdate(ProjectID int, ID int) *GetTaskForUpdateQuery {
 						row.ScheduleScanByIndex(8, &t.StatusID)
 						row.ScheduleScanByIndex(9, &t.PriorityID)
 						row.ScheduleScanByIndex(10, &t.ModuleID)
-						row.ScheduleScanByIndex(11, &t.ParentID)
-						row.ScheduleScanByIndex(12, &t.EstimateSeconds)
-						row.ScheduleScanByIndex(13, &t.DueDate)
-						row.ScheduleScanByIndex(14, &t.CreatedAt)
-						row.ScheduleScanByIndex(15, &t.UpdatedAt)
+						row.ScheduleScanByIndex(11, &t.EstimateSeconds)
+						row.ScheduleScanByIndex(12, &t.DueDate)
+						row.ScheduleScanByIndex(13, &t.CreatedAt)
+						row.ScheduleScanByIndex(14, &t.UpdatedAt)
 						return &t, nil
 					}, func(v any) (GetTaskForUpdateRow, error) {
 						return *v.(*GetTaskForUpdateRow), nil
@@ -245,9 +242,9 @@ func GetTaskForUpdate(ProjectID int, ID int) *GetTaskForUpdateQuery {
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
 			q.AppendLock(clause.Lock{Strength: "UPDATE", Tables: []interface{}{"t"}, Wait: ""})
-			q.AppendSelect(expressionTypArgs.subExpr(9, 258))
-			q.SetTable(expressionTypArgs.subExpr(266, 320))
-			q.AppendWhere(expressionTypArgs.subExpr(329, 362))
+			q.AppendSelect(expressionTypArgs.subExpr(9, 243))
+			q.SetTable(expressionTypArgs.subExpr(251, 305))
+			q.AppendWhere(expressionTypArgs.subExpr(314, 347))
 		}),
 		Build: psql.Select,
 	}
@@ -265,7 +262,6 @@ type GetTaskForUpdateRow = struct {
 	StatusID        int                 `db:"status_id"`
 	PriorityID      int                 `db:"priority_id"`
 	ModuleID        sql.Null[int]       `db:"module_id"`
-	ParentID        sql.Null[int]       `db:"parent_id"`
 	EstimateSeconds sql.Null[int]       `db:"estimate_seconds"`
 	DueDate         sql.Null[time.Time] `db:"due_date"`
 	CreatedAt       time.Time           `db:"created_at"`
@@ -283,8 +279,8 @@ func (o getTaskForUpdate) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      344,
-			Stop:       346,
+			Start:      329,
+			Stop:       331,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -292,8 +288,8 @@ func (o getTaskForUpdate) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "id",
-			Start:      360,
-			Stop:       362,
+			Start:      345,
+			Stop:       347,
 			Expression: o.ID,
 		}) {
 			return
@@ -313,7 +309,7 @@ func (o getTaskForUpdate) WriteSQL(ctx context.Context, w io.StringWriter, d bob
 	return o.subExpr(0, len(getTaskForUpdateSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var listTasksSQL = formattedQueries_queries[988:1358]
+var listTasksSQL = formattedQueries_queries[958:1313]
 
 type ListTasksQuery = orm.ModQuery[*dialect.SelectQuery, listTasks, ListTasksRow, []ListTasksRow, listTasksTransformer]
 
@@ -345,11 +341,10 @@ func ListTasks(ProjectID int) *ListTasksQuery {
 						row.ScheduleScanByIndex(8, &t.StatusID)
 						row.ScheduleScanByIndex(9, &t.PriorityID)
 						row.ScheduleScanByIndex(10, &t.ModuleID)
-						row.ScheduleScanByIndex(11, &t.ParentID)
-						row.ScheduleScanByIndex(12, &t.EstimateSeconds)
-						row.ScheduleScanByIndex(13, &t.DueDate)
-						row.ScheduleScanByIndex(14, &t.CreatedAt)
-						row.ScheduleScanByIndex(15, &t.UpdatedAt)
+						row.ScheduleScanByIndex(11, &t.EstimateSeconds)
+						row.ScheduleScanByIndex(12, &t.DueDate)
+						row.ScheduleScanByIndex(13, &t.CreatedAt)
+						row.ScheduleScanByIndex(14, &t.UpdatedAt)
 						return &t, nil
 					}, func(v any) (ListTasksRow, error) {
 						return *v.(*ListTasksRow), nil
@@ -357,10 +352,10 @@ func ListTasks(ProjectID int) *ListTasksQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendSelect(expressionTypArgs.subExpr(9, 258))
-			q.SetTable(expressionTypArgs.subExpr(266, 320))
-			q.AppendWhere(expressionTypArgs.subExpr(329, 346))
-			q.AppendOrder(expressionTypArgs.subExpr(358, 370))
+			q.AppendSelect(expressionTypArgs.subExpr(9, 243))
+			q.SetTable(expressionTypArgs.subExpr(251, 305))
+			q.AppendWhere(expressionTypArgs.subExpr(314, 331))
+			q.AppendOrder(expressionTypArgs.subExpr(343, 355))
 		}),
 		Build: psql.Select,
 	}
@@ -378,7 +373,6 @@ type ListTasksRow = struct {
 	StatusID        int                 `db:"status_id"`
 	PriorityID      int                 `db:"priority_id"`
 	ModuleID        sql.Null[int]       `db:"module_id"`
-	ParentID        sql.Null[int]       `db:"parent_id"`
 	EstimateSeconds sql.Null[int]       `db:"estimate_seconds"`
 	DueDate         sql.Null[time.Time] `db:"due_date"`
 	CreatedAt       time.Time           `db:"created_at"`
@@ -395,8 +389,8 @@ func (o listTasks) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      344,
-			Stop:       346,
+			Start:      329,
+			Stop:       331,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -416,11 +410,11 @@ func (o listTasks) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialec
 	return o.subExpr(0, len(listTasksSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var insertTaskSQL = formattedQueries_queries[1375:1895]
+var insertTaskSQL = formattedQueries_queries[1330:1828]
 
 type InsertTaskQuery = orm.ModQuery[*dialect.InsertQuery, insertTask, InsertTaskRow, []InsertTaskRow, insertTaskTransformer]
 
-func InsertTask(Number int, Title string, Description string, TaskTypeID int, WorkflowID int, StatusID int, PriorityID int, ModuleID sql.Null[int], ParentID sql.Null[int], EstimateSeconds sql.Null[int], DueDate sql.Null[time.Time], CreatedAt time.Time, UpdatedAt time.Time, ProjectID int) *InsertTaskQuery {
+func InsertTask(Number int, Title string, Description string, TaskTypeID int, WorkflowID int, StatusID int, PriorityID int, ModuleID sql.Null[int], EstimateSeconds sql.Null[int], DueDate sql.Null[time.Time], CreatedAt time.Time, UpdatedAt time.Time, ProjectID int) *InsertTaskQuery {
 	var expressionTypArgs insertTask
 
 	expressionTypArgs.Number = psql.Arg(Number)
@@ -431,7 +425,6 @@ func InsertTask(Number int, Title string, Description string, TaskTypeID int, Wo
 	expressionTypArgs.StatusID = psql.Arg(StatusID)
 	expressionTypArgs.PriorityID = psql.Arg(PriorityID)
 	expressionTypArgs.ModuleID = psql.Arg(ModuleID)
-	expressionTypArgs.ParentID = psql.Arg(ParentID)
 	expressionTypArgs.EstimateSeconds = psql.Arg(EstimateSeconds)
 	expressionTypArgs.DueDate = psql.Arg(DueDate)
 	expressionTypArgs.CreatedAt = psql.Arg(CreatedAt)
@@ -460,14 +453,14 @@ func InsertTask(Number int, Title string, Description string, TaskTypeID int, Wo
 			},
 		},
 		Mod: bob.ModFunc[*dialect.InsertQuery](func(q *dialect.InsertQuery) {
-			q.TableRef.Columns = []string{"project_id", "workflow_scheme_id", "priority_scheme_id", "number", "title", "description", "task_type_id", "workflow_id", "status_id", "priority_id", "module_id", "parent_id", "estimate_seconds", "due_date", "created_at", "updated_at"}
+			q.TableRef.Columns = []string{"project_id", "workflow_scheme_id", "priority_scheme_id", "number", "title", "description", "task_type_id", "workflow_id", "status_id", "priority_id", "module_id", "estimate_seconds", "due_date", "created_at", "updated_at"}
 			q.TableRef.Expression = expressionTypArgs.subExpr(14, 19)
 			q.Query = bob.BaseQuery[bob.Expression]{
-				Expression: expressionTypArgs.subExpr(294, 477),
+				Expression: expressionTypArgs.subExpr(279, 455),
 				Dialect:    dialect.Dialect,
 				QueryType:  bob.QueryTypeSelect,
 			}
-			q.AppendReturning(expressionTypArgs.subExpr(490, 520))
+			q.AppendReturning(expressionTypArgs.subExpr(468, 498))
 		}),
 		Build: psql.Insert,
 	}
@@ -490,7 +483,6 @@ type insertTask struct {
 	StatusID        bob.Expression
 	PriorityID      bob.Expression
 	ModuleID        bob.Expression
-	ParentID        bob.Expression
 	EstimateSeconds bob.Expression
 	DueDate         bob.Expression
 	CreatedAt       bob.Expression
@@ -502,8 +494,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "number",
-			Start:      359,
-			Stop:       361,
+			Start:      344,
+			Stop:       346,
 			Expression: o.Number,
 		}) {
 			return
@@ -511,8 +503,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "title",
-			Start:      365,
-			Stop:       367,
+			Start:      350,
+			Stop:       352,
 			Expression: o.Title,
 		}) {
 			return
@@ -520,8 +512,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "description",
-			Start:      371,
-			Stop:       373,
+			Start:      356,
+			Stop:       358,
 			Expression: o.Description,
 		}) {
 			return
@@ -529,8 +521,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "taskTypeID",
-			Start:      377,
-			Stop:       379,
+			Start:      362,
+			Stop:       364,
 			Expression: o.TaskTypeID,
 		}) {
 			return
@@ -538,8 +530,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "workflowID",
-			Start:      383,
-			Stop:       385,
+			Start:      368,
+			Stop:       370,
 			Expression: o.WorkflowID,
 		}) {
 			return
@@ -547,8 +539,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "statusID",
-			Start:      389,
-			Stop:       391,
+			Start:      374,
+			Stop:       376,
 			Expression: o.StatusID,
 		}) {
 			return
@@ -556,8 +548,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "priorityID",
-			Start:      395,
-			Stop:       397,
+			Start:      380,
+			Stop:       382,
 			Expression: o.PriorityID,
 		}) {
 			return
@@ -565,26 +557,17 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "moduleID",
-			Start:      401,
-			Stop:       403,
+			Start:      386,
+			Stop:       388,
 			Expression: o.ModuleID,
 		}) {
 			return
 		}
 
 		if !yield(orm.ArgWithPosition{
-			Name:       "parentID",
-			Start:      407,
-			Stop:       409,
-			Expression: o.ParentID,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
 			Name:       "estimateSeconds",
-			Start:      413,
-			Stop:       416,
+			Start:      392,
+			Stop:       394,
 			Expression: o.EstimateSeconds,
 		}) {
 			return
@@ -592,8 +575,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "dueDate",
-			Start:      420,
-			Stop:       423,
+			Start:      398,
+			Stop:       401,
 			Expression: o.DueDate,
 		}) {
 			return
@@ -601,8 +584,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "createdAt",
-			Start:      427,
-			Stop:       430,
+			Start:      405,
+			Stop:       408,
 			Expression: o.CreatedAt,
 		}) {
 			return
@@ -610,8 +593,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "updatedAt",
-			Start:      434,
-			Stop:       437,
+			Start:      412,
+			Stop:       415,
 			Expression: o.UpdatedAt,
 		}) {
 			return
@@ -619,8 +602,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      474,
-			Stop:       477,
+			Start:      452,
+			Stop:       455,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -640,18 +623,17 @@ func (o insertTask) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Diale
 	return o.subExpr(0, len(insertTaskSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var updateTaskSQL = formattedQueries_queries[1912:2156]
+var updateTaskSQL = formattedQueries_queries[1845:2070]
 
 type UpdateTaskQuery = orm.ModQuery[*dialect.UpdateQuery, updateTask, UpdateTaskRow, []UpdateTaskRow, updateTaskTransformer]
 
-func UpdateTask(Title string, Description string, PriorityID int, ModuleID sql.Null[int], ParentID sql.Null[int], EstimateSeconds sql.Null[int], DueDate sql.Null[time.Time], UpdatedAt time.Time, ProjectID int, ID int) *UpdateTaskQuery {
+func UpdateTask(Title string, Description string, PriorityID int, ModuleID sql.Null[int], EstimateSeconds sql.Null[int], DueDate sql.Null[time.Time], UpdatedAt time.Time, ProjectID int, ID int) *UpdateTaskQuery {
 	var expressionTypArgs updateTask
 
 	expressionTypArgs.Title = psql.Arg(Title)
 	expressionTypArgs.Description = psql.Arg(Description)
 	expressionTypArgs.PriorityID = psql.Arg(PriorityID)
 	expressionTypArgs.ModuleID = psql.Arg(ModuleID)
-	expressionTypArgs.ParentID = psql.Arg(ParentID)
 	expressionTypArgs.EstimateSeconds = psql.Arg(EstimateSeconds)
 	expressionTypArgs.DueDate = psql.Arg(DueDate)
 	expressionTypArgs.UpdatedAt = psql.Arg(UpdatedAt)
@@ -680,9 +662,9 @@ func UpdateTask(Title string, Description string, PriorityID int, ModuleID sql.N
 		},
 		Mod: bob.ModFunc[*dialect.UpdateQuery](func(q *dialect.UpdateQuery) {
 			q.Table.Expression = expressionTypArgs.subExpr(9, 14)
-			q.AppendSet(expressionTypArgs.subExpr(21, 168))
-			q.AppendWhere(expressionTypArgs.subExpr(177, 207))
-			q.AppendReturning(expressionTypArgs.subExpr(220, 244))
+			q.AppendSet(expressionTypArgs.subExpr(21, 150))
+			q.AppendWhere(expressionTypArgs.subExpr(159, 188))
+			q.AppendReturning(expressionTypArgs.subExpr(201, 225))
 		}),
 		Build: psql.Update,
 	}
@@ -700,7 +682,6 @@ type updateTask struct {
 	Description     bob.Expression
 	PriorityID      bob.Expression
 	ModuleID        bob.Expression
-	ParentID        bob.Expression
 	EstimateSeconds bob.Expression
 	DueDate         bob.Expression
 	UpdatedAt       bob.Expression
@@ -747,18 +728,9 @@ func (o updateTask) args() iter.Seq[orm.ArgWithPosition] {
 		}
 
 		if !yield(orm.ArgWithPosition{
-			Name:       "parentID",
-			Start:      105,
-			Stop:       107,
-			Expression: o.ParentID,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
 			Name:       "estimateSeconds",
-			Start:      130,
-			Stop:       132,
+			Start:      112,
+			Stop:       114,
 			Expression: o.EstimateSeconds,
 		}) {
 			return
@@ -766,8 +738,8 @@ func (o updateTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "dueDate",
-			Start:      147,
-			Stop:       149,
+			Start:      129,
+			Stop:       131,
 			Expression: o.DueDate,
 		}) {
 			return
@@ -775,8 +747,8 @@ func (o updateTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "updatedAt",
-			Start:      166,
-			Stop:       168,
+			Start:      148,
+			Stop:       150,
 			Expression: o.UpdatedAt,
 		}) {
 			return
@@ -784,8 +756,8 @@ func (o updateTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      190,
-			Stop:       192,
+			Start:      172,
+			Stop:       174,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -793,8 +765,8 @@ func (o updateTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "id",
-			Start:      204,
-			Stop:       207,
+			Start:      186,
+			Stop:       188,
 			Expression: o.ID,
 		}) {
 			return
@@ -814,7 +786,7 @@ func (o updateTask) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Diale
 	return o.subExpr(0, len(updateTaskSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var updateStatusSQL = formattedQueries_queries[2175:2304]
+var updateStatusSQL = formattedQueries_queries[2089:2218]
 
 type UpdateStatusQuery = orm.ModQuery[*dialect.UpdateQuery, updateStatus, UpdateStatusRow, []UpdateStatusRow, updateStatusTransformer]
 
@@ -922,7 +894,7 @@ func (o updateStatus) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dia
 	return o.subExpr(0, len(updateStatusSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var deleteTaskSQL = formattedQueries_queries[2321:2378]
+var deleteTaskSQL = formattedQueries_queries[2235:2292]
 
 type DeleteTaskQuery = orm.ModExecQuery[*dialect.DeleteQuery, deleteTask]
 

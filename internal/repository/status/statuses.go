@@ -12,6 +12,7 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/storage/postgres"
 )
 
+// ListStatuses возвращает статусы всех workflow из схемы, исключая повторы.
 func (r *Postgres) ListStatuses(ctx context.Context, schemeID int) ([]domain.Status, error) {
 	q := bobgen.ListStatuses(schemeID)
 

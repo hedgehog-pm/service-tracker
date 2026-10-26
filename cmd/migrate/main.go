@@ -22,7 +22,11 @@ func main() {
 
 func run(ctx context.Context) error {
 	dsn := flag.String("dsn", os.Getenv("DATABASE_URL"), "PostgreSQL connection string")
-	directory := flag.String("migrations", "migrations/postgresql/master", "Goose migrations directory")
+	directory := flag.String(
+		"migrations",
+		"migrations/postgresql/master",
+		"Goose migrations directory",
+	)
 
 	flag.Parse()
 

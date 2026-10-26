@@ -43,13 +43,13 @@ func (t Task) Key() string {
 	return fmt.Sprintf("%s-%d", t.ProjectKey, t.Number)
 }
 
-func (t *Task) Transition(transition Transition, now time.Time) error {
+// Transition пытается применить переход transition по текущему workflow задачи.
+func (t *Task) Transition(transition Transition) error {
 	if transition.WorkflowID != t.WorkflowID || transition.FromStatusID != t.StatusID {
 		return ErrTransitionUnavailable
 	}
 
 	t.StatusID = transition.ToStatus.ID
-	t.UpdatedAt = now
 
 	return nil
 }

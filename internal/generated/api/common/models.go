@@ -45,6 +45,14 @@ type InternalError = Error
 // NotFound defines model for NotFound.
 type NotFound = Error
 
+type BadRequestJSONResponse Error
+
+type ConflictJSONResponse Error
+
+type InternalErrorJSONResponse Error
+
+type NotFoundJSONResponse Error
+
 // Base64 encoded, compressed with deflate, json marshaled OpenAPI spec.
 // Stored as a slice of fixed-width chunks rather than one concatenated
 // const string: with thousands of chunks the chained `+` fold is several

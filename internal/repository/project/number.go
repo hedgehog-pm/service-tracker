@@ -14,6 +14,9 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/storage/postgres"
 )
 
+// ReserveTaskNumber атомарно выделяет следующий номер задачи
+// и возвращает его вместе с ключом проекта.
+// Для отката номера при ошибке создания задачи вызывай метод в транзакции из ctx.
 func (r *Postgres) ReserveTaskNumber(ctx context.Context, projectID int) (int, string, error) {
 	q := bobgen.ReserveTaskNumber(projectID)
 
@@ -28,7 +31,10 @@ func (r *Postgres) ReserveTaskNumber(ctx context.Context, projectID int) (int, s
 	}
 
 	if err != nil {
-		return 0, "", postgres.MapError(ctx, fmt.Errorf("reserve task number in project %d: %w", projectID, err))
+		return 0, "", postgres.MapError(
+			ctx,
+			fmt.Errorf("reserve task number in project %d: %w", projectID, err),
+		)
 	}
 
 	return row.Number, row.Key, nil

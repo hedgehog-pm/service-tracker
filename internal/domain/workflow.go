@@ -18,3 +18,8 @@ type IssueType struct {
 	Name     string
 	Position int
 }
+
+type IssueTypeWithInitialStatus struct {
+	IssueType
+	InitialStatus Status
+}

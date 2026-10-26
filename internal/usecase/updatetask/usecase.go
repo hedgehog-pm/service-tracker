@@ -13,10 +13,17 @@ type Usecase struct {
 }
 
 func New(repository repository, transactor transactor) *Usecase {
-	return &Usecase{repository: repository, transactor: transactor}
+	return &Usecase{
+		repository: repository,
+		transactor: transactor,
+	}
 }
 
-func (u *Usecase) Do(ctx context.Context, projectID, taskID int, fields domain.TaskFields) (domain.Task, error) {
+func (u *Usecase) Do(
+	ctx context.Context,
+	projectID, taskID int,
+	fields domain.TaskFields,
+) (domain.Task, error) {
 	if err := fields.Validate(); err != nil {
 		return domain.Task{}, err
 	}

@@ -69,21 +69,40 @@ func run(ctx context.Context) error {
 	workflows := workflowrepository.NewPostgres(db)
 	priorities := priorityrepository.NewPostgres(db)
 	taskHandler := api.NewTaskHandler(
-		taskusecase.New(tasks), createtask.New(tasks, projects, workflows, priorities, transactor),
-		listtasks.New(tasks), updatetask.New(tasks, transactor),
+		taskusecase.New(tasks),
+		createtask.New(tasks, projects, workflows, priorities, transactor),
+		listtasks.New(tasks),
+		updatetask.New(tasks, transactor),
 	)
 
 	statuses := statusrepository.NewPostgres(db)
 	modules := modulerepository.NewPostgres(db)
-	projectHandler := api.NewProjectHandler(projectusecase.New(projects), createproject.New(projects, workflows, priorities))
+	projectHandler := api.NewProjectHandler(
+		projectusecase.New(projects),
+		createproject.New(projects, workflows, priorities),
+	)
 	statusHandler := api.NewStatusHandler(statususecase.New(statuses, projects))
-	moduleHandler := api.NewModuleHandler(moduleusecase.New(modules), listmodules.New(modules, projects))
+	moduleHandler := api.NewModuleHandler(
+		moduleusecase.New(modules),
+		listmodules.New(modules, projects),
+	)
 
-	transitionHandler := api.NewTransitionHandler(listtasktransitions.New(tasks, workflows), transitiontask.New(tasks, workflows, transactor))
+	transitionHandler := api.NewTransitionHandler(
+		listtasktransitions.New(tasks, workflows),
+		transitiontask.New(tasks, workflows, transactor),
+	)
 	issueTypeHandler := api.NewIssueTypeHandler(issuetype.New(workflows, projects))
 	priorityHandler := api.NewPriorityHandler(priority.New(priorities, projects))
 
-	server, err := api.NewServer(projectHandler, statusHandler, moduleHandler, taskHandler, transitionHandler, issueTypeHandler, priorityHandler)
+	server, err := api.NewServer(
+		projectHandler,
+		statusHandler,
+		moduleHandler,
+		taskHandler,
+		transitionHandler,
+		issueTypeHandler,
+		priorityHandler,
+	)
 	if err != nil {
 		return err
 	}
@@ -93,7 +112,11 @@ func run(ctx context.Context) error {
 		address = ":8080"
 	}
 
-	httpServer := &http.Server{Addr: address, Handler: server, ReadHeaderTimeout: 5 * time.Second}
+	httpServer := &http.Server{
+		Addr:              address,
+		Handler:           server,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
 
 	return serve(ctx, httpServer)
 }

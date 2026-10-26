@@ -11,6 +11,10 @@ type (
 		Items             []domain.Priority
 		DefaultPriorityID int
 	}
+	// Usecase получения приоритетов проекта.
+	//
+	// [Result.Items] и [Result.DefaultPriorityID] берутся из одной схемы,
+	// указанной в [domain.Project.PrioritySchemeID].
 	Usecase struct {
 		reader   reader
 		projects projects
@@ -18,7 +22,10 @@ type (
 )
 
 func New(reader reader, projects projects) *Usecase {
-	return &Usecase{reader: reader, projects: projects}
+	return &Usecase{
+		reader:   reader,
+		projects: projects,
+	}
 }
 
 func (u *Usecase) List(ctx context.Context, projectID int) (Result, error) {
@@ -37,5 +44,8 @@ func (u *Usecase) List(ctx context.Context, projectID int) (Result, error) {
 		return Result{}, err
 	}
 
-	return Result{Items: items, DefaultPriorityID: defaultID}, nil
+	return Result{
+		Items:             items,
+		DefaultPriorityID: defaultID,
+	}, nil
 }

@@ -6,7 +6,9 @@ package statuses
 import (
 	"bytes"
 	"compress/flate"
+	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -132,6 +134,120 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 
 	router.GET(options.BaseURL+"/projects/:project_id/statuses", wrapper.ListStatuses, options.OperationMiddlewares["listStatuses"]...)
 
+}
+
+type ListStatusesRequestObject struct {
+	ProjectID externalRef0.ProjectID `json:"project_id"`
+}
+
+type ListStatusesResponseObject interface {
+	VisitListStatusesResponse(w http.ResponseWriter) error
+}
+
+type ListStatuses200JSONResponse StatusList
+
+func (response ListStatuses200JSONResponse) VisitListStatusesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListStatuses400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response ListStatuses400JSONResponse) VisitListStatusesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListStatuses404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response ListStatuses404JSONResponse) VisitListStatusesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListStatuses500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response ListStatuses500JSONResponse) VisitListStatusesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+// StrictServerInterface represents all server handlers.
+type StrictServerInterface interface {
+	// ListStatuses Статусы workflow схемы проекта
+	// (GET /projects/{project_id}/statuses)
+	ListStatuses(ctx context.Context, request ListStatusesRequestObject) (ListStatusesResponseObject, error)
+}
+
+type StrictHandlerFunc func(ctx *echo.Context, request any) (any, error)
+type StrictMiddlewareFunc func(f StrictHandlerFunc, operationID string) StrictHandlerFunc
+
+func NewStrictHandler(ssi StrictServerInterface, middlewares []StrictMiddlewareFunc) ServerInterface {
+	return &strictHandler{ssi: ssi, middlewares: middlewares}
+}
+
+type strictHandler struct {
+	ssi         StrictServerInterface
+	middlewares []StrictMiddlewareFunc
+}
+
+// ListStatuses operation middleware
+func (sh *strictHandler) ListStatuses(ctx *echo.Context, projectID externalRef0.ProjectID) error {
+	var request ListStatusesRequestObject
+
+	request.ProjectID = projectID
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ListStatuses(ctx.Request().Context(), request.(ListStatusesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListStatuses")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ListStatusesResponseObject); ok {
+		return validResponse.VisitListStatusesResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
 }
 
 // Base64 encoded, compressed with deflate, json marshaled OpenAPI spec.

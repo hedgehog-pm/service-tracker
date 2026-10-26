@@ -1,6 +1,7 @@
 package: priorities
 generate:
   models: true
+  strict-server: true
   embedded-spec: true
   echo5-server: true
 output: internal/generated/api/priorities/server.go

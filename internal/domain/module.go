@@ -9,7 +9,10 @@ type Module struct {
 }
 
 func (e Module) Validate() error {
-	if err := validation.ValidateStruct(&e, validation.Field(&e.Name, validation.By(notBlank))); err != nil {
+	if err := validation.ValidateStruct(
+		&e,
+		validation.Field(&e.Name, validation.By(notBlank)),
+	); err != nil {
 		return NewError(CodeInvalidInput, err.Error())
 	}
 

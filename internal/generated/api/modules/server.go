@@ -6,7 +6,9 @@ package modules
 import (
 	"bytes"
 	"compress/flate"
+	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -252,6 +254,596 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 	router.GET(options.BaseURL+"/projects/:project_id/modules/:module_id", wrapper.GetModule, options.OperationMiddlewares["getModule"]...)
 	router.PUT(options.BaseURL+"/projects/:project_id/modules/:module_id", wrapper.UpdateModule, options.OperationMiddlewares["updateModule"]...)
 
+}
+
+type ListModulesRequestObject struct {
+	ProjectID int `json:"project_id"`
+	Params    ListModulesParams
+}
+
+type ListModulesResponseObject interface {
+	VisitListModulesResponse(w http.ResponseWriter) error
+}
+
+type ListModules200JSONResponse ModuleList
+
+func (response ListModules200JSONResponse) VisitListModulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListModules400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response ListModules400JSONResponse) VisitListModulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListModules404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response ListModules404JSONResponse) VisitListModulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListModules500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response ListModules500JSONResponse) VisitListModulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateModuleRequestObject struct {
+	ProjectID int `json:"project_id"`
+	Body      *CreateModuleJSONRequestBody
+}
+
+type CreateModuleResponseObject interface {
+	VisitCreateModuleResponse(w http.ResponseWriter) error
+}
+
+type CreateModule201JSONResponse Module
+
+func (response CreateModule201JSONResponse) VisitCreateModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateModule400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response CreateModule400JSONResponse) VisitCreateModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateModule404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response CreateModule404JSONResponse) VisitCreateModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateModule409JSONResponse struct {
+	externalRef0.ConflictJSONResponse
+}
+
+func (response CreateModule409JSONResponse) VisitCreateModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateModule500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response CreateModule500JSONResponse) VisitCreateModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteModuleRequestObject struct {
+	ProjectID int `json:"project_id"`
+	ModuleID  int `json:"module_id"`
+}
+
+type DeleteModuleResponseObject interface {
+	VisitDeleteModuleResponse(w http.ResponseWriter) error
+}
+
+type DeleteModule204Response struct {
+}
+
+func (response DeleteModule204Response) VisitDeleteModuleResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteModule400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response DeleteModule400JSONResponse) VisitDeleteModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteModule404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response DeleteModule404JSONResponse) VisitDeleteModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteModule409JSONResponse struct {
+	externalRef0.ConflictJSONResponse
+}
+
+func (response DeleteModule409JSONResponse) VisitDeleteModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteModule500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response DeleteModule500JSONResponse) VisitDeleteModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetModuleRequestObject struct {
+	ProjectID int `json:"project_id"`
+	ModuleID  int `json:"module_id"`
+}
+
+type GetModuleResponseObject interface {
+	VisitGetModuleResponse(w http.ResponseWriter) error
+}
+
+type GetModule200JSONResponse Module
+
+func (response GetModule200JSONResponse) VisitGetModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetModule400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response GetModule400JSONResponse) VisitGetModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetModule404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response GetModule404JSONResponse) VisitGetModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetModule500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response GetModule500JSONResponse) VisitGetModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateModuleRequestObject struct {
+	ProjectID int `json:"project_id"`
+	ModuleID  int `json:"module_id"`
+	Body      *UpdateModuleJSONRequestBody
+}
+
+type UpdateModuleResponseObject interface {
+	VisitUpdateModuleResponse(w http.ResponseWriter) error
+}
+
+type UpdateModule200JSONResponse Module
+
+func (response UpdateModule200JSONResponse) VisitUpdateModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateModule400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response UpdateModule400JSONResponse) VisitUpdateModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateModule404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response UpdateModule404JSONResponse) VisitUpdateModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateModule409JSONResponse struct {
+	externalRef0.ConflictJSONResponse
+}
+
+func (response UpdateModule409JSONResponse) VisitUpdateModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateModule500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response UpdateModule500JSONResponse) VisitUpdateModuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+// StrictServerInterface represents all server handlers.
+type StrictServerInterface interface {
+	// ListModules Список: modules
+	// (GET /projects/{project_id}/modules)
+	ListModules(ctx context.Context, request ListModulesRequestObject) (ListModulesResponseObject, error)
+	// CreateModule Модуль: создание
+	// (POST /projects/{project_id}/modules)
+	CreateModule(ctx context.Context, request CreateModuleRequestObject) (CreateModuleResponseObject, error)
+	// DeleteModule Модуль: удаление
+	// (DELETE /projects/{project_id}/modules/{module_id})
+	DeleteModule(ctx context.Context, request DeleteModuleRequestObject) (DeleteModuleResponseObject, error)
+	// GetModule Модуль: чтение
+	// (GET /projects/{project_id}/modules/{module_id})
+	GetModule(ctx context.Context, request GetModuleRequestObject) (GetModuleResponseObject, error)
+	// UpdateModule Модуль: замена изменяемых полей
+	// (PUT /projects/{project_id}/modules/{module_id})
+	UpdateModule(ctx context.Context, request UpdateModuleRequestObject) (UpdateModuleResponseObject, error)
+}
+
+type StrictHandlerFunc func(ctx *echo.Context, request any) (any, error)
+type StrictMiddlewareFunc func(f StrictHandlerFunc, operationID string) StrictHandlerFunc
+
+func NewStrictHandler(ssi StrictServerInterface, middlewares []StrictMiddlewareFunc) ServerInterface {
+	return &strictHandler{ssi: ssi, middlewares: middlewares}
+}
+
+type strictHandler struct {
+	ssi         StrictServerInterface
+	middlewares []StrictMiddlewareFunc
+}
+
+// ListModules operation middleware
+func (sh *strictHandler) ListModules(ctx *echo.Context, projectID int, params ListModulesParams) error {
+	var request ListModulesRequestObject
+
+	request.ProjectID = projectID
+	request.Params = params
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ListModules(ctx.Request().Context(), request.(ListModulesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListModules")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ListModulesResponseObject); ok {
+		return validResponse.VisitListModulesResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// CreateModule operation middleware
+func (sh *strictHandler) CreateModule(ctx *echo.Context, projectID int) error {
+	var request CreateModuleRequestObject
+
+	request.ProjectID = projectID
+
+	var body CreateModuleJSONRequestBody
+	var err error
+	if _, ok := ctx.Echo().Binder.(*echo.DefaultBinder); ok {
+		// Bind only the request body, so that path and query parameters
+		// are not also bound into the body struct.
+		err = echo.BindBody(ctx, &body)
+	} else {
+		// A custom binder is installed on the Echo instance; defer to it
+		// entirely, since echo.Binder does not expose body-only binding.
+		err = ctx.Bind(&body)
+	}
+	if err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateModule(ctx.Request().Context(), request.(CreateModuleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateModule")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(CreateModuleResponseObject); ok {
+		return validResponse.VisitCreateModuleResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// DeleteModule operation middleware
+func (sh *strictHandler) DeleteModule(ctx *echo.Context, projectID int, moduleID int) error {
+	var request DeleteModuleRequestObject
+
+	request.ProjectID = projectID
+	request.ModuleID = moduleID
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteModule(ctx.Request().Context(), request.(DeleteModuleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteModule")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(DeleteModuleResponseObject); ok {
+		return validResponse.VisitDeleteModuleResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetModule operation middleware
+func (sh *strictHandler) GetModule(ctx *echo.Context, projectID int, moduleID int) error {
+	var request GetModuleRequestObject
+
+	request.ProjectID = projectID
+	request.ModuleID = moduleID
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetModule(ctx.Request().Context(), request.(GetModuleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetModule")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetModuleResponseObject); ok {
+		return validResponse.VisitGetModuleResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// UpdateModule operation middleware
+func (sh *strictHandler) UpdateModule(ctx *echo.Context, projectID int, moduleID int) error {
+	var request UpdateModuleRequestObject
+
+	request.ProjectID = projectID
+	request.ModuleID = moduleID
+
+	var body UpdateModuleJSONRequestBody
+	var err error
+	if _, ok := ctx.Echo().Binder.(*echo.DefaultBinder); ok {
+		// Bind only the request body, so that path and query parameters
+		// are not also bound into the body struct.
+		err = echo.BindBody(ctx, &body)
+	} else {
+		// A custom binder is installed on the Echo instance; defer to it
+		// entirely, since echo.Binder does not expose body-only binding.
+		err = ctx.Bind(&body)
+	}
+	if err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateModule(ctx.Request().Context(), request.(UpdateModuleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateModule")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(UpdateModuleResponseObject); ok {
+		return validResponse.VisitUpdateModuleResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
 }
 
 // Base64 encoded, compressed with deflate, json marshaled OpenAPI spec.

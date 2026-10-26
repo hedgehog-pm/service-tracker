@@ -23,7 +23,10 @@ func (u *Usecase) List(ctx context.Context, limit int, offset int) ([]domain.Pro
 }
 
 func (u *Usecase) Update(ctx context.Context, id int, name string) (domain.Project, error) {
-	value := domain.Project{ID: id, Name: name}
+	value := domain.Project{
+		ID:   id,
+		Name: name,
+	}
 	if err := value.Validate(); err != nil {
 		return domain.Project{}, err
 	}

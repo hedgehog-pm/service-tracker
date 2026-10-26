@@ -1,6 +1,7 @@
 package: common
 generate:
   models: true
+  strict-server: true
   embedded-spec: true
 output: internal/generated/api/common/models.go
 output-options:

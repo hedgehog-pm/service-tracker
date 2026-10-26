@@ -6,7 +6,9 @@ package priorities
 import (
 	"bytes"
 	"compress/flate"
+	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -109,6 +111,120 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 
 	router.GET(options.BaseURL+"/projects/:project_id/priorities", wrapper.ListPriorities, options.OperationMiddlewares["listPriorities"]...)
 
+}
+
+type ListPrioritiesRequestObject struct {
+	ProjectID externalRef0.ProjectID `json:"project_id"`
+}
+
+type ListPrioritiesResponseObject interface {
+	VisitListPrioritiesResponse(w http.ResponseWriter) error
+}
+
+type ListPriorities200JSONResponse PriorityList
+
+func (response ListPriorities200JSONResponse) VisitListPrioritiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListPriorities400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response ListPriorities400JSONResponse) VisitListPrioritiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListPriorities404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response ListPriorities404JSONResponse) VisitListPrioritiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListPriorities500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response ListPriorities500JSONResponse) VisitListPrioritiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+// StrictServerInterface represents all server handlers.
+type StrictServerInterface interface {
+	// ListPriorities Доступные приоритеты проекта
+	// (GET /projects/{project_id}/priorities)
+	ListPriorities(ctx context.Context, request ListPrioritiesRequestObject) (ListPrioritiesResponseObject, error)
+}
+
+type StrictHandlerFunc func(ctx *echo.Context, request any) (any, error)
+type StrictMiddlewareFunc func(f StrictHandlerFunc, operationID string) StrictHandlerFunc
+
+func NewStrictHandler(ssi StrictServerInterface, middlewares []StrictMiddlewareFunc) ServerInterface {
+	return &strictHandler{ssi: ssi, middlewares: middlewares}
+}
+
+type strictHandler struct {
+	ssi         StrictServerInterface
+	middlewares []StrictMiddlewareFunc
+}
+
+// ListPriorities operation middleware
+func (sh *strictHandler) ListPriorities(ctx *echo.Context, projectID externalRef0.ProjectID) error {
+	var request ListPrioritiesRequestObject
+
+	request.ProjectID = projectID
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ListPriorities(ctx.Request().Context(), request.(ListPrioritiesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListPriorities")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ListPrioritiesResponseObject); ok {
+		return validResponse.VisitListPrioritiesResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
 }
 
 // Base64 encoded, compressed with deflate, json marshaled OpenAPI spec.

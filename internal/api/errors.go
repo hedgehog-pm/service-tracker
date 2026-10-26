@@ -11,14 +11,20 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/common"
 )
 
+// HTTPErrorHandler возвращает ошибки в общем формате API.
+// Для ответов 5xx скрывает исходное сообщение за internal error.
 func HTTPErrorHandler(ctx *echo.Context, err error) {
-	if response, unwrapErr := echo.UnwrapResponse(ctx.Response()); unwrapErr == nil && response.Committed {
+	if response, unwrapErr := echo.UnwrapResponse(ctx.Response()); unwrapErr == nil &&
+		response.Committed {
 		return
 	}
 
 	status := http.StatusInternalServerError
 
-	body := common.Error{Code: "internal_error", Error: "internal error"}
+	body := common.Error{
+		Code:  "internal_error",
+		Error: "internal error",
+	}
 	if problem, ok := errors.AsType[*domain.Error](err); ok {
 		switch problem.Code {
 		case domain.CodeInvalidInput:
@@ -32,12 +38,18 @@ func HTTPErrorHandler(ctx *echo.Context, err error) {
 		}
 
 		if status < http.StatusInternalServerError {
-			body = common.Error{Code: string(problem.Code), Error: problem.Message}
+			body = common.Error{
+				Code:  string(problem.Code),
+				Error: problem.Message,
+			}
 		}
 	} else if httpStatus := echo.StatusCode(err); httpStatus >= 400 && httpStatus < 500 {
 		status = httpStatus
 
-		body = common.Error{Code: "invalid_input", Error: http.StatusText(status)}
+		body = common.Error{
+			Code:  "invalid_input",
+			Error: http.StatusText(status),
+		}
 		if status == http.StatusNotFound {
 			body.Code = "not_found"
 		}

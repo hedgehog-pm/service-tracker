@@ -19,7 +19,10 @@ func (u *Usecase) Get(ctx context.Context, projectID, id int) (domain.Module, er
 }
 
 func (u *Usecase) Create(ctx context.Context, projectID int, name string) (domain.Module, error) {
-	value := domain.Module{ProjectID: projectID, Name: name}
+	value := domain.Module{
+		ProjectID: projectID,
+		Name:      name,
+	}
 	if err := value.Validate(); err != nil {
 		return domain.Module{}, err
 	}
@@ -27,8 +30,16 @@ func (u *Usecase) Create(ctx context.Context, projectID int, name string) (domai
 	return u.repository.InsertModule(ctx, value)
 }
 
-func (u *Usecase) Update(ctx context.Context, projectID, id int, name string) (domain.Module, error) {
-	value := domain.Module{ID: id, ProjectID: projectID, Name: name}
+func (u *Usecase) Update(
+	ctx context.Context,
+	projectID, id int,
+	name string,
+) (domain.Module, error) {
+	value := domain.Module{
+		ID:        id,
+		ProjectID: projectID,
+		Name:      name,
+	}
 	if err := value.Validate(); err != nil {
 		return domain.Module{}, err
 	}

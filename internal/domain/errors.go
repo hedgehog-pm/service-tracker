@@ -15,7 +15,10 @@ type Error struct {
 }
 
 func NewError(code Code, message string) *Error {
-	return &Error{Code: code, Message: message}
+	return &Error{
+		Code:    code,
+		Message: message,
+	}
 }
 
 func (e *Error) Error() string {
@@ -26,11 +29,20 @@ var (
 	ErrProjectNotFound       = NewError(CodeNotFound, "project not found")
 	ErrTaskNotFound          = NewError(CodeNotFound, "task not found")
 	ErrTransitionNotFound    = NewError(CodeNotFound, "transition not found")
-	ErrTransitionUnavailable = NewError(CodeConflict, "transition is not available from the current state")
-	ErrIssueTypeUnavailable  = NewError(CodeInvalidInput, "issue type is not available in this project")
-	ErrModuleNotFound        = NewError(CodeNotFound, "module not found")
-	ErrInvalidReference      = NewError(CodeInvalidInput, "referenced resource is missing or not available in this context")
-	ErrResourceInUse         = NewError(CodeConflict, "resource is in use")
-	ErrAlreadyExists         = NewError(CodeConflict, "resource already exists")
-	ErrInternalServerError   = NewError(CodeInternalError, "internal error")
+	ErrTransitionUnavailable = NewError(
+		CodeConflict,
+		"transition is not available from the current state",
+	)
+	ErrIssueTypeUnavailable = NewError(
+		CodeInvalidInput,
+		"issue type is not available in this project",
+	)
+	ErrModuleNotFound   = NewError(CodeNotFound, "module not found")
+	ErrInvalidReference = NewError(
+		CodeInvalidInput,
+		"referenced resource is missing or not available in this context",
+	)
+	ErrResourceInUse       = NewError(CodeConflict, "resource is in use")
+	ErrAlreadyExists       = NewError(CodeConflict, "resource already exists")
+	ErrInternalServerError = NewError(CodeInternalError, "internal error")
 )

@@ -28,6 +28,8 @@ func (r *Postgres) GetDefaultPriority(ctx context.Context, schemeID int) (int, e
 	return row, nil
 }
 
+// ListPriorities возвращает приоритеты в порядке, заданном схемой.
+// Position берётся из связи со схемой, а не из общей записи приоритета.
 func (r *Postgres) ListPriorities(ctx context.Context, schemeID int) ([]domain.Priority, error) {
 	q := bobgen.ListPriorities(schemeID)
 

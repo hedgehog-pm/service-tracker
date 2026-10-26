@@ -10,6 +10,8 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 )
 
+// MapError переводит известные ошибки PostgreSQL в доменные и сохраняет исходные доменные ошибки.
+// Неизвестную ошибку логирует и заменяет на ErrInternalServerError.
 func MapError(ctx context.Context, err error) error {
 	if err == nil {
 		return nil
@@ -30,7 +32,10 @@ func MapError(ctx context.Context, err error) error {
 		case "22003", "2200H":
 			return domain.NewError(domain.CodeConflict, "numeric range exhausted")
 		case "40001", "40P01":
-			return domain.NewError(domain.CodeConflict, "concurrent modification, retry the request")
+			return domain.NewError(
+				domain.CodeConflict,
+				"concurrent modification, retry the request",
+			)
 		}
 	}
 
@@ -39,6 +44,8 @@ func MapError(ctx context.Context, err error) error {
 	return domain.ErrInternalServerError
 }
 
+// MapDeleteError трактует нарушение внешнего ключа при удалении как ErrResourceInUse.
+// Остальные ошибки обрабатывает по правилам MapError.
 func MapDeleteError(ctx context.Context, err error) error {
 	mapped := MapError(ctx, err)
 	if errors.Is(mapped, domain.ErrInvalidReference) {

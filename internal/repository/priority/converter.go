@@ -6,5 +6,9 @@ import (
 )
 
 func priorityToDomain(row bobgen.ListPrioritiesRow) domain.Priority {
-	return domain.Priority{ID: row.ID, Name: row.Name, Position: row.Position}
+	return domain.Priority{
+		ID:       row.ID,
+		Name:     row.Name,
+		Position: row.Position,
+	}
 }

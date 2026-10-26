@@ -12,11 +12,18 @@ type Project struct {
 }
 
 func NewProject(key, name string) Project {
-	return Project{Key: key, Name: name, NextNumber: 1}
+	return Project{
+		Key:        key,
+		Name:       name,
+		NextNumber: 1,
+	}
 }
 
 func (p Project) Validate() error {
-	if err := validation.ValidateStruct(&p, validation.Field(&p.Name, validation.By(notBlank))); err != nil {
+	if err := validation.ValidateStruct(
+		&p,
+		validation.Field(&p.Name, validation.By(notBlank)),
+	); err != nil {
 		return NewError(CodeInvalidInput, err.Error())
 	}
 

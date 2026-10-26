@@ -1,9 +1,7 @@
 package api
 
 import (
-	"net/http"
-
-	"github.com/labstack/echo/v5"
+	"context"
 
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	generated "github.com/hedgehog-pm/service-tracker/internal/generated/api/statuses"
@@ -16,10 +14,13 @@ func NewStatusHandler(statuses *status.Usecase) *StatusHandler {
 	return &StatusHandler{statuses: statuses}
 }
 
-func (h *StatusHandler) ListStatuses(ctx *echo.Context, projectID int) error {
-	values, err := h.statuses.List(ctx.Request().Context(), projectID)
+func (h *StatusHandler) ListStatuses(
+	ctx context.Context,
+	request generated.ListStatusesRequestObject,
+) (generated.ListStatusesResponseObject, error) {
+	values, err := h.statuses.List(ctx, request.ProjectID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	items := make([]generated.Status, 0, len(values))
@@ -27,9 +28,13 @@ func (h *StatusHandler) ListStatuses(ctx *echo.Context, projectID int) error {
 		items = append(items, statusToAPI(value))
 	}
 
-	return ctx.JSON(http.StatusOK, generated.StatusList{Items: items})
+	return generated.ListStatuses200JSONResponse(generated.StatusList{Items: items}), nil
 }
 
 func statusToAPI(value domain.Status) generated.Status {
-	return generated.Status{ID: value.ID, Name: value.Name, Category: generated.StatusCategory(value.Category)}
+	return generated.Status{
+		ID:       value.ID,
+		Name:     value.Name,
+		Category: generated.StatusCategory(value.Category),
+	}
 }

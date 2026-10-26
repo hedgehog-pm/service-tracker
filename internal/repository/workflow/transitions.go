@@ -19,7 +19,10 @@ func (r *Postgres) GetTransition(ctx context.Context, transitionID int) (domain.
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
-		return domain.Transition{}, postgres.MapError(ctx, fmt.Errorf("build transition query: %w", err))
+		return domain.Transition{}, postgres.MapError(
+			ctx,
+			fmt.Errorf("build transition query: %w", err),
+		)
 	}
 
 	row, err := pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
@@ -34,7 +37,10 @@ func (r *Postgres) GetTransition(ctx context.Context, transitionID int) (domain.
 	return transitionToDomain(row), nil
 }
 
-func (r *Postgres) ListTransitions(ctx context.Context, workflowID, statusID int) ([]domain.Transition, error) {
+func (r *Postgres) ListTransitions(
+	ctx context.Context,
+	workflowID, statusID int,
+) ([]domain.Transition, error) {
 	q := bobgen.ListTransitions(workflowID, statusID)
 
 	query, args, err := bob.Build(ctx, q)
@@ -55,12 +61,21 @@ func (r *Postgres) ListTransitions(ctx context.Context, workflowID, statusID int
 	return items, nil
 }
 
-func (r *Postgres) GetInitialStatus(ctx context.Context, schemeID, issueTypeID int) (domain.InitialStatus, error) {
+// GetInitialStatus выбирает workflow по правилу для типа задачи в схеме
+// и возвращает его начальный статус.
+// Если правило не найдено, возвращает ErrIssueTypeUnavailable.
+func (r *Postgres) GetInitialStatus(
+	ctx context.Context,
+	schemeID, issueTypeID int,
+) (domain.InitialStatus, error) {
 	q := bobgen.GetInitialStatus(schemeID, issueTypeID)
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
-		return domain.InitialStatus{}, postgres.MapError(ctx, fmt.Errorf("build initial status query: %w", err))
+		return domain.InitialStatus{}, postgres.MapError(
+			ctx,
+			fmt.Errorf("build initial status query: %w", err),
+		)
 	}
 
 	row, err := pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
@@ -69,7 +84,10 @@ func (r *Postgres) GetInitialStatus(ctx context.Context, schemeID, issueTypeID i
 	}
 
 	if err != nil {
-		return domain.InitialStatus{}, postgres.MapError(ctx, fmt.Errorf("read initial status: %w", err))
+		return domain.InitialStatus{}, postgres.MapError(
+			ctx,
+			fmt.Errorf("read initial status: %w", err),
+		)
 	}
 
 	return initialStatusToDomain(row), nil

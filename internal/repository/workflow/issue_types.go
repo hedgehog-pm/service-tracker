@@ -7,12 +7,16 @@ import (
 	"github.com/stephenafamo/bob"
 	"github.com/stephenafamo/scan/pgxscan"
 
+	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	bobgen "github.com/hedgehog-pm/service-tracker/internal/generated/bob/workflow"
 	"github.com/hedgehog-pm/service-tracker/internal/storage/postgres"
-	"github.com/hedgehog-pm/service-tracker/internal/usecase/issuetype"
 )
 
-func (r *Postgres) ListIssueTypes(ctx context.Context, schemeID int) ([]issuetype.Item, error) {
+// ListIssueTypes возвращает типы задач проекта с их начальными статусами в workflow.
+func (r *Postgres) ListIssueTypes(
+	ctx context.Context,
+	schemeID int,
+) ([]domain.IssueTypeWithInitialStatus, error) {
 	q := bobgen.ListIssueTypes(schemeID)
 
 	query, args, err := bob.Build(ctx, q)
@@ -25,9 +29,9 @@ func (r *Postgres) ListIssueTypes(ctx context.Context, schemeID int) ([]issuetyp
 		return nil, postgres.MapError(ctx, fmt.Errorf("list issue types: %w", err))
 	}
 
-	items := make([]issuetype.Item, 0, len(rows))
+	items := make([]domain.IssueTypeWithInitialStatus, 0, len(rows))
 	for _, row := range rows {
-		items = append(items, issueTypeToItem(row))
+		items = append(items, issueTypeToDomain(row))
 	}
 
 	return items, nil

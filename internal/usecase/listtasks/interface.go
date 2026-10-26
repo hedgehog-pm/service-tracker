@@ -8,5 +8,10 @@ import (
 
 type reader interface {
 	GetProjectKey(ctx context.Context, projectID int) (string, error)
-	ListTasks(ctx context.Context, projectID int, statusID, moduleID, issueTypeID, priorityID *int, limit, offset int) ([]domain.Task, error)
+	ListTasks(
+		ctx context.Context,
+		projectID int,
+		statusID, moduleID, issueTypeID, priorityID *int,
+		limit, offset int,
+	) ([]domain.Task, error)
 }

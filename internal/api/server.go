@@ -15,7 +15,15 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/transitions"
 )
 
-func NewServer(projectHandler projects.ServerInterface, statusHandler statuses.ServerInterface, moduleHandler modules.ServerInterface, taskHandler tasks.ServerInterface, transitionHandler transitions.ServerInterface, issueTypeHandler issuetypes.ServerInterface, priorityHandler priorities.ServerInterface) (*echo.Echo, error) {
+func NewServer(
+	projectHandler projects.StrictServerInterface,
+	statusHandler statuses.StrictServerInterface,
+	moduleHandler modules.StrictServerInterface,
+	taskHandler tasks.StrictServerInterface,
+	transitionHandler transitions.StrictServerInterface,
+	issueTypeHandler issuetypes.StrictServerInterface,
+	priorityHandler priorities.StrictServerInterface,
+) (*echo.Echo, error) {
 	projectSpec, err := projects.GetSpec()
 	if err != nil {
 		return nil, fmt.Errorf("load projects OpenAPI contract: %w", err)
@@ -53,14 +61,35 @@ func NewServer(projectHandler projects.ServerInterface, statusHandler statuses.S
 
 	server := echo.New()
 	server.HTTPErrorHandler = HTTPErrorHandler
-	projects.RegisterHandlers(server.Group("", echomiddleware.OapiRequestValidator(projectSpec)), projectHandler)
-	statuses.RegisterHandlers(server.Group("", echomiddleware.OapiRequestValidator(statusSpec)), statusHandler)
-	modules.RegisterHandlers(server.Group("", echomiddleware.OapiRequestValidator(moduleSpec)), moduleHandler)
-	tasks.RegisterHandlers(server.Group("", echomiddleware.OapiRequestValidator(taskSpec)), taskHandler)
+	projects.RegisterHandlers(
+		server.Group("", echomiddleware.OapiRequestValidator(projectSpec)),
+		projects.NewStrictHandler(projectHandler, nil),
+	)
+	statuses.RegisterHandlers(
+		server.Group("", echomiddleware.OapiRequestValidator(statusSpec)),
+		statuses.NewStrictHandler(statusHandler, nil),
+	)
+	modules.RegisterHandlers(
+		server.Group("", echomiddleware.OapiRequestValidator(moduleSpec)),
+		modules.NewStrictHandler(moduleHandler, nil),
+	)
+	tasks.RegisterHandlers(
+		server.Group("", echomiddleware.OapiRequestValidator(taskSpec)),
+		tasks.NewStrictHandler(taskHandler, nil),
+	)
 
-	transitions.RegisterHandlers(server.Group("", echomiddleware.OapiRequestValidator(transitionsSpec)), transitionHandler)
-	issuetypes.RegisterHandlers(server.Group("", echomiddleware.OapiRequestValidator(issuetypesSpec)), issueTypeHandler)
-	priorities.RegisterHandlers(server.Group("", echomiddleware.OapiRequestValidator(prioritiesSpec)), priorityHandler)
+	transitions.RegisterHandlers(
+		server.Group("", echomiddleware.OapiRequestValidator(transitionsSpec)),
+		transitions.NewStrictHandler(transitionHandler, nil),
+	)
+	issuetypes.RegisterHandlers(
+		server.Group("", echomiddleware.OapiRequestValidator(issuetypesSpec)),
+		issuetypes.NewStrictHandler(issueTypeHandler, nil),
+	)
+	priorities.RegisterHandlers(
+		server.Group("", echomiddleware.OapiRequestValidator(prioritiesSpec)),
+		priorities.NewStrictHandler(priorityHandler, nil),
+	)
 
 	return server, nil
 }

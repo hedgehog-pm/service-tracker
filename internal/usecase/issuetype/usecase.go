@@ -6,22 +6,27 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 )
 
-type (
-	Item struct {
-		domain.IssueType
-		InitialStatus domain.Status
-	}
-	Usecase struct {
-		reader   reader
-		projects projects
-	}
-)
-
-func New(reader reader, projects projects) *Usecase {
-	return &Usecase{reader: reader, projects: projects}
+// Usecase получения доступных типов задач проекта.
+//
+// Типы задач выбираются из схемы в [domain.Project.WorkflowSchemeID].
+// [domain.IssueTypeWithInitialStatus.InitialStatus] берётся из workflow,
+// выбранного для типа задачи в этой схеме.
+type Usecase struct {
+	reader   reader
+	projects projects
 }
 
-func (u *Usecase) List(ctx context.Context, projectID int) ([]Item, error) {
+func New(reader reader, projects projects) *Usecase {
+	return &Usecase{
+		reader:   reader,
+		projects: projects,
+	}
+}
+
+func (u *Usecase) List(
+	ctx context.Context,
+	projectID int,
+) ([]domain.IssueTypeWithInitialStatus, error) {
 	project, err := u.projects.GetProject(ctx, projectID)
 	if err != nil {
 		return nil, err

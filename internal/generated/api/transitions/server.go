@@ -6,7 +6,9 @@ package transitions
 import (
 	"bytes"
 	"compress/flate"
+	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -154,6 +156,255 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 	router.GET(options.BaseURL+"/projects/:project_id/tasks/:task_id/transitions", wrapper.ListTaskTransitions, options.OperationMiddlewares["listTaskTransitions"]...)
 	router.POST(options.BaseURL+"/projects/:project_id/tasks/:task_id/transitions", wrapper.TransitionTask, options.OperationMiddlewares["transitionTask"]...)
 
+}
+
+type ListTaskTransitionsRequestObject struct {
+	ProjectID externalRef0.ProjectID `json:"project_id"`
+	TaskID    externalRef0.TaskID    `json:"task_id"`
+}
+
+type ListTaskTransitionsResponseObject interface {
+	VisitListTaskTransitionsResponse(w http.ResponseWriter) error
+}
+
+type ListTaskTransitions200JSONResponse TransitionList
+
+func (response ListTaskTransitions200JSONResponse) VisitListTaskTransitionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskTransitions400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response ListTaskTransitions400JSONResponse) VisitListTaskTransitionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskTransitions404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response ListTaskTransitions404JSONResponse) VisitListTaskTransitionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskTransitions500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response ListTaskTransitions500JSONResponse) VisitListTaskTransitionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TransitionTaskRequestObject struct {
+	ProjectID externalRef0.ProjectID `json:"project_id"`
+	TaskID    externalRef0.TaskID    `json:"task_id"`
+	Body      *TransitionTaskJSONRequestBody
+}
+
+type TransitionTaskResponseObject interface {
+	VisitTransitionTaskResponse(w http.ResponseWriter) error
+}
+
+type TransitionTask200JSONResponse externalRef2.Task
+
+func (response TransitionTask200JSONResponse) VisitTransitionTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TransitionTask400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response TransitionTask400JSONResponse) VisitTransitionTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TransitionTask404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response TransitionTask404JSONResponse) VisitTransitionTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TransitionTask409JSONResponse struct {
+	externalRef0.ConflictJSONResponse
+}
+
+func (response TransitionTask409JSONResponse) VisitTransitionTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TransitionTask500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response TransitionTask500JSONResponse) VisitTransitionTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+// StrictServerInterface represents all server handlers.
+type StrictServerInterface interface {
+	// ListTaskTransitions Доступные переходы задачи
+	// (GET /projects/{project_id}/tasks/{task_id}/transitions)
+	ListTaskTransitions(ctx context.Context, request ListTaskTransitionsRequestObject) (ListTaskTransitionsResponseObject, error)
+	// TransitionTask Выполнить переход задачи
+	// (POST /projects/{project_id}/tasks/{task_id}/transitions)
+	TransitionTask(ctx context.Context, request TransitionTaskRequestObject) (TransitionTaskResponseObject, error)
+}
+
+type StrictHandlerFunc func(ctx *echo.Context, request any) (any, error)
+type StrictMiddlewareFunc func(f StrictHandlerFunc, operationID string) StrictHandlerFunc
+
+func NewStrictHandler(ssi StrictServerInterface, middlewares []StrictMiddlewareFunc) ServerInterface {
+	return &strictHandler{ssi: ssi, middlewares: middlewares}
+}
+
+type strictHandler struct {
+	ssi         StrictServerInterface
+	middlewares []StrictMiddlewareFunc
+}
+
+// ListTaskTransitions operation middleware
+func (sh *strictHandler) ListTaskTransitions(ctx *echo.Context, projectID externalRef0.ProjectID, taskID externalRef0.TaskID) error {
+	var request ListTaskTransitionsRequestObject
+
+	request.ProjectID = projectID
+	request.TaskID = taskID
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ListTaskTransitions(ctx.Request().Context(), request.(ListTaskTransitionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListTaskTransitions")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ListTaskTransitionsResponseObject); ok {
+		return validResponse.VisitListTaskTransitionsResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// TransitionTask operation middleware
+func (sh *strictHandler) TransitionTask(ctx *echo.Context, projectID externalRef0.ProjectID, taskID externalRef0.TaskID) error {
+	var request TransitionTaskRequestObject
+
+	request.ProjectID = projectID
+	request.TaskID = taskID
+
+	var body TransitionTaskJSONRequestBody
+	var err error
+	if _, ok := ctx.Echo().Binder.(*echo.DefaultBinder); ok {
+		// Bind only the request body, so that path and query parameters
+		// are not also bound into the body struct.
+		err = echo.BindBody(ctx, &body)
+	} else {
+		// A custom binder is installed on the Echo instance; defer to it
+		// entirely, since echo.Binder does not expose body-only binding.
+		err = ctx.Bind(&body)
+	}
+	if err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.TransitionTask(ctx.Request().Context(), request.(TransitionTaskRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TransitionTask")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(TransitionTaskResponseObject); ok {
+		return validResponse.VisitTransitionTaskResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
 }
 
 // Base64 encoded, compressed with deflate, json marshaled OpenAPI spec.

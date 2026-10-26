@@ -11,6 +11,9 @@ type (
 		GetProject(ctx context.Context, projectID int) (domain.Project, error)
 	}
 	reader interface {
-		ListIssueTypes(ctx context.Context, schemeID int) ([]Item, error)
+		ListIssueTypes(
+			ctx context.Context,
+			schemeID int,
+		) ([]domain.IssueTypeWithInitialStatus, error)
 	}
 )

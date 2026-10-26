@@ -19,7 +19,10 @@ func (r *Postgres) InsertModule(ctx context.Context, value domain.Module) (domai
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
-		return domain.Module{}, postgres.MapError(ctx, fmt.Errorf("build insert module query: %w", err))
+		return domain.Module{}, postgres.MapError(
+			ctx,
+			fmt.Errorf("build insert module query: %w", err),
+		)
 	}
 
 	row, err := pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
@@ -39,7 +42,10 @@ func (r *Postgres) GetModule(ctx context.Context, projectID, id int) (domain.Mod
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
-		return domain.Module{}, postgres.MapError(ctx, fmt.Errorf("build get module query: %w", err))
+		return domain.Module{}, postgres.MapError(
+			ctx,
+			fmt.Errorf("build get module query: %w", err),
+		)
 	}
 
 	row, err := pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
@@ -59,7 +65,10 @@ func (r *Postgres) UpdateModule(ctx context.Context, value domain.Module) (domai
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
-		return domain.Module{}, postgres.MapError(ctx, fmt.Errorf("build update module query: %w", err))
+		return domain.Module{}, postgres.MapError(
+			ctx,
+			fmt.Errorf("build update module query: %w", err),
+		)
 	}
 
 	row, err := pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
@@ -74,7 +83,12 @@ func (r *Postgres) UpdateModule(ctx context.Context, value domain.Module) (domai
 	return moduleToDomain(row), nil
 }
 
-func (r *Postgres) ListModules(ctx context.Context, projectID int, limit int, offset int) ([]domain.Module, error) {
+func (r *Postgres) ListModules(
+	ctx context.Context,
+	projectID int,
+	limit int,
+	offset int,
+) ([]domain.Module, error) {
 	q := bobgen.ListModules(projectID, offset, limit)
 
 	query, args, err := bob.Build(ctx, q)

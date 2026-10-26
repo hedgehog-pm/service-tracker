@@ -6,6 +6,12 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 )
 
+// Usecase создания проекта.
+//
+//   - [domain.Project.WorkflowSchemeID] берётся из схемы workflow по умолчанию.
+//   - [domain.Project.PrioritySchemeID] берётся из схемы приоритетов по умолчанию.
+//
+// В проекте сохраняются ID схем, поэтому смена схем по умолчанию не меняет созданный проект.
 type Usecase struct {
 	repository repository
 	workflows  workflows
@@ -13,7 +19,11 @@ type Usecase struct {
 }
 
 func New(repository repository, workflows workflows, priorities priorities) *Usecase {
-	return &Usecase{repository: repository, workflows: workflows, priorities: priorities}
+	return &Usecase{
+		repository: repository,
+		workflows:  workflows,
+		priorities: priorities,
+	}
 }
 
 func (u *Usecase) Do(ctx context.Context, key, name string) (domain.Project, error) {

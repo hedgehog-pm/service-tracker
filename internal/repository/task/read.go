@@ -36,7 +36,13 @@ func (r *Postgres) GetTask(ctx context.Context, projectID, taskID int) (domain.T
 	return taskToDomain(row), nil
 }
 
-func (r *Postgres) GetTaskForUpdate(ctx context.Context, projectID, taskID int) (domain.Task, error) {
+// GetTaskForUpdate блокирует строку задачи до завершения транзакции из ctx.
+// Строка проекта, из которой читается ключ, не блокируется.
+// Вызывай метод внутри InTx, чтобы блокировка сохранялась после возврата.
+func (r *Postgres) GetTaskForUpdate(
+	ctx context.Context,
+	projectID, taskID int,
+) (domain.Task, error) {
 	q := bobgen.GetTaskForUpdate(projectID, taskID)
 
 	query, args, err := bob.Build(ctx, q)
@@ -56,7 +62,12 @@ func (r *Postgres) GetTaskForUpdate(ctx context.Context, projectID, taskID int) 
 	return taskToDomain(row), nil
 }
 
-func (r *Postgres) ListTasks(ctx context.Context, projectID int, statusID, moduleID, issueTypeID, priorityID *int, limit, offset int) ([]domain.Task, error) {
+func (r *Postgres) ListTasks(
+	ctx context.Context,
+	projectID int,
+	statusID, moduleID, issueTypeID, priorityID *int,
+	limit, offset int,
+) ([]domain.Task, error) {
 	q := bobgen.ListTasks(projectID).With(
 		sm.Limit(psql.Arg(limit)), sm.Offset(psql.Arg(offset)),
 	)

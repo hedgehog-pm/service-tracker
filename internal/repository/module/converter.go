@@ -6,5 +6,9 @@ import (
 )
 
 func moduleToDomain(row bobgen.GetModuleRow) domain.Module {
-	return domain.Module{ID: row.ID, ProjectID: row.ProjectID, Name: row.Name}
+	return domain.Module{
+		ID:        row.ID,
+		ProjectID: row.ProjectID,
+		Name:      row.Name,
+	}
 }

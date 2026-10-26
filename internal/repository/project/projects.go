@@ -14,12 +14,24 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/storage/postgres"
 )
 
-func (r *Postgres) InsertProject(ctx context.Context, value domain.Project) (domain.Project, error) {
-	q := bobgen.InsertProject([]bobgen.InsertProject_Rows{{Key: value.Key, Name: value.Name, NextNumber: value.NextNumber, WorkflowSchemeID: value.WorkflowSchemeID, PrioritySchemeID: value.PrioritySchemeID}})
+func (r *Postgres) InsertProject(
+	ctx context.Context,
+	value domain.Project,
+) (domain.Project, error) {
+	q := bobgen.InsertProject([]bobgen.InsertProject_Rows{{
+		Key:              value.Key,
+		Name:             value.Name,
+		NextNumber:       value.NextNumber,
+		WorkflowSchemeID: value.WorkflowSchemeID,
+		PrioritySchemeID: value.PrioritySchemeID,
+	}})
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
-		return domain.Project{}, postgres.MapError(ctx, fmt.Errorf("build insert project query: %w", err))
+		return domain.Project{}, postgres.MapError(
+			ctx,
+			fmt.Errorf("build insert project query: %w", err),
+		)
 	}
 
 	row, err := pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
@@ -35,7 +47,10 @@ func (r *Postgres) GetProject(ctx context.Context, id int) (domain.Project, erro
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
-		return domain.Project{}, postgres.MapError(ctx, fmt.Errorf("build get project query: %w", err))
+		return domain.Project{}, postgres.MapError(
+			ctx,
+			fmt.Errorf("build get project query: %w", err),
+		)
 	}
 
 	row, err := pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
@@ -50,12 +65,18 @@ func (r *Postgres) GetProject(ctx context.Context, id int) (domain.Project, erro
 	return projectToDomain(row), nil
 }
 
-func (r *Postgres) UpdateProject(ctx context.Context, value domain.Project) (domain.Project, error) {
+func (r *Postgres) UpdateProject(
+	ctx context.Context,
+	value domain.Project,
+) (domain.Project, error) {
 	q := bobgen.UpdateProject(value.Name, value.ID)
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
-		return domain.Project{}, postgres.MapError(ctx, fmt.Errorf("build update project query: %w", err))
+		return domain.Project{}, postgres.MapError(
+			ctx,
+			fmt.Errorf("build update project query: %w", err),
+		)
 	}
 
 	row, err := pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
@@ -70,7 +91,11 @@ func (r *Postgres) UpdateProject(ctx context.Context, value domain.Project) (dom
 	return projectToDomain(row), nil
 }
 
-func (r *Postgres) ListProjects(ctx context.Context, limit int, offset int) ([]domain.Project, error) {
+func (r *Postgres) ListProjects(
+	ctx context.Context,
+	limit int,
+	offset int,
+) ([]domain.Project, error) {
 	q := bobgen.ListProjects(offset, limit)
 
 	query, args, err := bob.Build(ctx, q)

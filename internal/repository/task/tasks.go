@@ -15,7 +15,19 @@ import (
 )
 
 func (r *Postgres) InsertTask(ctx context.Context, task domain.Task) (domain.Task, error) {
-	q := bobgen.InsertTask(task.Number, task.Title, task.Description, task.IssueTypeID, task.WorkflowID, task.StatusID, task.PriorityID, pointerToNull(task.ModuleID), task.CreatedAt, task.UpdatedAt, task.ProjectID)
+	q := bobgen.InsertTask(
+		task.Number,
+		task.Title,
+		task.Description,
+		task.IssueTypeID,
+		task.WorkflowID,
+		task.StatusID,
+		task.PriorityID,
+		pointerToNull(task.ModuleID),
+		task.CreatedAt,
+		task.UpdatedAt,
+		task.ProjectID,
+	)
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
@@ -32,7 +44,13 @@ func (r *Postgres) InsertTask(ctx context.Context, task domain.Task) (domain.Tas
 
 func (r *Postgres) UpdateTask(ctx context.Context, task domain.Task) (domain.Task, error) {
 	q := bobgen.UpdateTask(
-		task.Title, task.Description, task.PriorityID, pointerToNull(task.ModuleID), task.UpdatedAt, task.ProjectID, task.ID,
+		task.Title,
+		task.Description,
+		task.PriorityID,
+		pointerToNull(task.ModuleID),
+		task.UpdatedAt,
+		task.ProjectID,
+		task.ID,
 	)
 
 	query, args, err := bob.Build(ctx, q)
@@ -54,12 +72,18 @@ func (r *Postgres) UpdateTask(ctx context.Context, task domain.Task) (domain.Tas
 
 func (r *Postgres) UpdateStatus(ctx context.Context, task domain.Task) (domain.Task, error) {
 	q := bobgen.UpdateStatus(
-		task.StatusID, task.UpdatedAt, task.ProjectID, task.ID,
+		task.StatusID,
+		task.UpdatedAt,
+		task.ProjectID,
+		task.ID,
 	)
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
-		return domain.Task{}, postgres.MapError(ctx, fmt.Errorf("build update task status query: %w", err))
+		return domain.Task{}, postgres.MapError(
+			ctx,
+			fmt.Errorf("build update task status query: %w", err),
+		)
 	}
 
 	row, err := pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)

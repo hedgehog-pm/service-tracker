@@ -1,0 +1,29 @@
+-- GetDefaultPriority
+SELECT
+  default_priority_id
+FROM
+  priority_schemes
+WHERE
+  id = $1;
+
+-- ListPriorities
+SELECT
+  priority.id,
+  priority.name,
+  membership.position AS position
+FROM
+  priority_scheme_priorities AS membership
+  JOIN priorities AS priority ON priority.id = membership.priority_id
+WHERE
+  membership.scheme_id = $1
+ORDER BY
+  membership.position ASC,
+  priority.id ASC;
+
+-- GetDefaultPriorityScheme
+SELECT
+  id
+FROM
+  priority_schemes
+WHERE
+  is_default;

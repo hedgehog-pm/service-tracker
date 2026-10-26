@@ -7,11 +7,13 @@ import (
 )
 
 type Params struct {
-	ProjectID int
-	StatusID  *int
-	ModuleID  *int
-	Limit     int
-	Offset    int
+	ProjectID   int
+	StatusID    *int
+	ModuleID    *int
+	IssueTypeID *int
+	PriorityID  *int
+	Limit       int
+	Offset      int
 }
 
 type Usecase struct {
@@ -27,5 +29,5 @@ func (u *Usecase) Do(ctx context.Context, params Params) ([]domain.Task, error) 
 		return nil, err
 	}
 
-	return u.reader.ListTasks(ctx, params.ProjectID, params.StatusID, params.ModuleID, params.Limit, params.Offset)
+	return u.reader.ListTasks(ctx, params.ProjectID, params.StatusID, params.ModuleID, params.IssueTypeID, params.PriorityID, params.Limit, params.Offset)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type repository interface {
-	GetTask(ctx context.Context, projectID, taskID int) (domain.Task, error)
+	GetTaskForUpdate(ctx context.Context, projectID, taskID int) (domain.Task, error)
 	UpdateTask(ctx context.Context, task domain.Task) (domain.Task, error)
 }
 

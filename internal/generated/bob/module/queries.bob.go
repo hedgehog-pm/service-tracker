@@ -19,7 +19,7 @@ import (
 //go:embed queries.bob.sql
 var formattedQueries_queries string
 
-var insertModuleSQL = formattedQueries_queries[150:263]
+var insertModuleSQL = formattedQueries_queries[150:289]
 
 type InsertModuleQuery = orm.ModQuery[*dialect.InsertQuery, insertModule, InsertModuleRow, []InsertModuleRow, insertModuleTransformer]
 
@@ -52,13 +52,13 @@ func InsertModule(Name string, ProjectID int) *InsertModuleQuery {
 		},
 		Mod: bob.ModFunc[*dialect.InsertQuery](func(q *dialect.InsertQuery) {
 			q.TableRef.Columns = []string{"project_id", "name"}
-			q.TableRef.Expression = expressionTypArgs.subExpr(12, 19)
+			q.TableRef.Expression = expressionTypArgs.subExpr(14, 21)
 			q.Query = bob.BaseQuery[bob.Expression]{
-				Expression: expressionTypArgs.subExpr(39, 81),
+				Expression: expressionTypArgs.subExpr(53, 102),
 				Dialect:    dialect.Dialect,
 				QueryType:  bob.QueryTypeSelect,
 			}
-			q.AppendReturning(expressionTypArgs.subExpr(93, 113))
+			q.AppendReturning(expressionTypArgs.subExpr(115, 139))
 		}),
 		Build: psql.Insert,
 	}
@@ -81,8 +81,8 @@ func (o insertModule) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "name",
-			Start:      50,
-			Stop:       52,
+			Start:      68,
+			Stop:       70,
 			Expression: o.Name,
 		}) {
 			return
@@ -90,8 +90,8 @@ func (o insertModule) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      79,
-			Stop:       81,
+			Start:      100,
+			Stop:       102,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -111,7 +111,7 @@ func (o insertModule) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dia
 	return o.subExpr(0, len(insertModuleSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var getModuleSQL = formattedQueries_queries[279:353]
+var getModuleSQL = formattedQueries_queries[305:391]
 
 type GetModuleQuery = orm.ModQuery[*dialect.SelectQuery, getModule, GetModuleRow, []GetModuleRow, getModuleTransformer]
 
@@ -143,9 +143,9 @@ func GetModule(ProjectID int, ID int) *GetModuleQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendSelect(expressionTypArgs.subExpr(7, 27))
-			q.SetTable(expressionTypArgs.subExpr(33, 40))
-			q.AppendWhere(expressionTypArgs.subExpr(47, 74))
+			q.AppendSelect(expressionTypArgs.subExpr(9, 33))
+			q.SetTable(expressionTypArgs.subExpr(41, 48))
+			q.AppendWhere(expressionTypArgs.subExpr(57, 86))
 		}),
 		Build: psql.Select,
 	}
@@ -168,8 +168,8 @@ func (o getModule) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      60,
-			Stop:       62,
+			Start:      70,
+			Stop:       72,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -177,8 +177,8 @@ func (o getModule) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "id",
-			Start:      72,
-			Stop:       74,
+			Start:      84,
+			Stop:       86,
 			Expression: o.ID,
 		}) {
 			return
@@ -198,7 +198,7 @@ func (o getModule) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialec
 	return o.subExpr(0, len(getModuleSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var listModulesSQL = formattedQueries_queries[371:470]
+var listModulesSQL = formattedQueries_queries[409:522]
 
 type ListModulesQuery = orm.ModQuery[*dialect.SelectQuery, listModules, ListModulesRow, []ListModulesRow, listModulesTransformer]
 
@@ -231,12 +231,12 @@ func ListModules(ProjectID int, Offset int, Limit int) *ListModulesQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendSelect(expressionTypArgs.subExpr(7, 27))
-			q.SetTable(expressionTypArgs.subExpr(33, 40))
-			q.AppendWhere(expressionTypArgs.subExpr(47, 62))
-			q.AppendOrder(expressionTypArgs.subExpr(72, 78))
-			q.SetOffset(expressionTypArgs.subExpr(86, 88))
-			q.SetLimit(expressionTypArgs.subExpr(96, 98))
+			q.AppendSelect(expressionTypArgs.subExpr(9, 33))
+			q.SetTable(expressionTypArgs.subExpr(41, 48))
+			q.AppendWhere(expressionTypArgs.subExpr(57, 72))
+			q.AppendOrder(expressionTypArgs.subExpr(84, 90))
+			q.SetOffset(expressionTypArgs.subExpr(100, 102))
+			q.SetLimit(expressionTypArgs.subExpr(111, 113))
 		}),
 		Build: psql.Select,
 	}
@@ -260,8 +260,8 @@ func (o listModules) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      60,
-			Stop:       62,
+			Start:      70,
+			Stop:       72,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -269,8 +269,8 @@ func (o listModules) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "offset",
-			Start:      86,
-			Stop:       88,
+			Start:      100,
+			Stop:       102,
 			Expression: o.Offset,
 		}) {
 			return
@@ -278,8 +278,8 @@ func (o listModules) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "limit",
-			Start:      96,
-			Stop:       98,
+			Start:      111,
+			Stop:       113,
 			Expression: o.Limit,
 		}) {
 			return
@@ -299,7 +299,7 @@ func (o listModules) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dial
 	return o.subExpr(0, len(listModulesSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var updateModuleSQL = formattedQueries_queries[489:582]
+var updateModuleSQL = formattedQueries_queries[541:648]
 
 type UpdateModuleQuery = orm.ModQuery[*dialect.UpdateQuery, updateModule, UpdateModuleRow, []UpdateModuleRow, updateModuleTransformer]
 
@@ -332,10 +332,10 @@ func UpdateModule(Name string, ProjectID int, ID int) *UpdateModuleQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.UpdateQuery](func(q *dialect.UpdateQuery) {
-			q.Table.Expression = expressionTypArgs.subExpr(7, 14)
-			q.AppendSet(expressionTypArgs.subExpr(19, 28))
-			q.AppendWhere(expressionTypArgs.subExpr(35, 62))
-			q.AppendReturning(expressionTypArgs.subExpr(73, 93))
+			q.Table.Expression = expressionTypArgs.subExpr(9, 16)
+			q.AppendSet(expressionTypArgs.subExpr(23, 32))
+			q.AppendWhere(expressionTypArgs.subExpr(41, 70))
+			q.AppendReturning(expressionTypArgs.subExpr(83, 107))
 		}),
 		Build: psql.Update,
 	}
@@ -359,8 +359,8 @@ func (o updateModule) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "name",
-			Start:      26,
-			Stop:       28,
+			Start:      30,
+			Stop:       32,
 			Expression: o.Name,
 		}) {
 			return
@@ -368,8 +368,8 @@ func (o updateModule) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      48,
-			Stop:       50,
+			Start:      54,
+			Stop:       56,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -377,8 +377,8 @@ func (o updateModule) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "id",
-			Start:      60,
-			Stop:       62,
+			Start:      68,
+			Stop:       70,
 			Expression: o.ID,
 		}) {
 			return
@@ -398,7 +398,7 @@ func (o updateModule) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dia
 	return o.subExpr(0, len(updateModuleSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var deleteModuleSQL = formattedQueries_queries[601:654]
+var deleteModuleSQL = formattedQueries_queries[667:726]
 
 type DeleteModuleQuery = orm.ModExecQuery[*dialect.DeleteQuery, deleteModule]
 
@@ -417,8 +417,8 @@ func DeleteModule(ProjectID int, ID int) *DeleteModuleQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.DeleteQuery](func(q *dialect.DeleteQuery) {
-			q.Table.Expression = expressionTypArgs.subExpr(12, 19)
-			q.AppendWhere(expressionTypArgs.subExpr(26, 53))
+			q.Table.Expression = expressionTypArgs.subExpr(14, 21)
+			q.AppendWhere(expressionTypArgs.subExpr(30, 59))
 		}),
 		Build: psql.Delete,
 	}
@@ -433,8 +433,8 @@ func (o deleteModule) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      39,
-			Stop:       41,
+			Start:      43,
+			Stop:       45,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -442,8 +442,8 @@ func (o deleteModule) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "id",
-			Start:      51,
-			Stop:       53,
+			Start:      57,
+			Stop:       59,
 			Expression: o.ID,
 		}) {
 			return

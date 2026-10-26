@@ -11,7 +11,7 @@ import (
 type TaskFields struct {
 	Title       string
 	Description string
-	StatusID    int
+	PriorityID  int
 	ModuleID    *int
 }
 
@@ -27,10 +27,13 @@ func (f TaskFields) Validate() error {
 }
 
 type Task struct {
-	ID         int
-	ProjectID  int
-	ProjectKey string
-	Number     int
+	ID          int
+	ProjectID   int
+	ProjectKey  string
+	Number      int
+	IssueTypeID int
+	WorkflowID  int
+	StatusID    int
 	TaskFields
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -38,4 +41,15 @@ type Task struct {
 
 func (t Task) Key() string {
 	return fmt.Sprintf("%s-%d", t.ProjectKey, t.Number)
+}
+
+func (t *Task) Transition(transition Transition, now time.Time) error {
+	if transition.WorkflowID != t.WorkflowID || transition.FromStatusID != t.StatusID {
+		return ErrTransitionUnavailable
+	}
+
+	t.StatusID = transition.ToStatus.ID
+	t.UpdatedAt = now
+
+	return nil
 }

@@ -8,8 +8,13 @@ types:
     alias_of: int
 psql:
   driver: github.com/jackc/pgx/v5/stdlib
+  # Bob v0.50.0 падает при построении связей этой таблицы с обратным FK начального статуса.
+  except:
+    workflow_statuses: []
   queries:
     - internal/generated/bob/task
     - internal/generated/bob/project
     - internal/generated/bob/status
     - internal/generated/bob/module
+    - internal/generated/bob/workflow
+    - internal/generated/bob/priority

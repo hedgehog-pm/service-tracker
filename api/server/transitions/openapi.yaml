@@ -1,0 +1,99 @@
+openapi: 3.0.3
+info:
+  title: Tracker task transitions
+  version: 0.2.0
+paths:
+  /projects/{project_id}/tasks/{task_id}/transitions:
+    $ref: '#/x-paths/collection'
+components:
+  schemas:
+    Transition:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - to
+      properties:
+        id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        name:
+          type: string
+        to:
+          $ref: ../statuses/openapi.yaml#/components/schemas/Status
+    TransitionList:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transition'
+    TransitionTask:
+      type: object
+      additionalProperties: false
+      required:
+      - transition_id
+      properties:
+        transition_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+x-paths:
+  collection:
+    get:
+      operationId: listTaskTransitions
+      tags:
+      - transitions
+      summary: Доступные переходы задачи
+      parameters:
+      - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
+      - $ref: ../common/openapi.yaml#/components/parameters/TaskID
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransitionList'
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+    post:
+      operationId: transitionTask
+      tags:
+      - transitions
+      summary: Выполнить переход задачи
+      parameters:
+      - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
+      - $ref: ../common/openapi.yaml#/components/parameters/TaskID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransitionTask'
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: ../tasks/openapi.yaml#/components/schemas/Task
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '409':
+          $ref: ../common/openapi.yaml#/components/responses/Conflict
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError

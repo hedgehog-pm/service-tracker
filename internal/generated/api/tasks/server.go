@@ -20,11 +20,12 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
-// CreateTask description можно опустить: домен установит пустую строку. module_id можно опустить или передать null: задача без модуля. Номер, ключ и время устанавливает приложение.
+// CreateTask defines model for CreateTask.
 type CreateTask struct {
 	Description *string `json:"description,omitempty"`
+	IssueTypeID int     `json:"issue_type_id"`
 	ModuleID    *int    `json:"module_id,omitempty"`
-	StatusID    int     `json:"status_id"`
+	PriorityID  *int    `json:"priority_id,omitempty"`
 	Title       string  `json:"title"`
 }
 
@@ -33,15 +34,17 @@ type Task struct {
 	CreatedAt   time.Time `json:"created_at"`
 	Description string    `json:"description"`
 	ID          int       `json:"id"`
+	IssueTypeID int       `json:"issue_type_id"`
 
 	// Key Example: WEB-1
-	Key       string    `json:"key"`
-	ModuleID  *int      `json:"module_id"`
-	Number    int       `json:"number"`
-	ProjectID int       `json:"project_id"`
-	StatusID  int       `json:"status_id"`
-	Title     string    `json:"title"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Key        string    `json:"key"`
+	ModuleID   *int      `json:"module_id"`
+	Number     int       `json:"number"`
+	PriorityID int       `json:"priority_id"`
+	ProjectID  int       `json:"project_id"`
+	StatusID   int       `json:"status_id"`
+	Title      string    `json:"title"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 // TaskList defines model for TaskList.
@@ -51,20 +54,22 @@ type TaskList struct {
 	Offset int    `json:"offset"`
 }
 
-// UpdateTask Полная замена изменяемых полей. Все четыре поля обязательны; module_id: null снимает модуль. project_id, number, key и время передавать запрещено.
+// UpdateTask defines model for UpdateTask.
 type UpdateTask struct {
 	Description string `json:"description"`
 	ModuleID    *int   `json:"module_id"`
-	StatusID    int    `json:"status_id"`
+	PriorityID  int    `json:"priority_id"`
 	Title       string `json:"title"`
 }
 
 // ListTasksParams defines parameters for ListTasks.
 type ListTasksParams struct {
-	Limit    *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset   *externalRef0.Offset `form:"offset,omitempty" json:"offset,omitempty"`
-	StatusID *int                 `form:"status_id,omitempty" json:"status_id,omitempty"`
-	ModuleID *int                 `form:"module_id,omitempty" json:"module_id,omitempty"`
+	Limit       *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset      *externalRef0.Offset `form:"offset,omitempty" json:"offset,omitempty"`
+	StatusID    *int                 `form:"status_id,omitempty" json:"status_id,omitempty"`
+	ModuleID    *int                 `form:"module_id,omitempty" json:"module_id,omitempty"`
+	IssueTypeID *int                 `form:"issue_type_id,omitempty" json:"issue_type_id,omitempty"`
+	PriorityID  *int                 `form:"priority_id,omitempty" json:"priority_id,omitempty"`
 }
 
 // CreateTaskJSONRequestBody defines body for CreateTask for application/json ContentType.
@@ -136,6 +141,20 @@ func (w *ServerInterfaceWrapper) ListTasks(ctx *echo.Context) error {
 	err = runtime.BindQueryParameterWithOptions("form", true, false, "module_id", ctx.QueryParams(), &params.ModuleID, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter module_id: %s", err))
+	}
+
+	// ------------- Optional query parameter "issue_type_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "issue_type_id", ctx.QueryParams(), &params.IssueTypeID, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter issue_type_id: %s", err))
+	}
+
+	// ------------- Optional query parameter "priority_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "priority_id", ctx.QueryParams(), &params.PriorityID, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter priority_id: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -291,37 +310,28 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
+	"tCxCyyK0bcn24bYza5D+NwA=",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

@@ -15,7 +15,7 @@ import (
 )
 
 func (r *Postgres) InsertProject(ctx context.Context, value domain.Project) (domain.Project, error) {
-	q := bobgen.InsertProject([]bobgen.InsertProject_Rows{{Key: value.Key, Name: value.Name, NextNumber: value.NextNumber}})
+	q := bobgen.InsertProject([]bobgen.InsertProject_Rows{{Key: value.Key, Name: value.Name, NextNumber: value.NextNumber, WorkflowSchemeID: value.WorkflowSchemeID, PrioritySchemeID: value.PrioritySchemeID}})
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {

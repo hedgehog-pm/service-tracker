@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Tracker common types
-  version: 0.1.0
+  version: 0.2.0
 paths: {}
 components:
   schemas:
@@ -42,27 +42,45 @@ components:
         x-go-type: int
         minimum: 0
         default: 0
+    ProjectID:
+      name: project_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int32
+        x-go-type: int
+        minimum: 1
+    TaskID:
+      name: task_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int32
+        x-go-type: int
+        minimum: 1
   responses:
     BadRequest:
-      description: Неверный JSON, параметры или значения полей
+      description: ""
       content:
         application/json:
           schema:
             "$ref": "#/components/schemas/Error"
     NotFound:
-      description: Проект или запрошенный ресурс не найден
+      description: ""
       content:
         application/json:
           schema:
             "$ref": "#/components/schemas/Error"
     Conflict:
-      description: Уникальный ключ занят или ресурс используется задачей
+      description: ""
       content:
         application/json:
           schema:
             "$ref": "#/components/schemas/Error"
     InternalError:
-      description: Внутренняя ошибка
+      description: ""
       content:
         application/json:
           schema:

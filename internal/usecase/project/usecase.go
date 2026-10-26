@@ -22,15 +22,6 @@ func (u *Usecase) List(ctx context.Context, limit int, offset int) ([]domain.Pro
 	return u.repository.ListProjects(ctx, limit, offset)
 }
 
-func (u *Usecase) Create(ctx context.Context, key, name string) (domain.Project, error) {
-	value := domain.NewProject(key, name)
-	if err := value.Validate(); err != nil {
-		return domain.Project{}, err
-	}
-
-	return u.repository.InsertProject(ctx, value)
-}
-
 func (u *Usecase) Update(ctx context.Context, id int, name string) (domain.Project, error) {
 	value := domain.Project{ID: id, Name: name}
 	if err := value.Validate(); err != nil {

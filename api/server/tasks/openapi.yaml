@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Tracker tasks
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /projects/{project_id}/tasks:
     $ref: "#/x-paths/collection"
@@ -23,6 +23,8 @@ components:
       - description
       - created_at
       - updated_at
+      - issue_type_id
+      - priority_id
       properties:
         id:
           type: integer
@@ -65,59 +67,69 @@ components:
         updated_at:
           type: string
           format: date-time
+        issue_type_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        priority_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
     CreateTask:
       type: object
       additionalProperties: false
       required:
       - title
-      - status_id
+      - issue_type_id
       properties:
         title:
           type: string
           minLength: 1
         description:
           type: string
-        status_id:
-          type: integer
-          format: int32
-          x-go-type: int
-          minimum: 1
         module_id:
           type: integer
           format: int32
           x-go-type: int
           minimum: 1
           nullable: true
-      description: 'description можно опустить: домен установит пустую строку. module_id
-        можно опустить или передать null: задача без модуля. Номер, ключ и время устанавливает
-        приложение.'
+        issue_type_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        priority_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
     UpdateTask:
       type: object
       additionalProperties: false
       required:
       - title
       - description
-      - status_id
       - module_id
+      - priority_id
       properties:
         title:
           type: string
           minLength: 1
         description:
           type: string
-        status_id:
-          type: integer
-          format: int32
-          x-go-type: int
-          minimum: 1
         module_id:
           type: integer
           format: int32
           x-go-type: int
           minimum: 1
           nullable: true
-      description: 'Полная замена изменяемых полей. Все четыре поля обязательны; module_id:
-        null снимает модуль. project_id, number, key и время передавать запрещено.'
+        priority_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
     TaskList:
       type: object
       additionalProperties: false
@@ -173,11 +185,23 @@ x-paths:
           format: int32
           x-go-type: int
           minimum: 1
-      description: Порядок number ASC. Фильтры объединяются через AND. Неизвестный
-        статус или модуль даёт пустой список. Несуществующий проект даёт 404.
+      - name: issue_type_id
+        in: query
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - name: priority_id
+        in: query
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
       responses:
         '200':
-          description: Список ресурсов
+          description: ""
           content:
             application/json:
               schema:
@@ -201,7 +225,7 @@ x-paths:
               $ref: "#/components/schemas/CreateTask"
       responses:
         '201':
-          description: Ресурс создан
+          description: ""
           content:
             application/json:
               schema:
@@ -248,7 +272,7 @@ x-paths:
           minimum: 1
       responses:
         '200':
-          description: Задача
+          description: ""
           content:
             application/json:
               schema:
@@ -289,7 +313,7 @@ x-paths:
               $ref: "#/components/schemas/UpdateTask"
       responses:
         '200':
-          description: Ресурс изменён
+          description: ""
           content:
             application/json:
               schema:
@@ -326,11 +350,10 @@ x-paths:
           minimum: 1
       responses:
         '204':
-          description: Ресурс удалён
+          description: ""
         '400':
           $ref: ../common/openapi.yaml#/components/responses/BadRequest
         '404':
           $ref: ../common/openapi.yaml#/components/responses/NotFound
         '500':
           $ref: ../common/openapi.yaml#/components/responses/InternalError
-      description: Удаление задачи не уменьшает счётчик проекта и не освобождает номер.

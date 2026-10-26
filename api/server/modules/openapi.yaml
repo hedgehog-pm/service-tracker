@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Tracker modules
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /projects/{project_id}/modules:
     $ref: "#/x-paths/collection"
@@ -89,10 +89,9 @@ x-paths:
           minimum: 1
       - $ref: ../common/openapi.yaml#/components/parameters/Limit
       - $ref: ../common/openapi.yaml#/components/parameters/Offset
-      description: 'Порядок id ASC. Пустой список передаётся как items: [].'
       responses:
         '200':
-          description: Список ресурсов
+          description: ""
           content:
             application/json:
               schema:
@@ -116,7 +115,7 @@ x-paths:
               $ref: "#/components/schemas/CreateModule"
       responses:
         '201':
-          description: Ресурс создан
+          description: ""
           content:
             application/json:
               schema:
@@ -163,7 +162,7 @@ x-paths:
           minimum: 1
       responses:
         '200':
-          description: Модуль
+          description: ""
           content:
             application/json:
               schema:
@@ -204,7 +203,7 @@ x-paths:
               $ref: "#/components/schemas/UpdateModule"
       responses:
         '200':
-          description: Ресурс изменён
+          description: ""
           content:
             application/json:
               schema:
@@ -241,7 +240,7 @@ x-paths:
           minimum: 1
       responses:
         '204':
-          description: Ресурс удалён
+          description: ""
         '400':
           $ref: ../common/openapi.yaml#/components/responses/BadRequest
         '404':
@@ -250,5 +249,3 @@ x-paths:
           $ref: ../common/openapi.yaml#/components/responses/InternalError
         '409':
           $ref: ../common/openapi.yaml#/components/responses/Conflict
-      description: Если ресурс используется хотя бы одной задачей, возвращается 409.
-        Ресурс другого проекта даёт 404.

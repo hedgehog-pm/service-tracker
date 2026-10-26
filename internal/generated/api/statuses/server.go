@@ -40,65 +40,26 @@ func (e StatusCategory) Valid() bool {
 	}
 }
 
-// CreateStatus defines model for CreateStatus.
-type CreateStatus struct {
+// Status defines model for Status.
+type Status struct {
 	Category StatusCategory `json:"category"`
+	ID       int            `json:"id"`
 	Name     string         `json:"name"`
 }
 
-// Status defines model for Status.
-type Status struct {
-	Category  StatusCategory `json:"category"`
-	ID        int            `json:"id"`
-	Name      string         `json:"name"`
-	ProjectID int            `json:"project_id"`
-}
-
-// StatusCategory defines model for StatusCategory.
+// StatusCategory defines model for Status.Category.
 type StatusCategory string
 
 // StatusList defines model for StatusList.
 type StatusList struct {
-	Items  []Status `json:"items"`
-	Limit  int      `json:"limit"`
-	Offset int      `json:"offset"`
+	Items []Status `json:"items"`
 }
-
-// UpdateStatus defines model for UpdateStatus.
-type UpdateStatus struct {
-	Category StatusCategory `json:"category"`
-	Name     string         `json:"name"`
-}
-
-// ListStatusesParams defines parameters for ListStatuses.
-type ListStatusesParams struct {
-	Limit  *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset *externalRef0.Offset `form:"offset,omitempty" json:"offset,omitempty"`
-}
-
-// CreateStatusJSONRequestBody defines body for CreateStatus for application/json ContentType.
-type CreateStatusJSONRequestBody = CreateStatus
-
-// UpdateStatusJSONRequestBody defines body for UpdateStatus for application/json ContentType.
-type UpdateStatusJSONRequestBody = UpdateStatus
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// ListStatuses Список: statuses
+	// ListStatuses Статусы workflow схемы проекта
 	// (GET /projects/{project_id}/statuses)
-	ListStatuses(ctx *echo.Context, projectID int, params ListStatusesParams) error
-	// CreateStatus Статус: создание
-	// (POST /projects/{project_id}/statuses)
-	CreateStatus(ctx *echo.Context, projectID int) error
-	// DeleteStatus Статус: удаление
-	// (DELETE /projects/{project_id}/statuses/{status_id})
-	DeleteStatus(ctx *echo.Context, projectID int, statusID int) error
-	// GetStatus Статус: чтение
-	// (GET /projects/{project_id}/statuses/{status_id})
-	GetStatus(ctx *echo.Context, projectID int, statusID int) error
-	// UpdateStatus Статус: замена изменяемых полей
-	// (PUT /projects/{project_id}/statuses/{status_id})
-	UpdateStatus(ctx *echo.Context, projectID int, statusID int) error
+	ListStatuses(ctx *echo.Context, projectID externalRef0.ProjectID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -110,39 +71,7 @@ type ServerInterfaceWrapper struct {
 func (w *ServerInterfaceWrapper) ListStatuses(ctx *echo.Context) error {
 	var err error
 	// ------------- Path parameter "project_id" -------------
-	var projectID int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "project_id", ctx.Param("project_id"), &projectID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "int32", ValueIsUnescaped: ctx.Request().URL.RawPath == ""})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter project_id: %s", err))
-	}
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListStatusesParams
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", ctx.QueryParams(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "offset", ctx.QueryParams(), &params.Offset, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.ListStatuses(ctx, projectID, params)
-	return err
-}
-
-// CreateStatus converts echo context to params.
-func (w *ServerInterfaceWrapper) CreateStatus(ctx *echo.Context) error {
-	var err error
-	// ------------- Path parameter "project_id" -------------
-	var projectID int
+	var projectID externalRef0.ProjectID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "project_id", ctx.Param("project_id"), &projectID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "int32", ValueIsUnescaped: ctx.Request().URL.RawPath == ""})
 	if err != nil {
@@ -150,79 +79,7 @@ func (w *ServerInterfaceWrapper) CreateStatus(ctx *echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.CreateStatus(ctx, projectID)
-	return err
-}
-
-// DeleteStatus converts echo context to params.
-func (w *ServerInterfaceWrapper) DeleteStatus(ctx *echo.Context) error {
-	var err error
-	// ------------- Path parameter "project_id" -------------
-	var projectID int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "project_id", ctx.Param("project_id"), &projectID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "int32", ValueIsUnescaped: ctx.Request().URL.RawPath == ""})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter project_id: %s", err))
-	}
-
-	// ------------- Path parameter "status_id" -------------
-	var statusID int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "status_id", ctx.Param("status_id"), &statusID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "int32", ValueIsUnescaped: ctx.Request().URL.RawPath == ""})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter status_id: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.DeleteStatus(ctx, projectID, statusID)
-	return err
-}
-
-// GetStatus converts echo context to params.
-func (w *ServerInterfaceWrapper) GetStatus(ctx *echo.Context) error {
-	var err error
-	// ------------- Path parameter "project_id" -------------
-	var projectID int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "project_id", ctx.Param("project_id"), &projectID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "int32", ValueIsUnescaped: ctx.Request().URL.RawPath == ""})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter project_id: %s", err))
-	}
-
-	// ------------- Path parameter "status_id" -------------
-	var statusID int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "status_id", ctx.Param("status_id"), &statusID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "int32", ValueIsUnescaped: ctx.Request().URL.RawPath == ""})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter status_id: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetStatus(ctx, projectID, statusID)
-	return err
-}
-
-// UpdateStatus converts echo context to params.
-func (w *ServerInterfaceWrapper) UpdateStatus(ctx *echo.Context) error {
-	var err error
-	// ------------- Path parameter "project_id" -------------
-	var projectID int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "project_id", ctx.Param("project_id"), &projectID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "int32", ValueIsUnescaped: ctx.Request().URL.RawPath == ""})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter project_id: %s", err))
-	}
-
-	// ------------- Path parameter "status_id" -------------
-	var statusID int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "status_id", ctx.Param("status_id"), &statusID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "int32", ValueIsUnescaped: ctx.Request().URL.RawPath == ""})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter status_id: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.UpdateStatus(ctx, projectID, statusID)
+	err = w.Handler.ListStatuses(ctx, projectID)
 	return err
 }
 
@@ -274,10 +131,6 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 	}
 
 	router.GET(options.BaseURL+"/projects/:project_id/statuses", wrapper.ListStatuses, options.OperationMiddlewares["listStatuses"]...)
-	router.POST(options.BaseURL+"/projects/:project_id/statuses", wrapper.CreateStatus, options.OperationMiddlewares["createStatus"]...)
-	router.DELETE(options.BaseURL+"/projects/:project_id/statuses/:status_id", wrapper.DeleteStatus, options.OperationMiddlewares["deleteStatus"]...)
-	router.GET(options.BaseURL+"/projects/:project_id/statuses/:status_id", wrapper.GetStatus, options.OperationMiddlewares["getStatus"]...)
-	router.PUT(options.BaseURL+"/projects/:project_id/statuses/:status_id", wrapper.UpdateStatus, options.OperationMiddlewares["updateStatus"]...)
 
 }
 
@@ -286,31 +139,18 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
-	"6/HE3OOJdXdZJClXMY5I/h0A",
+	"zFXNTttMFH2V6H7fcohToBsvq7YSUlWh0h1C1tS+CQP2XHNnDESRpULVFU/RN+iGTVW1r2C/UTXjxA4/",
+	"CYlALTt75vrM8Tnn3plATFlOGrU1EE4glywztMj+TeYqMsinyFFMWUY6ohy1W91lOsLY7rx2ZUpDCLm0",
+	"hyBAywzdW7MfqQQEMJ4UijGB0HKBAkx8iJl0Xw6JM2khBKXt1iYIyJRWWZFB+EKAHefYbOEIGQScb4xo",
+	"o1uFsiwduMlJG3yA8CuZfMCTAo11dTFpi9o2n+SpiqVVpIMjQ9qtdQT/ZxxCCP8FnUxBs2uCxYe9YSZu",
+	"6CVoYla5g4cQoBRLOO5oi6xl2nz+bGm+J/uWCp38W4blLEfe+D0rbeGfZJIoVyTTXaYc2SoXjaFMDQrI",
+	"55YmEEuLI+Kxe0btUrcPlhICAUpHOdOI0RgQkJBGOGgTaSwrPXIiqeQJUjxrmslt/HK+dfbB95IvFR31",
+	"jhV9ch3n4Box3ilj1xREWcxuPiyzbap52TKQzHJ8l7bHuo/nQ76v6SYlOO+k0qcyVUmkdF5YpxzZaOhz",
+	"K1xsh6mKrXe6aboI/Zl3XL5pWGc9ziguN82zEnAbfCaCK1d6SB5I2dTtfWQZHyP3jNcXDQg4RTZN8Af9",
+	"zf7AnT+VCkLY6g/6WyD8BPZKBNPpa4JJN4fLoMULJzBCnw2nn+/YnQRCcInZ6w6dvwv2749CVxKscleU",
+	"B7fm9eZg8GRTZC71C0ba9mCwCKRlFax0hXiw7ceAtUO0FPDycbxuXht+MBZZJt1cg+pbfVl9ry/rL/VF",
+	"fdU7Iz4epnTWqy/qr9V19bO+6lW/68/Vr+q6+uFKQYCVI+c4tHk58Hqeb7QBiylNMW6UXZCldJUs9ftB",
+	"8y/B9F/6Y5mlixL2THO0wk90Li7L0FpAi/OzFsxfyU75ZwA=",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

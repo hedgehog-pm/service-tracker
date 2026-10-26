@@ -1,0 +1,13 @@
+package: transitions
+generate:
+  models: true
+  embedded-spec: true
+  echo5-server: true
+output: internal/generated/api/transitions/server.go
+output-options:
+  skip-prune: true
+  name-normalizer: ToCamelCaseWithInitialisms
+import-mapping:
+  "../common/openapi.yaml": github.com/hedgehog-pm/service-tracker/internal/generated/api/common
+  "../statuses/openapi.yaml": github.com/hedgehog-pm/service-tracker/internal/generated/api/statuses
+  "../tasks/openapi.yaml": github.com/hedgehog-pm/service-tracker/internal/generated/api/tasks

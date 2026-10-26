@@ -2,32 +2,82 @@
 -- This file is meant to be re-generated in place and/or deleted at any time.
 
 -- InsertProject
-INSERT INTO projects (key, name, next_number)
-VALUES ($1, $2, $3) 
-RETURNING id, key, name, next_number;
+INSERT INTO
+  projects (
+    key,
+    name,
+    next_number,
+    workflow_scheme_id,
+    priority_scheme_id
+  )
+VALUES
+  ($1, $2, $3, $4, $5)
+RETURNING
+  id,
+  key,
+  name,
+  next_number,
+  workflow_scheme_id,
+  priority_scheme_id;
 
 -- GetProject
-SELECT id, key, name, next_number
-FROM projects
-WHERE id = $1;
+SELECT
+  id,
+  key,
+  name,
+  next_number,
+  workflow_scheme_id,
+  priority_scheme_id
+FROM
+  projects
+WHERE
+  id = $1;
 
 -- ListProjects
-SELECT id, key, name, next_number
-FROM projects
-ORDER BY id ASC
-OFFSET $1  LIMIT $2 ;
+SELECT
+  id,
+  key,
+  name,
+  next_number,
+  workflow_scheme_id,
+  priority_scheme_id
+FROM
+  projects
+ORDER BY
+  id ASC
+OFFSET
+  $1
+LIMIT
+  $2;
 
 -- UpdateProject
-UPDATE projects
-SET name = $1
-WHERE id = $2
-RETURNING id, key, name, next_number;
+UPDATE
+  projects
+SET
+  name = $1
+WHERE
+  id = $2
+RETURNING
+  id,
+  key,
+  name,
+  next_number,
+  workflow_scheme_id,
+  priority_scheme_id;
 
 -- DeleteProject
-DELETE FROM projects WHERE id = $1;
+DELETE FROM
+  projects
+WHERE
+  id = $1;
 
 -- ReserveTaskNumber
-UPDATE projects
-SET next_number = next_number + 1
-WHERE id = $1
-RETURNING next_number - 1 AS number, key;
+UPDATE
+  projects
+SET
+  next_number = next_number + 1
+WHERE
+  id = $1
+RETURNING
+  next_number - 1 AS number,
+  key;

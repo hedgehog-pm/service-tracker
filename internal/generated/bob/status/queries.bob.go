@@ -19,210 +19,14 @@ import (
 //go:embed queries.bob.sql
 var formattedQueries_queries string
 
-var insertStatusSQL = formattedQueries_queries[150:289]
-
-type InsertStatusQuery = orm.ModQuery[*dialect.InsertQuery, insertStatus, InsertStatusRow, []InsertStatusRow, insertStatusTransformer]
-
-func InsertStatus(Name string, Category string, ProjectID int) *InsertStatusQuery {
-	var expressionTypArgs insertStatus
-
-	expressionTypArgs.Name = psql.Arg(Name)
-	expressionTypArgs.Category = psql.Arg(Category)
-	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
-
-	return &InsertStatusQuery{
-		Query: orm.Query[insertStatus, InsertStatusRow, []InsertStatusRow, insertStatusTransformer]{
-			ExecQuery: orm.ExecQuery[insertStatus]{
-				BaseQuery: bob.BaseQuery[insertStatus]{
-					Expression: expressionTypArgs,
-					Dialect:    dialect.Dialect,
-					QueryType:  bob.QueryTypeInsert,
-				},
-			},
-			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (InsertStatusRow, error)) {
-				return func(row *scan.Row) (any, error) {
-						var t InsertStatusRow
-						row.ScheduleScanByIndex(0, &t.ID)
-						row.ScheduleScanByIndex(1, &t.ProjectID)
-						row.ScheduleScanByIndex(2, &t.Name)
-						row.ScheduleScanByIndex(3, &t.Category)
-						return &t, nil
-					}, func(v any) (InsertStatusRow, error) {
-						return *v.(*InsertStatusRow), nil
-					}
-			},
-		},
-		Mod: bob.ModFunc[*dialect.InsertQuery](func(q *dialect.InsertQuery) {
-			q.TableRef.Columns = []string{"project_id", "name", "category"}
-			q.TableRef.Expression = expressionTypArgs.subExpr(12, 20)
-			q.Query = bob.BaseQuery[bob.Expression]{
-				Expression: expressionTypArgs.subExpr(50, 97),
-				Dialect:    dialect.Dialect,
-				QueryType:  bob.QueryTypeSelect,
-			}
-			q.AppendReturning(expressionTypArgs.subExpr(109, 139))
-		}),
-		Build: psql.Insert,
-	}
-}
-
-type InsertStatusRow = struct {
-	ID        int    `db:"id"`
-	ProjectID int    `db:"project_id"`
-	Name      string `db:"name"`
-	Category  string `db:"category"`
-}
-
-type insertStatusTransformer = bob.SliceTransformer[InsertStatusRow, []InsertStatusRow]
-
-type insertStatus struct {
-	Name      bob.Expression
-	Category  bob.Expression
-	ProjectID bob.Expression
-}
-
-func (o insertStatus) args() iter.Seq[orm.ArgWithPosition] {
-	return func(yield func(arg orm.ArgWithPosition) bool) {
-		if !yield(orm.ArgWithPosition{
-			Name:       "name",
-			Start:      61,
-			Stop:       63,
-			Expression: o.Name,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
-			Name:       "category",
-			Start:      66,
-			Stop:       68,
-			Expression: o.Category,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
-			Name:       "projectID",
-			Start:      95,
-			Stop:       97,
-			Expression: o.ProjectID,
-		}) {
-			return
-		}
-	}
-}
-
-func (o insertStatus) raw(from, to int) string {
-	return insertStatusSQL[from:to]
-}
-
-func (o insertStatus) subExpr(from, to int) bob.Expression {
-	return orm.ArgsToExpression(insertStatusSQL, from, to, o.args())
-}
-
-func (o insertStatus) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
-	return o.subExpr(0, len(insertStatusSQL)).WriteSQL(ctx, w, d, start)
-}
-
-var getStatusSQL = formattedQueries_queries[305:390]
-
-type GetStatusQuery = orm.ModQuery[*dialect.SelectQuery, getStatus, GetStatusRow, []GetStatusRow, getStatusTransformer]
-
-func GetStatus(ProjectID int, ID int) *GetStatusQuery {
-	var expressionTypArgs getStatus
-
-	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
-	expressionTypArgs.ID = psql.Arg(ID)
-
-	return &GetStatusQuery{
-		Query: orm.Query[getStatus, GetStatusRow, []GetStatusRow, getStatusTransformer]{
-			ExecQuery: orm.ExecQuery[getStatus]{
-				BaseQuery: bob.BaseQuery[getStatus]{
-					Expression: expressionTypArgs,
-					Dialect:    dialect.Dialect,
-					QueryType:  bob.QueryTypeSelect,
-				},
-			},
-			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (GetStatusRow, error)) {
-				return func(row *scan.Row) (any, error) {
-						var t GetStatusRow
-						row.ScheduleScanByIndex(0, &t.ID)
-						row.ScheduleScanByIndex(1, &t.ProjectID)
-						row.ScheduleScanByIndex(2, &t.Name)
-						row.ScheduleScanByIndex(3, &t.Category)
-						return &t, nil
-					}, func(v any) (GetStatusRow, error) {
-						return *v.(*GetStatusRow), nil
-					}
-			},
-		},
-		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendSelect(expressionTypArgs.subExpr(7, 37))
-			q.SetTable(expressionTypArgs.subExpr(43, 51))
-			q.AppendWhere(expressionTypArgs.subExpr(58, 85))
-		}),
-		Build: psql.Select,
-	}
-}
-
-type GetStatusRow = struct {
-	ID        int    `db:"id"`
-	ProjectID int    `db:"project_id"`
-	Name      string `db:"name"`
-	Category  string `db:"category"`
-}
-
-type getStatusTransformer = bob.SliceTransformer[GetStatusRow, []GetStatusRow]
-
-type getStatus struct {
-	ProjectID bob.Expression
-	ID        bob.Expression
-}
-
-func (o getStatus) args() iter.Seq[orm.ArgWithPosition] {
-	return func(yield func(arg orm.ArgWithPosition) bool) {
-		if !yield(orm.ArgWithPosition{
-			Name:       "projectID",
-			Start:      71,
-			Stop:       73,
-			Expression: o.ProjectID,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
-			Name:       "id",
-			Start:      83,
-			Stop:       85,
-			Expression: o.ID,
-		}) {
-			return
-		}
-	}
-}
-
-func (o getStatus) raw(from, to int) string {
-	return getStatusSQL[from:to]
-}
-
-func (o getStatus) subExpr(from, to int) bob.Expression {
-	return orm.ArgsToExpression(getStatusSQL, from, to, o.args())
-}
-
-func (o getStatus) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
-	return o.subExpr(0, len(getStatusSQL)).WriteSQL(ctx, w, d, start)
-}
-
-var listStatusesSQL = formattedQueries_queries[409:519]
+var listStatusesSQL = formattedQueries_queries[150:447]
 
 type ListStatusesQuery = orm.ModQuery[*dialect.SelectQuery, listStatuses, ListStatusesRow, []ListStatusesRow, listStatusesTransformer]
 
-func ListStatuses(ProjectID int, Offset int, Limit int) *ListStatusesQuery {
+func ListStatuses(SchemeID int) *ListStatusesQuery {
 	var expressionTypArgs listStatuses
 
-	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
-	expressionTypArgs.Offset = psql.Arg(Offset)
-	expressionTypArgs.Limit = psql.Arg(Limit)
+	expressionTypArgs.SchemeID = psql.Arg(SchemeID)
 
 	return &ListStatusesQuery{
 		Query: orm.Query[listStatuses, ListStatusesRow, []ListStatusesRow, listStatusesTransformer]{
@@ -237,9 +41,8 @@ func ListStatuses(ProjectID int, Offset int, Limit int) *ListStatusesQuery {
 				return func(row *scan.Row) (any, error) {
 						var t ListStatusesRow
 						row.ScheduleScanByIndex(0, &t.ID)
-						row.ScheduleScanByIndex(1, &t.ProjectID)
-						row.ScheduleScanByIndex(2, &t.Name)
-						row.ScheduleScanByIndex(3, &t.Category)
+						row.ScheduleScanByIndex(1, &t.Name)
+						row.ScheduleScanByIndex(2, &t.Category)
 						return &t, nil
 					}, func(v any) (ListStatusesRow, error) {
 						return *v.(*ListStatusesRow), nil
@@ -247,57 +50,35 @@ func ListStatuses(ProjectID int, Offset int, Limit int) *ListStatusesQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendSelect(expressionTypArgs.subExpr(7, 37))
-			q.SetTable(expressionTypArgs.subExpr(43, 51))
-			q.AppendWhere(expressionTypArgs.subExpr(58, 73))
-			q.AppendOrder(expressionTypArgs.subExpr(83, 89))
-			q.SetOffset(expressionTypArgs.subExpr(97, 99))
-			q.SetLimit(expressionTypArgs.subExpr(107, 109))
+			q.Distinct.On = []any{}
+			q.AppendSelect(expressionTypArgs.subExpr(18, 61))
+			q.SetTable(expressionTypArgs.subExpr(69, 244))
+			q.AppendWhere(expressionTypArgs.subExpr(253, 272))
+			q.AppendOrder(expressionTypArgs.subExpr(284, 297))
 		}),
 		Build: psql.Select,
 	}
 }
 
 type ListStatusesRow = struct {
-	ID        int    `db:"id"`
-	ProjectID int    `db:"project_id"`
-	Name      string `db:"name"`
-	Category  string `db:"category"`
+	ID       int    `db:"id"`
+	Name     string `db:"name"`
+	Category string `db:"category"`
 }
 
 type listStatusesTransformer = bob.SliceTransformer[ListStatusesRow, []ListStatusesRow]
 
 type listStatuses struct {
-	ProjectID bob.Expression
-	Offset    bob.Expression
-	Limit     bob.Expression
+	SchemeID bob.Expression
 }
 
 func (o listStatuses) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
-			Name:       "projectID",
-			Start:      71,
-			Stop:       73,
-			Expression: o.ProjectID,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
-			Name:       "offset",
-			Start:      97,
-			Stop:       99,
-			Expression: o.Offset,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
-			Name:       "limit",
-			Start:      107,
-			Stop:       109,
-			Expression: o.Limit,
+			Name:       "schemeID",
+			Start:      270,
+			Stop:       272,
+			Expression: o.SchemeID,
 		}) {
 			return
 		}
@@ -314,181 +95,4 @@ func (o listStatuses) subExpr(from, to int) bob.Expression {
 
 func (o listStatuses) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
 	return o.subExpr(0, len(listStatusesSQL)).WriteSQL(ctx, w, d, start)
-}
-
-var updateStatusSQL = formattedQueries_queries[538:657]
-
-type UpdateStatusQuery = orm.ModQuery[*dialect.UpdateQuery, updateStatus, UpdateStatusRow, []UpdateStatusRow, updateStatusTransformer]
-
-func UpdateStatus(Name string, Category string, ProjectID int, ID int) *UpdateStatusQuery {
-	var expressionTypArgs updateStatus
-
-	expressionTypArgs.Name = psql.Arg(Name)
-	expressionTypArgs.Category = psql.Arg(Category)
-	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
-	expressionTypArgs.ID = psql.Arg(ID)
-
-	return &UpdateStatusQuery{
-		Query: orm.Query[updateStatus, UpdateStatusRow, []UpdateStatusRow, updateStatusTransformer]{
-			ExecQuery: orm.ExecQuery[updateStatus]{
-				BaseQuery: bob.BaseQuery[updateStatus]{
-					Expression: expressionTypArgs,
-					Dialect:    dialect.Dialect,
-					QueryType:  bob.QueryTypeUpdate,
-				},
-			},
-			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (UpdateStatusRow, error)) {
-				return func(row *scan.Row) (any, error) {
-						var t UpdateStatusRow
-						row.ScheduleScanByIndex(0, &t.ID)
-						row.ScheduleScanByIndex(1, &t.ProjectID)
-						row.ScheduleScanByIndex(2, &t.Name)
-						row.ScheduleScanByIndex(3, &t.Category)
-						return &t, nil
-					}, func(v any) (UpdateStatusRow, error) {
-						return *v.(*UpdateStatusRow), nil
-					}
-			},
-		},
-		Mod: bob.ModFunc[*dialect.UpdateQuery](func(q *dialect.UpdateQuery) {
-			q.Table.Expression = expressionTypArgs.subExpr(7, 15)
-			q.AppendSet(expressionTypArgs.subExpr(20, 44))
-			q.AppendWhere(expressionTypArgs.subExpr(51, 78))
-			q.AppendReturning(expressionTypArgs.subExpr(89, 119))
-		}),
-		Build: psql.Update,
-	}
-}
-
-type UpdateStatusRow = struct {
-	ID        int    `db:"id"`
-	ProjectID int    `db:"project_id"`
-	Name      string `db:"name"`
-	Category  string `db:"category"`
-}
-
-type updateStatusTransformer = bob.SliceTransformer[UpdateStatusRow, []UpdateStatusRow]
-
-type updateStatus struct {
-	Name      bob.Expression
-	Category  bob.Expression
-	ProjectID bob.Expression
-	ID        bob.Expression
-}
-
-func (o updateStatus) args() iter.Seq[orm.ArgWithPosition] {
-	return func(yield func(arg orm.ArgWithPosition) bool) {
-		if !yield(orm.ArgWithPosition{
-			Name:       "name",
-			Start:      27,
-			Stop:       29,
-			Expression: o.Name,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
-			Name:       "category",
-			Start:      42,
-			Stop:       44,
-			Expression: o.Category,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
-			Name:       "projectID",
-			Start:      64,
-			Stop:       66,
-			Expression: o.ProjectID,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
-			Name:       "id",
-			Start:      76,
-			Stop:       78,
-			Expression: o.ID,
-		}) {
-			return
-		}
-	}
-}
-
-func (o updateStatus) raw(from, to int) string {
-	return updateStatusSQL[from:to]
-}
-
-func (o updateStatus) subExpr(from, to int) bob.Expression {
-	return orm.ArgsToExpression(updateStatusSQL, from, to, o.args())
-}
-
-func (o updateStatus) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
-	return o.subExpr(0, len(updateStatusSQL)).WriteSQL(ctx, w, d, start)
-}
-
-var deleteStatusSQL = formattedQueries_queries[676:730]
-
-type DeleteStatusQuery = orm.ModExecQuery[*dialect.DeleteQuery, deleteStatus]
-
-func DeleteStatus(ProjectID int, ID int) *DeleteStatusQuery {
-	var expressionTypArgs deleteStatus
-
-	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
-	expressionTypArgs.ID = psql.Arg(ID)
-
-	return &DeleteStatusQuery{
-		ExecQuery: orm.ExecQuery[deleteStatus]{
-			BaseQuery: bob.BaseQuery[deleteStatus]{
-				Expression: expressionTypArgs,
-				Dialect:    dialect.Dialect,
-				QueryType:  bob.QueryTypeDelete,
-			},
-		},
-		Mod: bob.ModFunc[*dialect.DeleteQuery](func(q *dialect.DeleteQuery) {
-			q.Table.Expression = expressionTypArgs.subExpr(12, 20)
-			q.AppendWhere(expressionTypArgs.subExpr(27, 54))
-		}),
-		Build: psql.Delete,
-	}
-}
-
-type deleteStatus struct {
-	ProjectID bob.Expression
-	ID        bob.Expression
-}
-
-func (o deleteStatus) args() iter.Seq[orm.ArgWithPosition] {
-	return func(yield func(arg orm.ArgWithPosition) bool) {
-		if !yield(orm.ArgWithPosition{
-			Name:       "projectID",
-			Start:      40,
-			Stop:       42,
-			Expression: o.ProjectID,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
-			Name:       "id",
-			Start:      52,
-			Stop:       54,
-			Expression: o.ID,
-		}) {
-			return
-		}
-	}
-}
-
-func (o deleteStatus) raw(from, to int) string {
-	return deleteStatusSQL[from:to]
-}
-
-func (o deleteStatus) subExpr(from, to int) bob.Expression {
-	return orm.ArgsToExpression(deleteStatusSQL, from, to, o.args())
-}
-
-func (o deleteStatus) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
-	return o.subExpr(0, len(deleteStatusSQL)).WriteSQL(ctx, w, d, start)
 }

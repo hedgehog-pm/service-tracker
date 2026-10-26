@@ -1,0 +1,64 @@
+openapi: 3.0.3
+info:
+  title: Tracker issue types
+  version: 0.2.0
+paths:
+  /projects/{project_id}/issue-types:
+    $ref: '#/x-paths/collection'
+components:
+  schemas:
+    IssueType:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - position
+      - initial_status
+      properties:
+        id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        name:
+          type: string
+        position:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 0
+        initial_status:
+          $ref: ../statuses/openapi.yaml#/components/schemas/Status
+    IssueTypeList:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/IssueType'
+x-paths:
+  collection:
+    get:
+      operationId: listIssueTypes
+      tags:
+      - issue-types
+      summary: Доступные типы задач проекта
+      parameters:
+      - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueTypeList'
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError

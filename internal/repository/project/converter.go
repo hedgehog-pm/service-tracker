@@ -6,5 +6,5 @@ import (
 )
 
 func projectToDomain(row bobgen.GetProjectRow) domain.Project {
-	return domain.Project{ID: row.ID, Key: row.Key, Name: row.Name, NextNumber: row.NextNumber}
+	return domain.Project{ID: row.ID, Key: row.Key, Name: row.Name, NextNumber: row.NextNumber, WorkflowSchemeID: row.WorkflowSchemeID, PrioritySchemeID: row.PrioritySchemeID}
 }

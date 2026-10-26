@@ -7,15 +7,17 @@ import (
 
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	generated "github.com/hedgehog-pm/service-tracker/internal/generated/api/projects"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/createproject"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/project"
 )
 
 type ProjectHandler struct {
-	projects *project.Usecase
+	projects      *project.Usecase
+	createProject *createproject.Usecase
 }
 
-func NewProjectHandler(projects *project.Usecase) *ProjectHandler {
-	return &ProjectHandler{projects: projects}
+func NewProjectHandler(projects *project.Usecase, createProject *createproject.Usecase) *ProjectHandler {
+	return &ProjectHandler{projects: projects, createProject: createProject}
 }
 
 func (h *ProjectHandler) CreateProject(ctx *echo.Context) error {
@@ -24,7 +26,7 @@ func (h *ProjectHandler) CreateProject(ctx *echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
 
-	value, err := h.projects.Create(ctx.Request().Context(), body.Key, body.Name)
+	value, err := h.createProject.Do(ctx.Request().Context(), body.Key, body.Name)
 	if err != nil {
 		return err
 	}

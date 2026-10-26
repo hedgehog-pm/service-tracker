@@ -11,7 +11,16 @@ type repository interface {
 }
 
 type projects interface {
+	GetProject(ctx context.Context, projectID int) (domain.Project, error)
 	ReserveTaskNumber(ctx context.Context, projectID int) (int, string, error)
+}
+
+type workflows interface {
+	GetInitialStatus(ctx context.Context, schemeID, issueTypeID int) (domain.InitialStatus, error)
+}
+
+type priorities interface {
+	GetDefaultPriority(ctx context.Context, schemeID int) (int, error)
 }
 
 type transactor interface {

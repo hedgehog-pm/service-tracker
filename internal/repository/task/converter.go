@@ -22,13 +22,6 @@ func updatedTaskToDomain(task domain.Task, row bobgen.UpdateTaskRow) domain.Task
 	return task
 }
 
-func taskToInsertParams(task domain.Task) []bobgen.InsertTask_Rows {
-	return []bobgen.InsertTask_Rows{{
-		ProjectID: task.ProjectID, Number: task.Number, Title: task.Title, Description: task.Description,
-		StatusID: task.StatusID, ModuleID: pointerToNull(task.ModuleID), CreatedAt: task.CreatedAt, UpdatedAt: task.UpdatedAt,
-	}}
-}
-
 func pointerToNull[T any](value *T) sql.Null[T] {
 	if value == nil {
 		return sql.Null[T]{}
@@ -40,7 +33,8 @@ func pointerToNull[T any](value *T) sql.Null[T] {
 func taskToDomain(row bobgen.GetTaskRow) domain.Task {
 	return domain.Task{
 		ID: row.ID, ProjectID: row.ProjectID, ProjectKey: row.ProjectKey, Number: row.Number,
-		Title: row.Title, Description: row.Description, StatusID: row.StatusID, ModuleID: nullToPointer(row.ModuleID),
+		IssueTypeID: row.IssueTypeID, WorkflowID: row.WorkflowID, StatusID: row.StatusID,
+		Title: row.Title, Description: row.Description, PriorityID: row.PriorityID, ModuleID: nullToPointer(row.ModuleID),
 		CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
 	}
 }

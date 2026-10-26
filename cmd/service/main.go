@@ -16,18 +16,24 @@ import (
 
 	"github.com/hedgehog-pm/service-tracker/internal/api"
 	modulerepository "github.com/hedgehog-pm/service-tracker/internal/repository/module"
+	priorityrepository "github.com/hedgehog-pm/service-tracker/internal/repository/priority"
 	projectrepository "github.com/hedgehog-pm/service-tracker/internal/repository/project"
 	statusrepository "github.com/hedgehog-pm/service-tracker/internal/repository/status"
 	taskrepository "github.com/hedgehog-pm/service-tracker/internal/repository/task"
+	workflowrepository "github.com/hedgehog-pm/service-tracker/internal/repository/workflow"
 	"github.com/hedgehog-pm/service-tracker/internal/storage/postgres"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/createproject"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/createtask"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/issuetype"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/listmodules"
-	"github.com/hedgehog-pm/service-tracker/internal/usecase/liststatuses"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/listtasks"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/listtasktransitions"
 	moduleusecase "github.com/hedgehog-pm/service-tracker/internal/usecase/module"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/priority"
 	projectusecase "github.com/hedgehog-pm/service-tracker/internal/usecase/project"
 	statususecase "github.com/hedgehog-pm/service-tracker/internal/usecase/status"
 	taskusecase "github.com/hedgehog-pm/service-tracker/internal/usecase/task"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/transitiontask"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/updatetask"
 )
 
@@ -60,18 +66,24 @@ func run(ctx context.Context) error {
 	tasks := taskrepository.NewPostgres(db)
 	projects := projectrepository.NewPostgres(db)
 	transactor := postgres.NewTransactor(db)
+	workflows := workflowrepository.NewPostgres(db)
+	priorities := priorityrepository.NewPostgres(db)
 	taskHandler := api.NewTaskHandler(
-		taskusecase.New(tasks), createtask.New(tasks, projects, transactor),
+		taskusecase.New(tasks), createtask.New(tasks, projects, workflows, priorities, transactor),
 		listtasks.New(tasks), updatetask.New(tasks, transactor),
 	)
 
 	statuses := statusrepository.NewPostgres(db)
 	modules := modulerepository.NewPostgres(db)
-	projectHandler := api.NewProjectHandler(projectusecase.New(projects))
-	statusHandler := api.NewStatusHandler(statususecase.New(statuses), liststatuses.New(statuses, projects))
+	projectHandler := api.NewProjectHandler(projectusecase.New(projects), createproject.New(projects, workflows, priorities))
+	statusHandler := api.NewStatusHandler(statususecase.New(statuses, projects))
 	moduleHandler := api.NewModuleHandler(moduleusecase.New(modules), listmodules.New(modules, projects))
 
-	server, err := api.NewServer(projectHandler, statusHandler, moduleHandler, taskHandler)
+	transitionHandler := api.NewTransitionHandler(listtasktransitions.New(tasks, workflows), transitiontask.New(tasks, workflows, transactor))
+	issueTypeHandler := api.NewIssueTypeHandler(issuetype.New(workflows, projects))
+	priorityHandler := api.NewPriorityHandler(priority.New(priorities, projects))
+
+	server, err := api.NewServer(projectHandler, statusHandler, moduleHandler, taskHandler, transitionHandler, issueTypeHandler, priorityHandler)
 	if err != nil {
 		return err
 	}

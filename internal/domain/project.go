@@ -3,10 +3,12 @@ package domain
 import validation "github.com/go-ozzo/ozzo-validation/v4"
 
 type Project struct {
-	ID         int
-	Key        string
-	Name       string
-	NextNumber int
+	ID               int
+	Key              string
+	Name             string
+	NextNumber       int
+	WorkflowSchemeID int
+	PrioritySchemeID int
 }
 
 func NewProject(key, name string) Project {

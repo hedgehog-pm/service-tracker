@@ -26,7 +26,7 @@ func (u *Usecase) Do(ctx context.Context, projectID, taskID int, fields domain.T
 	err := u.transactor.InTx(ctx, func(ctx context.Context) error {
 		var err error
 
-		task, err = u.repository.GetTask(ctx, projectID, taskID)
+		task, err = u.repository.GetTaskForUpdate(ctx, projectID, taskID)
 		if err != nil {
 			return err
 		}

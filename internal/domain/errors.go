@@ -23,12 +23,14 @@ func (e *Error) Error() string {
 }
 
 var (
-	ErrProjectNotFound     = NewError(CodeNotFound, "project not found")
-	ErrTaskNotFound        = NewError(CodeNotFound, "task not found")
-	ErrStatusNotFound      = NewError(CodeNotFound, "status not found")
-	ErrModuleNotFound      = NewError(CodeNotFound, "module not found")
-	ErrInvalidReference    = NewError(CodeInvalidInput, "referenced resource is missing or belongs to another project")
-	ErrResourceInUse       = NewError(CodeConflict, "resource is in use")
-	ErrAlreadyExists       = NewError(CodeConflict, "resource already exists")
-	ErrInternalServerError = NewError(CodeInternalError, "internal error")
+	ErrProjectNotFound       = NewError(CodeNotFound, "project not found")
+	ErrTaskNotFound          = NewError(CodeNotFound, "task not found")
+	ErrTransitionNotFound    = NewError(CodeNotFound, "transition not found")
+	ErrTransitionUnavailable = NewError(CodeConflict, "transition is not available from the current state")
+	ErrIssueTypeUnavailable  = NewError(CodeInvalidInput, "issue type is not available in this project")
+	ErrModuleNotFound        = NewError(CodeNotFound, "module not found")
+	ErrInvalidReference      = NewError(CodeInvalidInput, "referenced resource is missing or not available in this context")
+	ErrResourceInUse         = NewError(CodeConflict, "resource is in use")
+	ErrAlreadyExists         = NewError(CodeConflict, "resource already exists")
+	ErrInternalServerError   = NewError(CodeInternalError, "internal error")
 )

@@ -27,6 +27,12 @@ type Limit = int
 // Offset defines model for Offset.
 type Offset = int
 
+// ProjectID defines model for ProjectID.
+type ProjectID = int
+
+// TaskID defines model for TaskID.
+type TaskID = int
+
 // BadRequest defines model for BadRequest.
 type BadRequest = Error
 
@@ -44,17 +50,14 @@ type NotFound = Error
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"vJPBTtw8EMdfJZrvO5rdAPouOX5VK7WqoGp7qyrkJhMwTezgOAiEIu3CASRQV+q96qEvsK2IWNguvML4",
-	"jSo7WbZFVOqlXBJ7Zuz5zT/5H0Cs8kJJlKaE6AAKrnmOBrXfPRe5MG4hJESwU6HeBwaS5wgRZD7JoIy3",
-	"MOeuKsGUV5mB6L+QQap0zg1EIKRZXQEGOd8TeZVDtBKGDHIh290yA7NfYFuIm6iBwd7SplpaRKGuGayn",
-	"aYm/hVFt9l6ae2Hm7cM/al8z0FgWSpbohfmfJy9xp8LSA8VKGpR+yYsiEzE3Qsn+dqmkiy2Q/tWYQgT/",
-	"9Bei99ts2X+stdJtqwTLWIvCXQIR0Cdq6Bs1dkAze0qXwbNX62ssoBsa2wGN6Ts19tAO7GlAE5rSJKAL",
-	"mtHYHlNDM5rYkSu9pik1dAk1g0dKppmIH4L8iwOgKxrT1J519HRFU/vBHjvMMc3syB7Owe2AGju0R3Zg",
-	"hwFN7LAFt2d0YY/8lEM7as+ddwP6iZ5Kg1ryrAX5+2N9pJk9cpp7hd0Io4Cu7QlN6Kub1jGtKfNEVTJ5",
-	"AJzPdkDX1NDVQkmv0Y2L25MO0mn/q8AzatxjTJd07oq8zbp2juZWTp4kwjXj2QutCtRGOBekPCuRQfFT",
-	"yI2aoHujdOZ6A0Lu8kwkG0IWlQEGUpmN1OvCIJ7/iAxE9wU30Pd8e2vK0mghN+94sgvWDHCOeCfj/bpT",
-	"CY2Jo/BUDO5ert5tY9zZW8hU+YuEyVzutebxe9RBrPJcycCdKIHBLuqylT3sLfdCx6AKlLwQEMFqL+yt",
-	"AoOCmy2nRl3/GAA=",
+	"vJNNaxs/EMa/Snj+/6Nib2N62WPfIFDaUHILxai7s87Eq5E80oaEsN+9aBW/YGLIpT55NTOe56eZRy9o",
+	"vAteSFJE/YJg1TpKpNPpOztO+YMFNTYD6TMMxDpCjX5KGsTmnpzNVS11dugT6o+VQefV2YQaLGlxBQNn",
+	"n9gNDvVVVRk4lnL6YJCeA5VCWpHC4Oly5S/3UYyjwc+ui3QSxpfsmzRvwmzlq3fK36h/oCZdf9kRBJvu",
+	"9wCh5JfcwkBpM7BSizrpQIdQp0HeO4dbG9cnKZKN63+NMObmMXiJNJnkk21/0WagOC2n8ZJIpk8bQs+N",
+	"Texl/hC95Nge43+lDjX+m+8NOC/ZOP+q6rVItRQb5ZCboAZGg89eup6bM6ldSyIV25eis0j+8OmbH6Q9",
+	"h9q4dca0yt0lbdtyrrH9jfpAmjjvurN9JINwEMqELeVfkmyhO7A82p7bJUsYEgzEp2U3Xceg2a7OgF/n",
+	"uqRJ8/fOejEpy+rIea/B0YC2iEeZ8dDyd4XK4Li5/5MfaRkFS+enRpz6nLtV26xJLxrvnJeL/I8Ig0fS",
+	"WKZVza5mVWbwgcQGRo3FrJotYKZXmKcxjn8HAA==",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

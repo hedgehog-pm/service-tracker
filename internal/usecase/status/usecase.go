@@ -7,35 +7,19 @@ import (
 )
 
 type Usecase struct {
-	repository repository
+	reader   reader
+	projects projects
 }
 
-func New(repository repository) *Usecase {
-	return &Usecase{repository: repository}
+func New(reader reader, projects projects) *Usecase {
+	return &Usecase{reader: reader, projects: projects}
 }
 
-func (u *Usecase) Get(ctx context.Context, projectID, id int) (domain.Status, error) {
-	return u.repository.GetStatus(ctx, projectID, id)
-}
-
-func (u *Usecase) Create(ctx context.Context, projectID int, name, category string) (domain.Status, error) {
-	value := domain.Status{ProjectID: projectID, Name: name, Category: category}
-	if err := value.Validate(); err != nil {
-		return domain.Status{}, err
+func (u *Usecase) List(ctx context.Context, projectID int) ([]domain.Status, error) {
+	project, err := u.projects.GetProject(ctx, projectID)
+	if err != nil {
+		return nil, err
 	}
 
-	return u.repository.InsertStatus(ctx, value)
-}
-
-func (u *Usecase) Update(ctx context.Context, projectID, id int, name, category string) (domain.Status, error) {
-	value := domain.Status{ID: id, ProjectID: projectID, Name: name, Category: category}
-	if err := value.Validate(); err != nil {
-		return domain.Status{}, err
-	}
-
-	return u.repository.UpdateStatus(ctx, value)
-}
-
-func (u *Usecase) Delete(ctx context.Context, projectID, id int) error {
-	return u.repository.DeleteStatus(ctx, projectID, id)
+	return u.reader.ListStatuses(ctx, project.WorkflowSchemeID)
 }

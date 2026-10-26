@@ -30,12 +30,12 @@ func (h *TaskHandler) CreateTask(ctx *echo.Context, projectID int) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
 
-	fields := domain.TaskFields{Title: body.Title, StatusID: body.StatusID, ModuleID: body.ModuleID}
+	params := createtask.Params{ProjectID: projectID, Title: body.Title, ModuleID: body.ModuleID, IssueTypeID: body.IssueTypeID, PriorityID: body.PriorityID}
 	if body.Description != nil {
-		fields.Description = *body.Description
+		params.Description = *body.Description
 	}
 
-	task, err := h.createTask.Do(ctx.Request().Context(), projectID, fields)
+	task, err := h.createTask.Do(ctx.Request().Context(), params)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (h *TaskHandler) ListTasks(ctx *echo.Context, projectID int, params generat
 	limit, offset := *params.Limit, *params.Offset
 
 	tasks, err := h.listTasks.Do(ctx.Request().Context(), listtasks.Params{
-		ProjectID: projectID, StatusID: params.StatusID, ModuleID: params.ModuleID, Limit: limit, Offset: offset,
+		ProjectID: projectID, StatusID: params.StatusID, ModuleID: params.ModuleID, IssueTypeID: params.IssueTypeID, PriorityID: params.PriorityID, Limit: limit, Offset: offset,
 	})
 	if err != nil {
 		return err
@@ -77,7 +77,7 @@ func (h *TaskHandler) UpdateTask(ctx *echo.Context, projectID, taskID int) error
 	}
 
 	task, err := h.updateTask.Do(ctx.Request().Context(), projectID, taskID, domain.TaskFields{
-		Title: body.Title, Description: body.Description, StatusID: body.StatusID, ModuleID: body.ModuleID,
+		Title: body.Title, Description: body.Description, PriorityID: body.PriorityID, ModuleID: body.ModuleID,
 	})
 	if err != nil {
 		return err

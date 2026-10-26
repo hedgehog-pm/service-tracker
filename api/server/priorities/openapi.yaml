@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: Tracker priorities
+  version: 0.2.0
+paths:
+  /projects/{project_id}/priorities:
+    $ref: '#/x-paths/collection'
+components:
+  schemas:
+    Priority:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - position
+      properties:
+        id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        name:
+          type: string
+        position:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 0
+    PriorityList:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - default_priority_id
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Priority'
+        default_priority_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+x-paths:
+  collection:
+    get:
+      operationId: listPriorities
+      tags:
+      - priorities
+      summary: Доступные приоритеты проекта
+      parameters:
+      - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriorityList'
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError

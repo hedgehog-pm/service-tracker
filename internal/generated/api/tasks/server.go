@@ -20,27 +20,34 @@ import (
 	externalRef0 "github.com/hedgehog-pm/service-tracker/internal/generated/api/common"
 	"github.com/labstack/echo/v5"
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // CreateTask defines model for CreateTask.
 type CreateTask struct {
-	Description *string `json:"description,omitempty"`
-	ModuleID    *int    `json:"module_id,omitempty"`
-	PriorityID  *int    `json:"priority_id,omitempty"`
-	TaskTypeID  int     `json:"task_type_id"`
-	Title       string  `json:"title"`
+	Description     *string             `json:"description,omitempty"`
+	DueDate         *openapi_types.Date `json:"due_date,omitempty"`
+	EstimateSeconds *int                `json:"estimate_seconds,omitempty"`
+	ModuleID        *int                `json:"module_id,omitempty"`
+	ParentID        *int                `json:"parent_id,omitempty"`
+	PriorityID      *int                `json:"priority_id,omitempty"`
+	TaskTypeID      int                 `json:"task_type_id"`
+	Title           string              `json:"title"`
 }
 
 // Task defines model for Task.
 type Task struct {
-	CreatedAt   time.Time `json:"created_at"`
-	Description string    `json:"description"`
-	ID          int       `json:"id"`
+	CreatedAt       time.Time           `json:"created_at"`
+	Description     string              `json:"description"`
+	DueDate         *openapi_types.Date `json:"due_date"`
+	EstimateSeconds *int                `json:"estimate_seconds"`
+	ID              int                 `json:"id"`
 
 	// Key Example: WEB-1
 	Key        string    `json:"key"`
 	ModuleID   *int      `json:"module_id"`
 	Number     int       `json:"number"`
+	ParentID   *int      `json:"parent_id"`
 	PriorityID int       `json:"priority_id"`
 	ProjectID  int       `json:"project_id"`
 	StatusID   int       `json:"status_id"`
@@ -58,10 +65,13 @@ type TaskList struct {
 
 // UpdateTask defines model for UpdateTask.
 type UpdateTask struct {
-	Description string `json:"description"`
-	ModuleID    *int   `json:"module_id"`
-	PriorityID  int    `json:"priority_id"`
-	Title       string `json:"title"`
+	Description     string              `json:"description"`
+	DueDate         *openapi_types.Date `json:"due_date,omitempty"`
+	EstimateSeconds *int                `json:"estimate_seconds,omitempty"`
+	ModuleID        *int                `json:"module_id"`
+	ParentID        *int                `json:"parent_id,omitempty"`
+	PriorityID      int                 `json:"priority_id"`
+	Title           string              `json:"title"`
 }
 
 // ListTasksParams defines parameters for ListTasks.
@@ -886,28 +896,29 @@ func (sh *strictHandler) UpdateTask(ctx *echo.Context, projectID int, taskID int
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"7FjNbttGEH4VY5pTuxJpxzmEtyZNiwBBWxQpClRQhQ05kjcmd+nl0rAg8NAWRQ499Nhz38CHGnbbNHkF",
-	"6o2KXUoUKVOyZFGJ3PBia0nu7MzsN3/fCFwRhIIjVxE4IwippAEqlGZFQ9aLUJ6i7LkiCATviRC5fvqM",
-	"BUzpTxgHB05ilEMgwGmA4IBvXhKI3CMMqP7Kwz6NfQXOA5tAX8iAKnCAcXX/AAgE9IwFcQDOgW0TCBjP",
-	"VvsE1DDE7EMcoAQCZ62BaM2eQpKQJVp+1e9HuFBNkb2t1LNSzali9kqKJQQkRqHgEd7gzEfU+wZPYoyM",
-	"qq7gCrnKtoQ+c6liglsvI8H1s5my9yT2wYGPrNkVWtnbyFp82BMphczU8zByJQu1eHAAlrryseB9n7k7",
-	"rOFTrlBy6mfbd1bNL4X6XMTce78aJlPUG2g+lkgVPqfRsVHF85j+kPpfSxGiVEwDuE/9CAmEhUejstjR",
-	"NCoiJRkfaDcEwot97DFj7eKA2ifAY9+nL3wER8kYVwkwrQsTkqnhKvJXkadodNzTj2oTyJS2aKQ3PkM+",
-	"UEfFrVM3mURxEjOJHjidyaY5bbr5LvHiJbpG+i3uyzUX7fWoKtnnUYUtxQKE/JjZHd50xzX56hiHWg6e",
-	"0SDUToPvnjxq7QOBkCod2ODAD51PW9939R+79bD7Sauz33rY7ejfH98D8q7Rx+PgBcpabK8byKEUGiR1",
-	"iYsUVXF0x6OMQBx6a4J/LjKZByXf5hjI0FsEXNFpJA/pYiiRYjCWlJtzURkeixLBMxapNZMBUxiUfywr",
-	"M/oQSPLTqZR0qNf+tBOsta0j0+7MGW3ciM1dojGW5E3q5Jwqv35r7qQpi5tUsTLkiwFyE6pv6mvWrHzC",
-	"MzYg15Z3gPFT6jOvx3gYKyDAher1TV9GwJ32ugTYpKnsoTmzO2922WGzG8apisu9ZLQiMC986gT9OeN9",
-	"YQRltwDPJXWPUe7pHKFxfIoyyro6u33Qtk3oZH4CB+637fb9rIYeGTdYk/QVWaNZIkusTJgzgkEWctpz",
-	"phd96oEDOrc8nxxXHBA7k7lKS5+NVaUEOTM2w++spd0QlgmpTlcz/aybpteNRExGy4RMfDA3Wxazf602",
-	"Vx1WKjvbPmyuNm39vGKaqPO47tx4fmDbtY1keUFeMB0e2vYiEblO1kp8gRF2uImwfB5NCDzYTK/yBG5m",
-	"zDgIqByCA+kf6dv0avxj+ib928mTl6KDyFQLs+7q4iWiigxUGFB3KAV1M+EYqUfCG9aGnoKxSZLMG5Bc",
-	"w+1+rbi9a5g9tB9uIirntbYM/9/T8/TP9Hz8Kj139kwYXOp1+m96lV5UREJCltZqa6T/6XXWb/qo8HrY",
-	"fGae71rYkMrDJ/ZsP2BLsXN4rV3/YBN0GaE/G3T+k14sRCipbha/QNUA7l01GU2DsQi/r8Y/LcVuGFdg",
-	"tzDwN/DdXoNTcPNKDY7dNDh3rMFJL9Pz9LUJwPO99Cq9zBbj39KL9PX41/Eve+nb9I0pL39VNT+JRmNO",
-	"WrjC99GdsmmVVcffbYqi3bYyX1oTX7aHNPAXsQ7X6In1tjfURENN1ERNrAC8WeJYlgHXErS4Y1hLzPbo",
-	"CLehI3aLjnj/OC1X6bXELK7Q9cH9FvQDUxgsIxe8hlyog1z4/6bYmgiFQUMo7Bqh8KFg9lYkQtyQCA2J",
-	"0LQl64fbxqRB8t8A",
+	"7FjBjts2E36Vxfw5/aUt7WZziG5NmhYBgrYoUhTowjUYaewwK5EKSQUxDB3aosihhx577hvsoUHSNk1e",
+	"QX6jgpQtS7bstddy42102bUo8Zvh8Jvh8BuDL6JYcORagTeGmEoaoUZpn2jM+grlM5R9X0SR4H0RIzej",
+	"D1jEtPmEcfDgaYJyBAQ4jRA8CO1LAsp/jBE1XwU4oEmowbvlEhgIGVENHjCub54AgYg+Z1ESgXfiugQi",
+	"xvOnYwJ6FGP+IQ5RAoHnnaHozEchTckaL78YDBSudFPkb2v9rHVz5pi7kWMpAYkqFlzhJcG8Q4Ov8GmC",
+	"yrrqC66R63xKHDKfaia480QJbsbmzt6QOAAP/ufMt9DJ3ypntbF7UgqZuxeg8iWLDTx4AGtDeVfwQcj8",
+	"A/bwPtcoOQ3z6Qfr5udCfyoSHrxfD9MZ6y0170qkGh9SdW5dCQJmPqThl1LEKDUzBB7QUCGBuDQ0rsKO",
+	"Z1mhtGR8aMIQJNgPqEbzssgnO0CAJ2FIH4UInpYJkuXJqDSLqMa+Ql/wQFVAZkm5AmVNYhKIRJCE2GdB",
+	"LWK5/lwFPaYSud4bumRCMj3aBH8TPE3Ved8MNQbIdGj3O2L8AfKhflyeOttdWxyfJkxiAN7ZdNKCN71i",
+	"lnj0BH2LfgWO+pbcQZ/qJRZ2NIsQCjMl3l5LXje0g+c4Mjj4nEaxcQC+uXencwyG2Vqj5ODBd2cfd77t",
+	"mT9u53bvo87Zced278z8/v+NunjuN+N4Ej1C2cjar1fyxlKYxGgKTmmqE3XNKwuBJA62TPiFasQCqMS2",
+	"YFieG2U6lxlTk9mlSlEOLykKXrnQkHKpqixjIZhVIq0qkw+Y0luWSqYxqv5Y13gYI5AW1qmUdGSew9nd",
+	"oNFGn8z6dW+8c2u+sN12saS4tkzt1MX1a7snbaP0ITZKu/Q11TSvlI9LMvmy7n7LXkgEdg3IzcrPgPFn",
+	"NGRBn/E40UCAC90f2NsJAX924yPAplerPlqbvcVlVwNWIubMxfVRsl4RWASfBcF8zvhAWKB8F+ChpP45",
+	"yiNTF03uPkOp8ruN2z3pusb4NE7gwc2u272Z9y+PbRicaXFXznhe5lMnB/PGMMzLjImcvZHdD8ADU08f",
+	"Ts2VZZKzqbpg0OfiQuX4mC825+/8YrcjLVNSX6Ln/jmXaTg7QUwFlpRMY7CgsJRPvEbXXGesnFV7N7Zw",
+	"Hu/dXrlMNGmutyBSnbhuY8JE0YSs0EhOXXcVROGTs5FqZsFOdwErVJmUwK3d/KrqUGbpKokiKkfgQfZb",
+	"9i57Pfk+e5v96RXFS9OhsqeFfe6Zw0uomgpUkmkOqAT1cnBU+o4IRo2xp7TYNE0XF5Au8fa4Ud5eN86e",
+	"urd3gSrU3T3T/9fsIvs9u5i8yC68I5sGr8xz9nf2OntZkwkpWXtWO2PzzzznPXaIGpfT5hM7fmhpQ2qN",
+	"T9ez/4St5M7p0hXlgy3QVYb+aNn5V/ZyJUNJfbP4GeqWcP9Wk9E2GKv4+2Lyw1ruxkkNd0siR0vf/TU4",
+	"pTBv1OC4bYNzzRqc7FV2kb2xCXhxlL3OXuUPk1+yl9mbyc+Tn46yd9lbe7z8Udf8pIaNhWjhizBEf6Yg",
+	"1p464WFLFN2uk8fSmcayO6JRuEp1WJIntpveShOtNNGQNLEB8eaFY10F3ApodcewFcz+5Ai/lSMOS454",
+	"/zytntJbwaw+oZuj+xXkB6YxWicuBK240IS48N8tsQ0JCsNWUDg0QeFD4eyVRISkFRFaEaFtS7ZPt51F",
+	"g/SfAQA=",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

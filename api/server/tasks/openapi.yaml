@@ -18,6 +18,9 @@ components:
       - number
       - key
       - module_id
+      - parent_id
+      - estimate_seconds
+      - due_date
       - status_id
       - title
       - description
@@ -50,6 +53,21 @@ components:
           format: int32
           x-go-type: int
           minimum: 1
+          nullable: true
+        parent_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+          nullable: true
+        estimate_seconds:
+          type: integer
+          format: int32
+          x-go-type: int
+          nullable: true
+        due_date:
+          type: string
+          format: date
           nullable: true
         status_id:
           type: integer
@@ -95,6 +113,21 @@ components:
           x-go-type: int
           minimum: 1
           nullable: true
+        parent_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+          nullable: true
+        estimate_seconds:
+          type: integer
+          format: int32
+          x-go-type: int
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
         task_type_id:
           type: integer
           format: int32
@@ -124,6 +157,21 @@ components:
           format: int32
           x-go-type: int
           minimum: 1
+          nullable: true
+        parent_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+          nullable: true
+        estimate_seconds:
+          type: integer
+          format: int32
+          x-go-type: int
+          nullable: true
+        due_date:
+          type: string
+          format: date
           nullable: true
         priority_id:
           type: integer

@@ -8,12 +8,15 @@ import (
 )
 
 type Params struct {
-	ProjectID   int
-	TaskTypeID  int
-	PriorityID  *int
-	Title       string
-	Description string
-	ModuleID    *int
+	ProjectID       int
+	TaskTypeID      int
+	PriorityID      *int
+	Title           string
+	Description     string
+	ModuleID        *int
+	ParentID        *int
+	EstimateSeconds *int
+	DueDate         *time.Time
 }
 
 // Usecase создания задачи.
@@ -48,9 +51,12 @@ func New(
 
 func (u *Usecase) Do(ctx context.Context, params Params) (domain.Task, error) {
 	fields := domain.TaskFields{
-		Title:       params.Title,
-		Description: params.Description,
-		ModuleID:    params.ModuleID,
+		Title:           params.Title,
+		Description:     params.Description,
+		ModuleID:        params.ModuleID,
+		ParentID:        params.ParentID,
+		EstimateSeconds: params.EstimateSeconds,
+		DueDate:         params.DueDate,
 	}
 	if err := fields.Validate(); err != nil {
 		return domain.Task{}, err

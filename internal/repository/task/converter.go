@@ -35,19 +35,22 @@ func pointerToNull[T any](value *T) sql.Null[T] {
 
 func taskToDomain(row bobgen.GetTaskRow) domain.Task {
 	return domain.Task{
-		ID:          row.ID,
-		ProjectID:   row.ProjectID,
-		ProjectKey:  row.ProjectKey,
-		Number:      row.Number,
-		TaskTypeID:  row.TaskTypeID,
-		WorkflowID:  row.WorkflowID,
-		StatusID:    row.StatusID,
-		Title:       row.Title,
-		Description: row.Description,
-		PriorityID:  row.PriorityID,
-		ModuleID:    nullToPointer(row.ModuleID),
-		CreatedAt:   row.CreatedAt,
-		UpdatedAt:   row.UpdatedAt,
+		ID:              row.ID,
+		ProjectID:       row.ProjectID,
+		ProjectKey:      row.ProjectKey,
+		Number:          row.Number,
+		TaskTypeID:      row.TaskTypeID,
+		WorkflowID:      row.WorkflowID,
+		StatusID:        row.StatusID,
+		Title:           row.Title,
+		Description:     row.Description,
+		PriorityID:      row.PriorityID,
+		ModuleID:        nullToPointer(row.ModuleID),
+		ParentID:        nullToPointer(row.ParentID),
+		EstimateSeconds: nullToPointer(row.EstimateSeconds),
+		DueDate:         nullToPointer(row.DueDate),
+		CreatedAt:       row.CreatedAt,
+		UpdatedAt:       row.UpdatedAt,
 	}
 }
 

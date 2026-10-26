@@ -9,10 +9,13 @@ import (
 
 // TaskFields объединяет входные поля создания и обновления.
 type TaskFields struct {
-	Title       string
-	Description string
-	PriorityID  int
-	ModuleID    *int
+	Title           string
+	Description     string
+	PriorityID      int
+	ModuleID        *int
+	ParentID        *int
+	EstimateSeconds *int
+	DueDate         *time.Time
 }
 
 func (f TaskFields) Validate() error {

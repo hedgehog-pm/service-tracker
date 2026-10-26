@@ -39,11 +39,14 @@ func (h *TaskHandler) CreateTask(
 	body := request.Body
 
 	params := createtask.Params{
-		ProjectID:  request.ProjectID,
-		Title:      body.Title,
-		ModuleID:   body.ModuleID,
-		TaskTypeID: body.TaskTypeID,
-		PriorityID: body.PriorityID,
+		ProjectID:       request.ProjectID,
+		Title:           body.Title,
+		ModuleID:        body.ModuleID,
+		TaskTypeID:      body.TaskTypeID,
+		PriorityID:      body.PriorityID,
+		ParentID:        body.ParentID,
+		EstimateSeconds: body.EstimateSeconds,
+		DueDate:         dateToDomain(body.DueDate),
 	}
 	if body.Description != nil {
 		params.Description = *body.Description
@@ -107,10 +110,13 @@ func (h *TaskHandler) UpdateTask(
 	body := request.Body
 
 	task, err := h.updateTask.Do(ctx, request.ProjectID, request.TaskID, domain.TaskFields{
-		Title:       body.Title,
-		Description: body.Description,
-		PriorityID:  body.PriorityID,
-		ModuleID:    body.ModuleID,
+		Title:           body.Title,
+		Description:     body.Description,
+		PriorityID:      body.PriorityID,
+		ModuleID:        body.ModuleID,
+		ParentID:        body.ParentID,
+		EstimateSeconds: body.EstimateSeconds,
+		DueDate:         dateToDomain(body.DueDate),
 	})
 	if err != nil {
 		return nil, err

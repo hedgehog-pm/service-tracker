@@ -1,0 +1,63 @@
+site_name: service-tracker
+site_url: https://hedgehog-pm.github.io/service-tracker/
+site_description: Проекты, задачи и правила их выполнения
+
+theme:
+  name: material
+  language: ru
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Включить тёмную тему
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Включить светлую тему
+  features:
+    - content.code.copy
+    - search.highlight
+
+plugins:
+  - search:
+      lang:
+        - ru
+        - en
+  - swagger-ui-tag:
+      supportedSubmitMethods: []
+      validatorUrl: none
+
+hooks:
+  - scripts/docs.py
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+extra_css:
+  - stylesheets/extra.css
+
+validation:
+  nav:
+    omitted_files: warn
+  links:
+    not_found: warn
+    anchors: warn
+
+nav:
+  - О сервисе: index.md
+  - Начать работу:
+      - Основные понятия: concepts.md
+      - Создать первую задачу: quick-start.md
+  - Руководства:
+      - Работа с задачами и проектами: guides/tasks.md
+  - Ограничения: limitations.md
+  - FAQ: faq.md
+  - API и Swagger: api/index.md

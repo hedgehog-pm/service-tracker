@@ -59,7 +59,7 @@ type StatusList struct {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// ListStatuses Статусы workflow схемы проекта
+	// ListStatuses Получить статусы, используемые в проекте
 	// (GET /projects/{project_id}/statuses)
 	ListStatuses(ctx *echo.Context, projectID externalRef0.ProjectID) error
 }
@@ -208,7 +208,7 @@ func (response ListStatuses500JSONResponse) VisitListStatusesResponse(w http.Res
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// ListStatuses Статусы workflow схемы проекта
+	// ListStatuses Получить статусы, используемые в проекте
 	// (GET /projects/{project_id}/statuses)
 	ListStatuses(ctx context.Context, request ListStatusesRequestObject) (ListStatusesResponseObject, error)
 }
@@ -255,18 +255,19 @@ func (sh *strictHandler) ListStatuses(ctx *echo.Context, projectID externalRef0.
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
+	"Vf0dAA==",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

@@ -59,19 +59,19 @@ type UpdateModuleJSONRequestBody = UpdateModule
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// ListModules Список: modules
+	// ListModules Получить модули проекта
 	// (GET /projects/{project_id}/modules)
 	ListModules(ctx *echo.Context, projectID int, params ListModulesParams) error
-	// CreateModule Модуль: создание
+	// CreateModule Создать модуль в проекте
 	// (POST /projects/{project_id}/modules)
 	CreateModule(ctx *echo.Context, projectID int) error
-	// DeleteModule Модуль: удаление
+	// DeleteModule Удалить модуль без задач
 	// (DELETE /projects/{project_id}/modules/{module_id})
 	DeleteModule(ctx *echo.Context, projectID int, moduleID int) error
-	// GetModule Модуль: чтение
+	// GetModule Получить модуль проекта
 	// (GET /projects/{project_id}/modules/{module_id})
 	GetModule(ctx *echo.Context, projectID int, moduleID int) error
-	// UpdateModule Модуль: замена изменяемых полей
+	// UpdateModule Переименовать модуль
 	// (PUT /projects/{project_id}/modules/{module_id})
 	UpdateModule(ctx *echo.Context, projectID int, moduleID int) error
 }
@@ -656,19 +656,19 @@ func (response UpdateModule500JSONResponse) VisitUpdateModuleResponse(w http.Res
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// ListModules Список: modules
+	// ListModules Получить модули проекта
 	// (GET /projects/{project_id}/modules)
 	ListModules(ctx context.Context, request ListModulesRequestObject) (ListModulesResponseObject, error)
-	// CreateModule Модуль: создание
+	// CreateModule Создать модуль в проекте
 	// (POST /projects/{project_id}/modules)
 	CreateModule(ctx context.Context, request CreateModuleRequestObject) (CreateModuleResponseObject, error)
-	// DeleteModule Модуль: удаление
+	// DeleteModule Удалить модуль без задач
 	// (DELETE /projects/{project_id}/modules/{module_id})
 	DeleteModule(ctx context.Context, request DeleteModuleRequestObject) (DeleteModuleResponseObject, error)
-	// GetModule Модуль: чтение
+	// GetModule Получить модуль проекта
 	// (GET /projects/{project_id}/modules/{module_id})
 	GetModule(ctx context.Context, request GetModuleRequestObject) (GetModuleResponseObject, error)
-	// UpdateModule Модуль: замена изменяемых полей
+	// UpdateModule Переименовать модуль
 	// (PUT /projects/{project_id}/modules/{module_id})
 	UpdateModule(ctx context.Context, request UpdateModuleRequestObject) (UpdateModuleResponseObject, error)
 }
@@ -851,24 +851,24 @@ func (sh *strictHandler) UpdateModule(ctx *echo.Context, projectID int, moduleID
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

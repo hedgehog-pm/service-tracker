@@ -60,19 +60,19 @@ type UpdateProjectJSONRequestBody = UpdateProject
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// ListProjects Список: projects
+	// ListProjects Получить список проектов
 	// (GET /projects)
 	ListProjects(ctx *echo.Context, params ListProjectsParams) error
-	// CreateProject Проект: создание
+	// CreateProject Создать проект
 	// (POST /projects)
 	CreateProject(ctx *echo.Context) error
-	// DeleteProject Проект: удаление
+	// DeleteProject Удалить проект со всеми задачами и модулями
 	// (DELETE /projects/{project_id})
 	DeleteProject(ctx *echo.Context, projectID int) error
-	// GetProject Проект: чтение
+	// GetProject Получить проект по идентификатору
 	// (GET /projects/{project_id})
 	GetProject(ctx *echo.Context, projectID int) error
-	// UpdateProject Проект: замена изменяемых полей
+	// UpdateProject Переименовать проект
 	// (PUT /projects/{project_id})
 	UpdateProject(ctx *echo.Context, projectID int) error
 }
@@ -566,19 +566,19 @@ func (response UpdateProject500JSONResponse) VisitUpdateProjectResponse(w http.R
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// ListProjects Список: projects
+	// ListProjects Получить список проектов
 	// (GET /projects)
 	ListProjects(ctx context.Context, request ListProjectsRequestObject) (ListProjectsResponseObject, error)
-	// CreateProject Проект: создание
+	// CreateProject Создать проект
 	// (POST /projects)
 	CreateProject(ctx context.Context, request CreateProjectRequestObject) (CreateProjectResponseObject, error)
-	// DeleteProject Проект: удаление
+	// DeleteProject Удалить проект со всеми задачами и модулями
 	// (DELETE /projects/{project_id})
 	DeleteProject(ctx context.Context, request DeleteProjectRequestObject) (DeleteProjectResponseObject, error)
-	// GetProject Проект: чтение
+	// GetProject Получить проект по идентификатору
 	// (GET /projects/{project_id})
 	GetProject(ctx context.Context, request GetProjectRequestObject) (GetProjectResponseObject, error)
-	// UpdateProject Проект: замена изменяемых полей
+	// UpdateProject Переименовать проект
 	// (PUT /projects/{project_id})
 	UpdateProject(ctx context.Context, request UpdateProjectRequestObject) (UpdateProjectResponseObject, error)
 }
@@ -755,24 +755,25 @@ func (sh *strictHandler) UpdateProject(ctx *echo.Context, projectID int) error {
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

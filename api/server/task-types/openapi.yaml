@@ -46,7 +46,7 @@ x-paths:
       operationId: listTaskTypes
       tags:
       - task-types
-      summary: Доступные типы задач проекта
+      summary: Получить типы задач проекта и их начальные статусы
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       responses:

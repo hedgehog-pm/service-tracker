@@ -188,7 +188,7 @@ x-paths:
       operationId: listTasks
       tags:
       - tasks
-      summary: 'Список: tasks'
+      summary: Получить задачи проекта с учётом фильтров
       parameters:
       - name: project_id
         in: path
@@ -245,7 +245,7 @@ x-paths:
       operationId: createTask
       tags:
       - tasks
-      summary: 'Задача: создание'
+      summary: Создать задачу в начальном статусе
       requestBody:
         required: true
         content:
@@ -281,7 +281,7 @@ x-paths:
       operationId: getTask
       tags:
       - tasks
-      summary: 'Задача: чтение'
+      summary: Получить задачу проекта
       parameters:
       - name: project_id
         in: path
@@ -316,7 +316,7 @@ x-paths:
       operationId: updateTask
       tags:
       - tasks
-      summary: 'Задача: замена изменяемых полей'
+      summary: Заменить редактируемые поля задачи
       parameters:
       - name: project_id
         in: path
@@ -359,7 +359,7 @@ x-paths:
       operationId: deleteTask
       tags:
       - tasks
-      summary: 'Задача: удаление'
+      summary: Удалить задачу
       parameters:
       - name: project_id
         in: path

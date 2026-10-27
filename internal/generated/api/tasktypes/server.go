@@ -38,7 +38,7 @@ type TaskTypeList struct {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// ListTaskTypes Доступные типы задач проекта
+	// ListTaskTypes Получить типы задач проекта и их начальные статусы
 	// (GET /projects/{project_id}/task-types)
 	ListTaskTypes(ctx *echo.Context, projectID externalRef0.ProjectID) error
 }
@@ -187,7 +187,7 @@ func (response ListTaskTypes500JSONResponse) VisitListTaskTypesResponse(w http.R
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// ListTaskTypes Доступные типы задач проекта
+	// ListTaskTypes Получить типы задач проекта и их начальные статусы
 	// (GET /projects/{project_id}/task-types)
 	ListTaskTypes(ctx context.Context, request ListTaskTypesRequestObject) (ListTaskTypesResponseObject, error)
 }
@@ -234,19 +234,20 @@ func (sh *strictHandler) ListTaskTypes(ctx *echo.Context, projectID externalRef0
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
+	"67wDyuj6vs91RwHtdtxRMM/RbfX/AwA=",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

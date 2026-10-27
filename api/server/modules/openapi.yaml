@@ -77,7 +77,7 @@ x-paths:
       operationId: listModules
       tags:
       - modules
-      summary: 'Список: modules'
+      summary: Получить модули проекта
       parameters:
       - name: project_id
         in: path
@@ -106,7 +106,7 @@ x-paths:
       operationId: createModule
       tags:
       - modules
-      summary: 'Модуль: создание'
+      summary: Создать модуль в проекте
       requestBody:
         required: true
         content:
@@ -142,7 +142,7 @@ x-paths:
       operationId: getModule
       tags:
       - modules
-      summary: 'Модуль: чтение'
+      summary: Получить модуль проекта
       parameters:
       - name: project_id
         in: path
@@ -177,7 +177,7 @@ x-paths:
       operationId: updateModule
       tags:
       - modules
-      summary: 'Модуль: замена изменяемых полей'
+      summary: Переименовать модуль
       parameters:
       - name: project_id
         in: path
@@ -220,7 +220,7 @@ x-paths:
       operationId: deleteModule
       tags:
       - modules
-      summary: 'Модуль: удаление'
+      summary: Удалить модуль без задач
       parameters:
       - name: project_id
         in: path

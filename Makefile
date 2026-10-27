@@ -1,4 +1,4 @@
-.PHONY: fmt lint generate generate-api generate-sql
+.PHONY: fmt lint generate generate-api generate-sql docs
 
 export DATABASE_URL ?= postgres://tracker:tracker@localhost:5433/tracker?sslmode=disable
 export PSQL_DSN ?= $(DATABASE_URL)
@@ -31,3 +31,8 @@ generate-api:
 	@for part in common projects statuses modules tasks transitions task-types priorities; do \
 		go tool oapi-codegen -config api/server/$$part/oapi-codegen.yaml api/server/$$part/openapi.yaml || exit $$?; \
 	done
+
+docs:
+	python3 -m venv .venv-docs
+	.venv-docs/bin/python -m pip install -r requirements-docs.txt
+	.venv-docs/bin/mkdocs serve

@@ -89,19 +89,19 @@ type UpdateTaskJSONRequestBody = UpdateTask
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// ListTasks Список: tasks
+	// ListTasks Получить задачи проекта с учётом фильтров
 	// (GET /projects/{project_id}/tasks)
 	ListTasks(ctx *echo.Context, projectID int, params ListTasksParams) error
-	// CreateTask Задача: создание
+	// CreateTask Создать задачу в начальном статусе
 	// (POST /projects/{project_id}/tasks)
 	CreateTask(ctx *echo.Context, projectID int) error
-	// DeleteTask Задача: удаление
+	// DeleteTask Удалить задачу
 	// (DELETE /projects/{project_id}/tasks/{task_id})
 	DeleteTask(ctx *echo.Context, projectID int, taskID int) error
-	// GetTask Задача: чтение
+	// GetTask Получить задачу проекта
 	// (GET /projects/{project_id}/tasks/{task_id})
 	GetTask(ctx *echo.Context, projectID int, taskID int) error
-	// UpdateTask Задача: замена изменяемых полей
+	// UpdateTask Заменить редактируемые поля задачи
 	// (PUT /projects/{project_id}/tasks/{task_id})
 	UpdateTask(ctx *echo.Context, projectID int, taskID int) error
 }
@@ -698,19 +698,19 @@ func (response UpdateTask500JSONResponse) VisitUpdateTaskResponse(w http.Respons
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// ListTasks Список: tasks
+	// ListTasks Получить задачи проекта с учётом фильтров
 	// (GET /projects/{project_id}/tasks)
 	ListTasks(ctx context.Context, request ListTasksRequestObject) (ListTasksResponseObject, error)
-	// CreateTask Задача: создание
+	// CreateTask Создать задачу в начальном статусе
 	// (POST /projects/{project_id}/tasks)
 	CreateTask(ctx context.Context, request CreateTaskRequestObject) (CreateTaskResponseObject, error)
-	// DeleteTask Задача: удаление
+	// DeleteTask Удалить задачу
 	// (DELETE /projects/{project_id}/tasks/{task_id})
 	DeleteTask(ctx context.Context, request DeleteTaskRequestObject) (DeleteTaskResponseObject, error)
-	// GetTask Задача: чтение
+	// GetTask Получить задачу проекта
 	// (GET /projects/{project_id}/tasks/{task_id})
 	GetTask(ctx context.Context, request GetTaskRequestObject) (GetTaskResponseObject, error)
-	// UpdateTask Задача: замена изменяемых полей
+	// UpdateTask Заменить редактируемые поля задачи
 	// (PUT /projects/{project_id}/tasks/{task_id})
 	UpdateTask(ctx context.Context, request UpdateTaskRequestObject) (UpdateTaskResponseObject, error)
 }
@@ -893,28 +893,30 @@ func (sh *strictHandler) UpdateTask(ctx *echo.Context, projectID int, taskID int
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
+	"VjAukq1xsTUutkJmIQKuxahI/xkA",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

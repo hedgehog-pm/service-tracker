@@ -51,7 +51,7 @@ x-paths:
       operationId: listTaskTransitions
       tags:
       - transitions
-      summary: Доступные переходы задачи
+      summary: Получить доступные переходы задачи
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: ../common/openapi.yaml#/components/parameters/TaskID
@@ -72,7 +72,7 @@ x-paths:
       operationId: transitionTask
       tags:
       - transitions
-      summary: Выполнить переход задачи
+      summary: Изменить статус задачи через доступный переход
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: ../common/openapi.yaml#/components/parameters/TaskID

@@ -44,7 +44,7 @@ x-paths:
       operationId: listStatuses
       tags:
       - statuses
-      summary: Статусы workflow схемы проекта
+      summary: Получить статусы, используемые в проекте
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       responses:

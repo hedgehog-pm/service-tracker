@@ -33,6 +33,7 @@ var (
 	ErrRankExhausted         = NewError(CodeConflict, "task order requires rebalancing")
 	ErrProjectNotFound       = NewError(CodeNotFound, "project not found")
 	ErrTaskNotFound          = NewError(CodeNotFound, "task not found")
+	ErrTaskWorklogNotFound   = NewError(CodeNotFound, "task worklog not found")
 	ErrTransitionNotFound    = NewError(CodeNotFound, "transition not found")
 	ErrTransitionUnavailable = NewError(
 		CodeConflict,

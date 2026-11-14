@@ -1,0 +1,12 @@
+package: taskworklogs
+generate:
+  models: true
+  strict-server: true
+  embedded-spec: true
+  echo5-server: true
+output: internal/generated/api/taskworklogs/server.go
+output-options:
+  skip-prune: true
+  name-normalizer: ToCamelCaseWithInitialisms
+import-mapping:
+  "../common/openapi.yaml": github.com/hedgehog-pm/service-tracker/internal/generated/api/common

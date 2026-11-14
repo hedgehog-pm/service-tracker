@@ -13,6 +13,7 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/statuses"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/tasks"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/tasktypes"
+	"github.com/hedgehog-pm/service-tracker/internal/generated/api/taskworklogs"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/transitions"
 )
 
@@ -21,6 +22,7 @@ func NewServer(
 	statusHandler statuses.StrictServerInterface,
 	moduleHandler modules.StrictServerInterface,
 	taskHandler tasks.StrictServerInterface,
+	taskWorklogHandler taskworklogs.StrictServerInterface,
 	transitionHandler transitions.StrictServerInterface,
 	taskTypeHandler tasktypes.StrictServerInterface,
 	priorityHandler priorities.StrictServerInterface,
@@ -44,6 +46,11 @@ func NewServer(
 	taskSpec, err := tasks.GetSpec()
 	if err != nil {
 		return nil, fmt.Errorf("load tasks OpenAPI contract: %w", err)
+	}
+
+	worklogSpec, err := taskworklogs.GetSpec()
+	if err != nil {
+		return nil, fmt.Errorf("load task worklogs OpenAPI contract: %w", err)
 	}
 
 	transitionsSpec, err := transitions.GetSpec()
@@ -83,6 +90,10 @@ func NewServer(
 	tasks.RegisterHandlers(
 		server.Group("", echomiddleware.OapiRequestValidator(taskSpec)),
 		tasks.NewStrictHandler(taskHandler, nil),
+	)
+	taskworklogs.RegisterHandlers(
+		server.Group("", echomiddleware.OapiRequestValidator(worklogSpec)),
+		taskworklogs.NewStrictHandler(taskWorklogHandler, nil),
 	)
 
 	transitions.RegisterHandlers(

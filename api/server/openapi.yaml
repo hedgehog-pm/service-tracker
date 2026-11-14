@@ -17,6 +17,10 @@ paths:
     $ref: ./tasks/openapi.yaml#/x-paths/collection
   /projects/{project_id}/tasks/{task_id}:
     $ref: ./tasks/openapi.yaml#/x-paths/item
+  /projects/{project_id}/tasks/{task_id}/worklogs:
+    $ref: ./task-worklogs/openapi.yaml#/x-paths/collection
+  /projects/{project_id}/tasks/{task_id}/worklogs/{worklog_id}:
+    $ref: ./task-worklogs/openapi.yaml#/x-paths/item
   /projects/{project_id}/tasks/{task_id}/transitions:
     $ref: ./transitions/openapi.yaml#/x-paths/collection
   /projects/{project_id}/task-types:

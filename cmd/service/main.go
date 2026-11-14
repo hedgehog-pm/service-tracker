@@ -21,6 +21,7 @@ import (
 	projectrepository "github.com/hedgehog-pm/service-tracker/internal/repository/project"
 	statusrepository "github.com/hedgehog-pm/service-tracker/internal/repository/status"
 	taskrepository "github.com/hedgehog-pm/service-tracker/internal/repository/task"
+	taskworklogrepository "github.com/hedgehog-pm/service-tracker/internal/repository/taskworklog"
 	workflowrepository "github.com/hedgehog-pm/service-tracker/internal/repository/workflow"
 	"github.com/hedgehog-pm/service-tracker/internal/storage/postgres"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/board"
@@ -40,6 +41,7 @@ import (
 	statususecase "github.com/hedgehog-pm/service-tracker/internal/usecase/status"
 	taskusecase "github.com/hedgehog-pm/service-tracker/internal/usecase/task"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/tasktype"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/taskworklog"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/transitiontask"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/updateboardcolumn"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/updatetask"
@@ -83,6 +85,9 @@ func run(ctx context.Context) error {
 		updatetask.New(tasks, transactor),
 	)
 
+	worklogs := taskworklogrepository.NewPostgres(db)
+	taskWorklogHandler := api.NewTaskWorklogHandler(taskworklog.New(worklogs))
+
 	statuses := statusrepository.NewPostgres(db)
 	modules := modulerepository.NewPostgres(db)
 	projectHandler := api.NewProjectHandler(
@@ -118,6 +123,7 @@ func run(ctx context.Context) error {
 		statusHandler,
 		moduleHandler,
 		taskHandler,
+		taskWorklogHandler,
 		transitionHandler,
 		taskTypeHandler,
 		priorityHandler,

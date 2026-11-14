@@ -19,3 +19,4 @@ psql:
     - internal/generated/bob/workflow
     - internal/generated/bob/priority
     - internal/generated/bob/board
+    - internal/generated/bob/taskworklog

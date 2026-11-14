@@ -1,6 +1,6 @@
 <mxfile host="Electron" pages="2">
   <diagram name="Классы — общее" id="oRmOzETqidd5_IPAJQPx">
-    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#FFFFFF" math="0" shadow="0" adaptiveColors="auto">
+    <mxGraphModel dx="958" dy="711" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#FFFFFF" math="0" shadow="0" adaptiveColors="auto">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -321,11 +321,40 @@
         <mxCell id="tracker-link-18" data-fk-columns="priority_scheme_id,priority_id" data-source-multiplicity="0..*" data-target-columns="scheme_id,priority_id" edge="1" parent="1" source="T2cpyjtkUnrIWHlbGqH--8" style="shape=connector;rounded=0;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontFamily=Helvetica;fontSize=11;labelBackgroundColor=#FFFFFF;endFill=0;startArrow=none;startFill=0;exitX=0.7307692307692307;exitY=0.0;exitDx=0;exitDy=0;entryX=0.5;entryY=1.0;entryDx=0;entryDy=0;endArrow=open;edgeStyle=orthogonalEdgeStyle;curved=0;exitPerimeter=0;entryPerimeter=0;orthogonalLoop=1;jettySize=0;" target="tracker-class-priority_scheme_priorities" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="tracker-class-task_worklogs" data-table="task_worklogs" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;strokeColor=#000000;fontColor=#000000;fillColor=#FFFFFF;shadow=0;rounded=0;" value="TaskWorklog" vertex="1">
+          <mxGeometry height="182" width="260" x="1615" y="309" as="geometry" />
+        </mxCell>
+        <mxCell id="tracker-field-task_worklogs-id" data-column="id" parent="tracker-class-task_worklogs" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;" value="+ id: int" vertex="1">
+          <mxGeometry height="26" width="260" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tracker-field-task_worklogs-started_at" data-column="started_at" parent="tracker-class-task_worklogs" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;" value="+ started_at: timestamptz" vertex="1">
+          <mxGeometry height="26" width="260" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="tracker-field-task_worklogs-time_spent_seconds" data-column="time_spent_seconds" parent="tracker-class-task_worklogs" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;" value="+ time_spent_seconds: int" vertex="1">
+          <mxGeometry height="26" width="260" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="tracker-field-task_worklogs-comment" data-column="comment" parent="tracker-class-task_worklogs" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;" value="+ comment: string [0..1]" vertex="1">
+          <mxGeometry height="26" width="260" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="tracker-field-task_worklogs-created_at" data-column="created_at" parent="tracker-class-task_worklogs" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;" value="+ created_at: timestamptz" vertex="1">
+          <mxGeometry height="26" width="260" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="tracker-field-task_worklogs-updated_at" data-column="updated_at" parent="tracker-class-task_worklogs" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;" value="+ updated_at: timestamptz" vertex="1">
+          <mxGeometry height="26" width="260" y="156" as="geometry" />
+        </mxCell>
+        <mxCell id="tracker-link-worklog-task" data-fk-columns="task_id" data-source-multiplicity="0..*" data-target-columns="id" data-target-multiplicity="1" edge="1" parent="1" source="tracker-class-task_worklogs" style="shape=connector;rounded=0;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontFamily=Helvetica;fontSize=11;labelBackgroundColor=#FFFFFF;endFill=0;startArrow=none;startFill=0;endArrow=open;edgeStyle=orthogonalEdgeStyle;curved=0;exitPerimeter=0;entryPerimeter=0;orthogonalLoop=1;jettySize=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="T2cpyjtkUnrIWHlbGqH--8" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tracker-link-worklog-task-s-multiplicity" connectable="0" parent="tracker-link-worklog-task" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" value="0..*" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="-15" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
   <diagram id="SIQVk-jJLtbONmq0toKZ" name="Состояния — default workflow">
-    <mxGraphModel dx="2196" dy="1016" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />

@@ -15,6 +15,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/hedgehog-pm/service-tracker/internal/api"
+	boardrepository "github.com/hedgehog-pm/service-tracker/internal/repository/board"
 	modulerepository "github.com/hedgehog-pm/service-tracker/internal/repository/module"
 	priorityrepository "github.com/hedgehog-pm/service-tracker/internal/repository/priority"
 	projectrepository "github.com/hedgehog-pm/service-tracker/internal/repository/project"
@@ -22,18 +23,25 @@ import (
 	taskrepository "github.com/hedgehog-pm/service-tracker/internal/repository/task"
 	workflowrepository "github.com/hedgehog-pm/service-tracker/internal/repository/workflow"
 	"github.com/hedgehog-pm/service-tracker/internal/storage/postgres"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/board"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/createboardcolumn"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/createproject"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/createtask"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/deleteboardcolumn"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/listboardcolumntasks"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/listboards"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/listmodules"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/listtasks"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/listtasktransitions"
 	moduleusecase "github.com/hedgehog-pm/service-tracker/internal/usecase/module"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/moveboardtask"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/priority"
 	projectusecase "github.com/hedgehog-pm/service-tracker/internal/usecase/project"
 	statususecase "github.com/hedgehog-pm/service-tracker/internal/usecase/status"
 	taskusecase "github.com/hedgehog-pm/service-tracker/internal/usecase/task"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/tasktype"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/transitiontask"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/updateboardcolumn"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/updatetask"
 )
 
@@ -94,6 +102,17 @@ func run(ctx context.Context) error {
 	taskTypeHandler := api.NewTaskTypeHandler(tasktype.New(workflows, projects))
 	priorityHandler := api.NewPriorityHandler(priority.New(priorities, projects))
 
+	boards := boardrepository.NewPostgres(db)
+	boardHandler := api.NewBoardHandler(
+		board.New(boards),
+		listboards.New(boards, projects),
+		createboardcolumn.New(boards, statuses, transactor),
+		updateboardcolumn.New(boards, statuses, transactor),
+		deleteboardcolumn.New(boards, transactor),
+		listboardcolumntasks.New(boards, tasks),
+		moveboardtask.New(tasks, tasks, boards, projects, workflows, transactor),
+	)
+
 	server, err := api.NewServer(
 		projectHandler,
 		statusHandler,
@@ -102,6 +121,7 @@ func run(ctx context.Context) error {
 		transitionHandler,
 		taskTypeHandler,
 		priorityHandler,
+		boardHandler,
 	)
 	if err != nil {
 		return err

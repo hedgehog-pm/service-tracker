@@ -12,6 +12,7 @@ SELECT
   t.project_id,
   p.key AS project_key,
   t.number,
+  t.rank,
   t.title,
   t.description,
   t.task_type_id,
@@ -36,6 +37,7 @@ SELECT
   t.project_id,
   p.key AS project_key,
   t.number,
+  t.rank,
   t.title,
   t.description,
   t.task_type_id,
@@ -61,6 +63,7 @@ SELECT
   t.project_id,
   p.key AS project_key,
   t.number,
+  t.rank,
   t.title,
   t.description,
   t.task_type_id,
@@ -87,6 +90,7 @@ INSERT INTO
     workflow_scheme_id,
     priority_scheme_id,
     number,
+    rank,
     title,
     description,
     task_type_id,
@@ -104,21 +108,22 @@ SELECT
   p.workflow_scheme_id,
   p.priority_scheme_id,
   $1/* number */,
-  $2/* title */,
-  $3/* description */,
-  $4/* task_type_id */,
-  $5/* workflow_id */,
-  $6/* status_id */,
-  $7/* priority_id */,
-  $8/* module_id::null */,
-  $9/* estimate_seconds::null */,
-  $10/* due_date::null */,
-  $11/* created_at */,
-  $12/* updated_at */
+  $2/* rank */,
+  $3/* title */,
+  $4/* description */,
+  $5/* task_type_id */,
+  $6/* workflow_id */,
+  $7/* status_id */,
+  $8/* priority_id */,
+  $9/* module_id::null */,
+  $10/* estimate_seconds::null */,
+  $11/* due_date::null */,
+  $12/* created_at */,
+  $13/* updated_at */
 FROM
   projects AS p
 WHERE
-  p.id = $13/* project_id */
+  p.id = $14/* project_id */
 RETURNING
   id,
   created_at,
@@ -161,3 +166,142 @@ DELETE FROM
 WHERE
   project_id = $1
   AND id = $2;
+
+-- ListTaskOrder
+SELECT
+  t.id,
+  t.project_id,
+  p.key AS project_key,
+  t.number,
+  t.rank,
+  t.title,
+  t.description,
+  t.task_type_id,
+  t.workflow_id,
+  t.status_id,
+  t.priority_id,
+  t.module_id,
+  t.estimate_seconds,
+  t.due_date,
+  t.created_at,
+  t.updated_at
+FROM
+  tasks AS t
+  JOIN projects AS p ON p.id = t.project_id
+WHERE
+  t.project_id = $1
+ORDER BY
+  t.rank,
+  t.number;
+
+
+-- GetLastRank
+SELECT
+  rank
+FROM
+  tasks
+WHERE
+  project_id = $1
+ORDER BY
+  rank DESC
+LIMIT 1;
+
+-- GetPreviousRank
+SELECT
+  rank
+FROM
+  tasks
+WHERE
+  project_id = $1
+  AND id <> $2
+  AND rank < $3
+ORDER BY
+  rank DESC
+LIMIT 1;
+
+-- GetNextRank
+SELECT
+  rank
+FROM
+  tasks
+WHERE
+  project_id = $1
+  AND id <> $2
+  AND rank > $3
+ORDER BY
+  rank
+LIMIT 1;
+
+-- GetLastColumnRank
+SELECT
+  t.rank
+FROM
+  tasks AS t
+  JOIN board_column_statuses AS membership ON membership.status_id = t.status_id
+WHERE
+  t.project_id = $1
+  AND membership.board_id = $2
+  AND membership.column_id = $3
+  AND t.id <> $4
+ORDER BY
+  t.rank DESC
+LIMIT 1;
+
+-- UpdateRank
+UPDATE
+  tasks
+SET
+  rank = $1
+WHERE
+  project_id = $2
+  AND id = $3;
+
+-- UpdatePosition
+UPDATE
+  tasks
+SET
+  rank = $1,
+  status_id = $2,
+  updated_at = $3
+WHERE
+  project_id = $4
+  AND id = $5
+RETURNING
+  created_at,
+  updated_at;
+
+-- ListBoardColumnTasks
+SELECT
+  t.id,
+  t.project_id,
+  p.key AS project_key,
+  t.number,
+  t.rank,
+  t.title,
+  t.description,
+  t.task_type_id,
+  t.workflow_id,
+  t.status_id,
+  t.priority_id,
+  t.module_id,
+  t.estimate_seconds,
+  t.due_date,
+  t.created_at,
+  t.updated_at
+FROM
+  tasks AS t
+  JOIN projects AS p ON p.id = t.project_id
+WHERE
+  t.project_id = $1
+  AND EXISTS (
+    SELECT 1
+    FROM board_column_statuses AS membership
+    WHERE membership.board_id = $2
+      AND membership.column_id = $3
+      AND membership.status_id = t.status_id
+  )
+  AND ($4::BIGINT IS NULL OR (t.rank, t.number) > ($4/* after_rank::null */, $5/* after_number::null */))
+ORDER BY
+  t.rank,
+  t.number
+LIMIT $6;

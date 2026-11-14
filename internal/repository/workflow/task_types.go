@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/samber/lo"
 	"github.com/stephenafamo/bob"
 	"github.com/stephenafamo/scan/pgxscan"
 
@@ -29,10 +30,9 @@ func (r *Postgres) ListTaskTypes(
 		return nil, postgres.MapError(ctx, fmt.Errorf("list task types: %w", err))
 	}
 
-	items := make([]domain.TaskTypeWithInitialStatus, 0, len(rows))
-	for _, row := range rows {
-		items = append(items, taskTypeToDomain(row))
-	}
+	items := lo.Map(rows, func(row bobgen.ListTaskTypesRow, _ int) domain.TaskTypeWithInitialStatus {
+		return taskTypeToDomain(row)
+	})
 
 	return items, nil
 }

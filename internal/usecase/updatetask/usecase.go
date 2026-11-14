@@ -8,13 +8,13 @@ import (
 )
 
 type Usecase struct {
-	repository repository
+	tasks      taskRepository
 	transactor transactor
 }
 
-func New(repository repository, transactor transactor) *Usecase {
+func New(tasks taskRepository, transactor transactor) *Usecase {
 	return &Usecase{
-		repository: repository,
+		tasks:      tasks,
 		transactor: transactor,
 	}
 }
@@ -33,14 +33,14 @@ func (u *Usecase) Do(
 	err := u.transactor.InTx(ctx, func(ctx context.Context) error {
 		var err error
 
-		task, err = u.repository.GetTaskForUpdate(ctx, projectID, taskID)
+		task, err = u.tasks.GetTaskForUpdate(ctx, projectID, taskID)
 		if err != nil {
 			return err
 		}
 
 		task.TaskFields = fields
 		task.UpdatedAt = time.Now().UTC()
-		task, err = u.repository.UpdateTask(ctx, task)
+		task, err = u.tasks.UpdateTask(ctx, task)
 
 		return err
 	})

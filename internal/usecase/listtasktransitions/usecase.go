@@ -11,14 +11,14 @@ import (
 // Переходы выбираются по [domain.Task.WorkflowID] и текущему [domain.Task.StatusID].
 // Список отражает состояние на момент чтения и не резервирует переход.
 type Usecase struct {
-	tasks  tasks
-	reader reader
+	tasks       taskReader
+	transitions transitionReader
 }
 
-func New(tasks tasks, reader reader) *Usecase {
+func New(tasks taskReader, transitions transitionReader) *Usecase {
 	return &Usecase{
-		tasks:  tasks,
-		reader: reader,
+		tasks:       tasks,
+		transitions: transitions,
 	}
 }
 
@@ -28,5 +28,5 @@ func (u *Usecase) Do(ctx context.Context, projectID, taskID int) ([]domain.Trans
 		return nil, err
 	}
 
-	return u.reader.ListTransitions(ctx, task.WorkflowID, task.StatusID)
+	return u.transitions.ListTransitions(ctx, task.WorkflowID, task.StatusID)
 }

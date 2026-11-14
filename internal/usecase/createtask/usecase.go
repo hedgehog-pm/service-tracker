@@ -2,6 +2,7 @@ package createtask
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
@@ -25,22 +26,22 @@ type Params struct {
 //   - [domain.Task.PriorityID] берётся из [Params.PriorityID]. Если [Params.PriorityID] == nil,
 //     используется приоритет по умолчанию из схемы приоритетов проекта.
 type Usecase struct {
-	repository repository
-	projects   projects
-	workflows  workflows
-	priorities priorities
+	tasks      taskRepository
+	projects   projectRepository
+	workflows  workflowReader
+	priorities priorityReader
 	transactor transactor
 }
 
 func New(
-	repository repository,
-	projects projects,
-	workflows workflows,
-	priorities priorities,
+	tasks taskRepository,
+	projects projectRepository,
+	workflows workflowReader,
+	priorities priorityReader,
 	transactor transactor,
 ) *Usecase {
 	return &Usecase{
-		repository: repository,
+		tasks:      tasks,
 		projects:   projects,
 		workflows:  workflows,
 		priorities: priorities,
@@ -89,11 +90,17 @@ func (u *Usecase) Do(ctx context.Context, params Params) (domain.Task, error) {
 			return err
 		}
 
+		rank, err := u.nextRank(ctx, params.ProjectID)
+		if err != nil {
+			return err
+		}
+
 		now := time.Now().UTC()
-		task, err = u.repository.InsertTask(ctx, domain.Task{
+		task, err = u.tasks.InsertTask(ctx, domain.Task{
 			ProjectID:  params.ProjectID,
 			ProjectKey: key,
 			Number:     number,
+			Rank:       rank,
 			TaskTypeID: params.TaskTypeID,
 			WorkflowID: initial.WorkflowID,
 			StatusID:   initial.Status.ID,
@@ -117,4 +124,35 @@ func (u *Usecase) priorityID(ctx context.Context, requested *int, schemeID int) 
 	}
 
 	return u.priorities.GetDefaultPriority(ctx, schemeID)
+}
+
+func (u *Usecase) nextRank(ctx context.Context, projectID int) (int, error) {
+	last, err := u.tasks.GetLastRank(ctx, projectID)
+	if err != nil {
+		return 0, err
+	}
+
+	rank, err := domain.RankBetween(last, nil)
+	if !errors.Is(err, domain.ErrRankExhausted) {
+		return rank, err
+	}
+
+	tasks, err := u.tasks.ListTaskOrder(ctx, projectID)
+	if err != nil {
+		return 0, err
+	}
+
+	if err := domain.RebalanceTaskRanks(tasks); err != nil {
+		return 0, err
+	}
+
+	if err := u.tasks.UpdateTaskRanks(ctx, tasks); err != nil {
+		return 0, err
+	}
+
+	if len(tasks) == 0 {
+		return domain.RankBetween(nil, nil)
+	}
+
+	return domain.RankBetween(&tasks[len(tasks)-1].Rank, nil)
 }

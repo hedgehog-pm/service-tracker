@@ -81,3 +81,12 @@ WHERE
 RETURNING
   next_number - 1 AS number,
   key;
+
+-- LockProject
+SELECT
+  id
+FROM
+  projects
+WHERE
+  id = $1
+FOR NO KEY UPDATE;

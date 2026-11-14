@@ -17,19 +17,19 @@ type Params struct {
 }
 
 type Usecase struct {
-	reader reader
+	tasks taskReader
 }
 
-func New(reader reader) *Usecase {
-	return &Usecase{reader: reader}
+func New(tasks taskReader) *Usecase {
+	return &Usecase{tasks: tasks}
 }
 
 func (u *Usecase) Do(ctx context.Context, params Params) ([]domain.Task, error) {
-	if _, err := u.reader.GetProjectKey(ctx, params.ProjectID); err != nil {
+	if _, err := u.tasks.GetProjectKey(ctx, params.ProjectID); err != nil {
 		return nil, err
 	}
 
-	return u.reader.ListTasks(
+	return u.tasks.ListTasks(
 		ctx,
 		params.ProjectID,
 		params.StatusID,

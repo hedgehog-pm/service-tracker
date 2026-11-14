@@ -7,13 +7,13 @@ import (
 )
 
 type (
-	projects interface {
-		GetProject(ctx context.Context, projectID int) (domain.Project, error)
-	}
-	reader interface {
+	taskTypeReader interface {
 		ListTaskTypes(
 			ctx context.Context,
 			schemeID int,
 		) ([]domain.TaskTypeWithInitialStatus, error)
+	}
+	projectReader interface {
+		GetProject(ctx context.Context, projectID int) (domain.Project, error)
 	}
 )

@@ -7,10 +7,10 @@ import (
 )
 
 type (
-	tasks interface {
+	taskReader interface {
 		GetTask(ctx context.Context, projectID, taskID int) (domain.Task, error)
 	}
-	reader interface {
+	transitionReader interface {
 		ListTransitions(ctx context.Context, workflowID, statusID int) ([]domain.Transition, error)
 	}
 )

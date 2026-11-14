@@ -33,6 +33,7 @@ type Task struct {
 	ProjectID  int
 	ProjectKey string
 	Number     int
+	Rank       int
 	TaskTypeID int
 	WorkflowID int
 	StatusID   int

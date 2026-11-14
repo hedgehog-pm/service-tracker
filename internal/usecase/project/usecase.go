@@ -7,19 +7,19 @@ import (
 )
 
 type Usecase struct {
-	repository repository
+	projects projectRepository
 }
 
-func New(repository repository) *Usecase {
-	return &Usecase{repository: repository}
+func New(projects projectRepository) *Usecase {
+	return &Usecase{projects: projects}
 }
 
 func (u *Usecase) Get(ctx context.Context, id int) (domain.Project, error) {
-	return u.repository.GetProject(ctx, id)
+	return u.projects.GetProject(ctx, id)
 }
 
 func (u *Usecase) List(ctx context.Context, limit int, offset int) ([]domain.Project, error) {
-	return u.repository.ListProjects(ctx, limit, offset)
+	return u.projects.ListProjects(ctx, limit, offset)
 }
 
 func (u *Usecase) Update(ctx context.Context, id int, name string) (domain.Project, error) {
@@ -31,9 +31,9 @@ func (u *Usecase) Update(ctx context.Context, id int, name string) (domain.Proje
 		return domain.Project{}, err
 	}
 
-	return u.repository.UpdateProject(ctx, value)
+	return u.projects.UpdateProject(ctx, value)
 }
 
 func (u *Usecase) Delete(ctx context.Context, id int) error {
-	return u.repository.DeleteProject(ctx, id)
+	return u.projects.DeleteProject(ctx, id)
 }

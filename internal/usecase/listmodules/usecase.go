@@ -7,14 +7,14 @@ import (
 )
 
 type Usecase struct {
-	repository repository
-	projects   projects
+	modules  moduleReader
+	projects projectReader
 }
 
-func New(repository repository, projects projects) *Usecase {
+func New(modules moduleReader, projects projectReader) *Usecase {
 	return &Usecase{
-		repository: repository,
-		projects:   projects,
+		modules:  modules,
+		projects: projects,
 	}
 }
 
@@ -28,5 +28,5 @@ func (u *Usecase) Do(
 		return nil, err
 	}
 
-	return u.repository.ListModules(ctx, projectID, limit, offset)
+	return u.modules.ListModules(ctx, projectID, limit, offset)
 }

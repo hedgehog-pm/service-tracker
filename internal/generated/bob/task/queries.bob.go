@@ -86,7 +86,7 @@ func (o getProjectKey) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Di
 	return o.subExpr(0, len(getProjectKeySQL)).WriteSQL(ctx, w, d, start)
 }
 
-var getTaskSQL = formattedQueries_queries[209:556]
+var getTaskSQL = formattedQueries_queries[209:566]
 
 type GetTaskQuery = orm.ModQuery[*dialect.SelectQuery, getTask, GetTaskRow, []GetTaskRow, getTaskTransformer]
 
@@ -112,17 +112,18 @@ func GetTask(ProjectID int, ID int) *GetTaskQuery {
 						row.ScheduleScanByIndex(1, &t.ProjectID)
 						row.ScheduleScanByIndex(2, &t.ProjectKey)
 						row.ScheduleScanByIndex(3, &t.Number)
-						row.ScheduleScanByIndex(4, &t.Title)
-						row.ScheduleScanByIndex(5, &t.Description)
-						row.ScheduleScanByIndex(6, &t.TaskTypeID)
-						row.ScheduleScanByIndex(7, &t.WorkflowID)
-						row.ScheduleScanByIndex(8, &t.StatusID)
-						row.ScheduleScanByIndex(9, &t.PriorityID)
-						row.ScheduleScanByIndex(10, &t.ModuleID)
-						row.ScheduleScanByIndex(11, &t.EstimateSeconds)
-						row.ScheduleScanByIndex(12, &t.DueDate)
-						row.ScheduleScanByIndex(13, &t.CreatedAt)
-						row.ScheduleScanByIndex(14, &t.UpdatedAt)
+						row.ScheduleScanByIndex(4, &t.Rank)
+						row.ScheduleScanByIndex(5, &t.Title)
+						row.ScheduleScanByIndex(6, &t.Description)
+						row.ScheduleScanByIndex(7, &t.TaskTypeID)
+						row.ScheduleScanByIndex(8, &t.WorkflowID)
+						row.ScheduleScanByIndex(9, &t.StatusID)
+						row.ScheduleScanByIndex(10, &t.PriorityID)
+						row.ScheduleScanByIndex(11, &t.ModuleID)
+						row.ScheduleScanByIndex(12, &t.EstimateSeconds)
+						row.ScheduleScanByIndex(13, &t.DueDate)
+						row.ScheduleScanByIndex(14, &t.CreatedAt)
+						row.ScheduleScanByIndex(15, &t.UpdatedAt)
 						return &t, nil
 					}, func(v any) (GetTaskRow, error) {
 						return *v.(*GetTaskRow), nil
@@ -130,9 +131,9 @@ func GetTask(ProjectID int, ID int) *GetTaskQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendSelect(expressionTypArgs.subExpr(9, 243))
-			q.SetTable(expressionTypArgs.subExpr(251, 305))
-			q.AppendWhere(expressionTypArgs.subExpr(314, 347))
+			q.AppendSelect(expressionTypArgs.subExpr(9, 253))
+			q.SetTable(expressionTypArgs.subExpr(261, 315))
+			q.AppendWhere(expressionTypArgs.subExpr(324, 357))
 		}),
 		Build: psql.Select,
 	}
@@ -143,6 +144,7 @@ type GetTaskRow = struct {
 	ProjectID       int                 `db:"project_id"`
 	ProjectKey      string              `db:"project_key"`
 	Number          int                 `db:"number"`
+	Rank            int                 `db:"rank"`
 	Title           string              `db:"title"`
 	Description     string              `db:"description"`
 	TaskTypeID      int                 `db:"task_type_id"`
@@ -167,8 +169,8 @@ func (o getTask) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      329,
-			Stop:       331,
+			Start:      339,
+			Stop:       341,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -176,8 +178,8 @@ func (o getTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "id",
-			Start:      345,
-			Stop:       347,
+			Start:      355,
+			Stop:       357,
 			Expression: o.ID,
 		}) {
 			return
@@ -197,7 +199,7 @@ func (o getTask) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect,
 	return o.subExpr(0, len(getTaskSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var getTaskForUpdateSQL = formattedQueries_queries[579:942]
+var getTaskForUpdateSQL = formattedQueries_queries[589:962]
 
 type GetTaskForUpdateQuery = orm.ModQuery[*dialect.SelectQuery, getTaskForUpdate, GetTaskForUpdateRow, []GetTaskForUpdateRow, getTaskForUpdateTransformer]
 
@@ -223,17 +225,18 @@ func GetTaskForUpdate(ProjectID int, ID int) *GetTaskForUpdateQuery {
 						row.ScheduleScanByIndex(1, &t.ProjectID)
 						row.ScheduleScanByIndex(2, &t.ProjectKey)
 						row.ScheduleScanByIndex(3, &t.Number)
-						row.ScheduleScanByIndex(4, &t.Title)
-						row.ScheduleScanByIndex(5, &t.Description)
-						row.ScheduleScanByIndex(6, &t.TaskTypeID)
-						row.ScheduleScanByIndex(7, &t.WorkflowID)
-						row.ScheduleScanByIndex(8, &t.StatusID)
-						row.ScheduleScanByIndex(9, &t.PriorityID)
-						row.ScheduleScanByIndex(10, &t.ModuleID)
-						row.ScheduleScanByIndex(11, &t.EstimateSeconds)
-						row.ScheduleScanByIndex(12, &t.DueDate)
-						row.ScheduleScanByIndex(13, &t.CreatedAt)
-						row.ScheduleScanByIndex(14, &t.UpdatedAt)
+						row.ScheduleScanByIndex(4, &t.Rank)
+						row.ScheduleScanByIndex(5, &t.Title)
+						row.ScheduleScanByIndex(6, &t.Description)
+						row.ScheduleScanByIndex(7, &t.TaskTypeID)
+						row.ScheduleScanByIndex(8, &t.WorkflowID)
+						row.ScheduleScanByIndex(9, &t.StatusID)
+						row.ScheduleScanByIndex(10, &t.PriorityID)
+						row.ScheduleScanByIndex(11, &t.ModuleID)
+						row.ScheduleScanByIndex(12, &t.EstimateSeconds)
+						row.ScheduleScanByIndex(13, &t.DueDate)
+						row.ScheduleScanByIndex(14, &t.CreatedAt)
+						row.ScheduleScanByIndex(15, &t.UpdatedAt)
 						return &t, nil
 					}, func(v any) (GetTaskForUpdateRow, error) {
 						return *v.(*GetTaskForUpdateRow), nil
@@ -242,9 +245,9 @@ func GetTaskForUpdate(ProjectID int, ID int) *GetTaskForUpdateQuery {
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
 			q.AppendLock(clause.Lock{Strength: "UPDATE", Tables: []interface{}{"t"}, Wait: ""})
-			q.AppendSelect(expressionTypArgs.subExpr(9, 243))
-			q.SetTable(expressionTypArgs.subExpr(251, 305))
-			q.AppendWhere(expressionTypArgs.subExpr(314, 347))
+			q.AppendSelect(expressionTypArgs.subExpr(9, 253))
+			q.SetTable(expressionTypArgs.subExpr(261, 315))
+			q.AppendWhere(expressionTypArgs.subExpr(324, 357))
 		}),
 		Build: psql.Select,
 	}
@@ -255,6 +258,7 @@ type GetTaskForUpdateRow = struct {
 	ProjectID       int                 `db:"project_id"`
 	ProjectKey      string              `db:"project_key"`
 	Number          int                 `db:"number"`
+	Rank            int                 `db:"rank"`
 	Title           string              `db:"title"`
 	Description     string              `db:"description"`
 	TaskTypeID      int                 `db:"task_type_id"`
@@ -279,8 +283,8 @@ func (o getTaskForUpdate) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      329,
-			Stop:       331,
+			Start:      339,
+			Stop:       341,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -288,8 +292,8 @@ func (o getTaskForUpdate) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "id",
-			Start:      345,
-			Stop:       347,
+			Start:      355,
+			Stop:       357,
 			Expression: o.ID,
 		}) {
 			return
@@ -309,7 +313,7 @@ func (o getTaskForUpdate) WriteSQL(ctx context.Context, w io.StringWriter, d bob
 	return o.subExpr(0, len(getTaskForUpdateSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var listTasksSQL = formattedQueries_queries[958:1313]
+var listTasksSQL = formattedQueries_queries[978:1343]
 
 type ListTasksQuery = orm.ModQuery[*dialect.SelectQuery, listTasks, ListTasksRow, []ListTasksRow, listTasksTransformer]
 
@@ -334,17 +338,18 @@ func ListTasks(ProjectID int) *ListTasksQuery {
 						row.ScheduleScanByIndex(1, &t.ProjectID)
 						row.ScheduleScanByIndex(2, &t.ProjectKey)
 						row.ScheduleScanByIndex(3, &t.Number)
-						row.ScheduleScanByIndex(4, &t.Title)
-						row.ScheduleScanByIndex(5, &t.Description)
-						row.ScheduleScanByIndex(6, &t.TaskTypeID)
-						row.ScheduleScanByIndex(7, &t.WorkflowID)
-						row.ScheduleScanByIndex(8, &t.StatusID)
-						row.ScheduleScanByIndex(9, &t.PriorityID)
-						row.ScheduleScanByIndex(10, &t.ModuleID)
-						row.ScheduleScanByIndex(11, &t.EstimateSeconds)
-						row.ScheduleScanByIndex(12, &t.DueDate)
-						row.ScheduleScanByIndex(13, &t.CreatedAt)
-						row.ScheduleScanByIndex(14, &t.UpdatedAt)
+						row.ScheduleScanByIndex(4, &t.Rank)
+						row.ScheduleScanByIndex(5, &t.Title)
+						row.ScheduleScanByIndex(6, &t.Description)
+						row.ScheduleScanByIndex(7, &t.TaskTypeID)
+						row.ScheduleScanByIndex(8, &t.WorkflowID)
+						row.ScheduleScanByIndex(9, &t.StatusID)
+						row.ScheduleScanByIndex(10, &t.PriorityID)
+						row.ScheduleScanByIndex(11, &t.ModuleID)
+						row.ScheduleScanByIndex(12, &t.EstimateSeconds)
+						row.ScheduleScanByIndex(13, &t.DueDate)
+						row.ScheduleScanByIndex(14, &t.CreatedAt)
+						row.ScheduleScanByIndex(15, &t.UpdatedAt)
 						return &t, nil
 					}, func(v any) (ListTasksRow, error) {
 						return *v.(*ListTasksRow), nil
@@ -352,10 +357,10 @@ func ListTasks(ProjectID int) *ListTasksQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendSelect(expressionTypArgs.subExpr(9, 243))
-			q.SetTable(expressionTypArgs.subExpr(251, 305))
-			q.AppendWhere(expressionTypArgs.subExpr(314, 331))
-			q.AppendOrder(expressionTypArgs.subExpr(343, 355))
+			q.AppendSelect(expressionTypArgs.subExpr(9, 253))
+			q.SetTable(expressionTypArgs.subExpr(261, 315))
+			q.AppendWhere(expressionTypArgs.subExpr(324, 341))
+			q.AppendOrder(expressionTypArgs.subExpr(353, 365))
 		}),
 		Build: psql.Select,
 	}
@@ -366,6 +371,7 @@ type ListTasksRow = struct {
 	ProjectID       int                 `db:"project_id"`
 	ProjectKey      string              `db:"project_key"`
 	Number          int                 `db:"number"`
+	Rank            int                 `db:"rank"`
 	Title           string              `db:"title"`
 	Description     string              `db:"description"`
 	TaskTypeID      int                 `db:"task_type_id"`
@@ -389,8 +395,8 @@ func (o listTasks) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      329,
-			Stop:       331,
+			Start:      339,
+			Stop:       341,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -410,14 +416,15 @@ func (o listTasks) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialec
 	return o.subExpr(0, len(listTasksSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var insertTaskSQL = formattedQueries_queries[1330:1828]
+var insertTaskSQL = formattedQueries_queries[1360:1875]
 
 type InsertTaskQuery = orm.ModQuery[*dialect.InsertQuery, insertTask, InsertTaskRow, []InsertTaskRow, insertTaskTransformer]
 
-func InsertTask(Number int, Title string, Description string, TaskTypeID int, WorkflowID int, StatusID int, PriorityID int, ModuleID sql.Null[int], EstimateSeconds sql.Null[int], DueDate sql.Null[time.Time], CreatedAt time.Time, UpdatedAt time.Time, ProjectID int) *InsertTaskQuery {
+func InsertTask(Number int, Rank int, Title string, Description string, TaskTypeID int, WorkflowID int, StatusID int, PriorityID int, ModuleID sql.Null[int], EstimateSeconds sql.Null[int], DueDate sql.Null[time.Time], CreatedAt time.Time, UpdatedAt time.Time, ProjectID int) *InsertTaskQuery {
 	var expressionTypArgs insertTask
 
 	expressionTypArgs.Number = psql.Arg(Number)
+	expressionTypArgs.Rank = psql.Arg(Rank)
 	expressionTypArgs.Title = psql.Arg(Title)
 	expressionTypArgs.Description = psql.Arg(Description)
 	expressionTypArgs.TaskTypeID = psql.Arg(TaskTypeID)
@@ -453,14 +460,14 @@ func InsertTask(Number int, Title string, Description string, TaskTypeID int, Wo
 			},
 		},
 		Mod: bob.ModFunc[*dialect.InsertQuery](func(q *dialect.InsertQuery) {
-			q.TableRef.Columns = []string{"project_id", "workflow_scheme_id", "priority_scheme_id", "number", "title", "description", "task_type_id", "workflow_id", "status_id", "priority_id", "module_id", "estimate_seconds", "due_date", "created_at", "updated_at"}
+			q.TableRef.Columns = []string{"project_id", "workflow_scheme_id", "priority_scheme_id", "number", "rank", "title", "description", "task_type_id", "workflow_id", "status_id", "priority_id", "module_id", "estimate_seconds", "due_date", "created_at", "updated_at"}
 			q.TableRef.Expression = expressionTypArgs.subExpr(14, 19)
 			q.Query = bob.BaseQuery[bob.Expression]{
-				Expression: expressionTypArgs.subExpr(279, 455),
+				Expression: expressionTypArgs.subExpr(289, 472),
 				Dialect:    dialect.Dialect,
 				QueryType:  bob.QueryTypeSelect,
 			}
-			q.AppendReturning(expressionTypArgs.subExpr(468, 498))
+			q.AppendReturning(expressionTypArgs.subExpr(485, 515))
 		}),
 		Build: psql.Insert,
 	}
@@ -476,6 +483,7 @@ type insertTaskTransformer = bob.SliceTransformer[InsertTaskRow, []InsertTaskRow
 
 type insertTask struct {
 	Number          bob.Expression
+	Rank            bob.Expression
 	Title           bob.Expression
 	Description     bob.Expression
 	TaskTypeID      bob.Expression
@@ -494,17 +502,26 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "number",
-			Start:      344,
-			Stop:       346,
+			Start:      354,
+			Stop:       356,
 			Expression: o.Number,
 		}) {
 			return
 		}
 
 		if !yield(orm.ArgWithPosition{
+			Name:       "rank",
+			Start:      360,
+			Stop:       362,
+			Expression: o.Rank,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
 			Name:       "title",
-			Start:      350,
-			Stop:       352,
+			Start:      366,
+			Stop:       368,
 			Expression: o.Title,
 		}) {
 			return
@@ -512,8 +529,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "description",
-			Start:      356,
-			Stop:       358,
+			Start:      372,
+			Stop:       374,
 			Expression: o.Description,
 		}) {
 			return
@@ -521,8 +538,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "taskTypeID",
-			Start:      362,
-			Stop:       364,
+			Start:      378,
+			Stop:       380,
 			Expression: o.TaskTypeID,
 		}) {
 			return
@@ -530,8 +547,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "workflowID",
-			Start:      368,
-			Stop:       370,
+			Start:      384,
+			Stop:       386,
 			Expression: o.WorkflowID,
 		}) {
 			return
@@ -539,8 +556,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "statusID",
-			Start:      374,
-			Stop:       376,
+			Start:      390,
+			Stop:       392,
 			Expression: o.StatusID,
 		}) {
 			return
@@ -548,8 +565,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "priorityID",
-			Start:      380,
-			Stop:       382,
+			Start:      396,
+			Stop:       398,
 			Expression: o.PriorityID,
 		}) {
 			return
@@ -557,8 +574,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "moduleID",
-			Start:      386,
-			Stop:       388,
+			Start:      402,
+			Stop:       404,
 			Expression: o.ModuleID,
 		}) {
 			return
@@ -566,8 +583,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "estimateSeconds",
-			Start:      392,
-			Stop:       394,
+			Start:      408,
+			Stop:       411,
 			Expression: o.EstimateSeconds,
 		}) {
 			return
@@ -575,8 +592,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "dueDate",
-			Start:      398,
-			Stop:       401,
+			Start:      415,
+			Stop:       418,
 			Expression: o.DueDate,
 		}) {
 			return
@@ -584,8 +601,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "createdAt",
-			Start:      405,
-			Stop:       408,
+			Start:      422,
+			Stop:       425,
 			Expression: o.CreatedAt,
 		}) {
 			return
@@ -593,8 +610,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "updatedAt",
-			Start:      412,
-			Stop:       415,
+			Start:      429,
+			Stop:       432,
 			Expression: o.UpdatedAt,
 		}) {
 			return
@@ -602,8 +619,8 @@ func (o insertTask) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      452,
-			Stop:       455,
+			Start:      469,
+			Stop:       472,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -623,7 +640,7 @@ func (o insertTask) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Diale
 	return o.subExpr(0, len(insertTaskSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var updateTaskSQL = formattedQueries_queries[1845:2070]
+var updateTaskSQL = formattedQueries_queries[1892:2117]
 
 type UpdateTaskQuery = orm.ModQuery[*dialect.UpdateQuery, updateTask, UpdateTaskRow, []UpdateTaskRow, updateTaskTransformer]
 
@@ -786,7 +803,7 @@ func (o updateTask) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Diale
 	return o.subExpr(0, len(updateTaskSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var updateStatusSQL = formattedQueries_queries[2089:2218]
+var updateStatusSQL = formattedQueries_queries[2136:2265]
 
 type UpdateStatusQuery = orm.ModQuery[*dialect.UpdateQuery, updateStatus, UpdateStatusRow, []UpdateStatusRow, updateStatusTransformer]
 
@@ -894,7 +911,7 @@ func (o updateStatus) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dia
 	return o.subExpr(0, len(updateStatusSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var deleteTaskSQL = formattedQueries_queries[2235:2292]
+var deleteTaskSQL = formattedQueries_queries[2282:2339]
 
 type DeleteTaskQuery = orm.ModExecQuery[*dialect.DeleteQuery, deleteTask]
 
@@ -957,4 +974,812 @@ func (o deleteTask) subExpr(from, to int) bob.Expression {
 
 func (o deleteTask) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
 	return o.subExpr(0, len(deleteTaskSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var listTaskOrderSQL = formattedQueries_queries[2359:2730]
+
+type ListTaskOrderQuery = orm.ModQuery[*dialect.SelectQuery, listTaskOrder, ListTaskOrderRow, []ListTaskOrderRow, listTaskOrderTransformer]
+
+func ListTaskOrder(ProjectID int) *ListTaskOrderQuery {
+	var expressionTypArgs listTaskOrder
+
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+
+	return &ListTaskOrderQuery{
+		Query: orm.Query[listTaskOrder, ListTaskOrderRow, []ListTaskOrderRow, listTaskOrderTransformer]{
+			ExecQuery: orm.ExecQuery[listTaskOrder]{
+				BaseQuery: bob.BaseQuery[listTaskOrder]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeSelect,
+				},
+			},
+			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (ListTaskOrderRow, error)) {
+				return func(row *scan.Row) (any, error) {
+						var t ListTaskOrderRow
+						row.ScheduleScanByIndex(0, &t.ID)
+						row.ScheduleScanByIndex(1, &t.ProjectID)
+						row.ScheduleScanByIndex(2, &t.ProjectKey)
+						row.ScheduleScanByIndex(3, &t.Number)
+						row.ScheduleScanByIndex(4, &t.Rank)
+						row.ScheduleScanByIndex(5, &t.Title)
+						row.ScheduleScanByIndex(6, &t.Description)
+						row.ScheduleScanByIndex(7, &t.TaskTypeID)
+						row.ScheduleScanByIndex(8, &t.WorkflowID)
+						row.ScheduleScanByIndex(9, &t.StatusID)
+						row.ScheduleScanByIndex(10, &t.PriorityID)
+						row.ScheduleScanByIndex(11, &t.ModuleID)
+						row.ScheduleScanByIndex(12, &t.EstimateSeconds)
+						row.ScheduleScanByIndex(13, &t.DueDate)
+						row.ScheduleScanByIndex(14, &t.CreatedAt)
+						row.ScheduleScanByIndex(15, &t.UpdatedAt)
+						return &t, nil
+					}, func(v any) (ListTaskOrderRow, error) {
+						return *v.(*ListTaskOrderRow), nil
+					}
+			},
+		},
+		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
+			q.AppendSelect(expressionTypArgs.subExpr(9, 253))
+			q.SetTable(expressionTypArgs.subExpr(261, 315))
+			q.AppendWhere(expressionTypArgs.subExpr(324, 341))
+			q.AppendOrder(expressionTypArgs.subExpr(353, 371))
+		}),
+		Build: psql.Select,
+	}
+}
+
+type ListTaskOrderRow = struct {
+	ID              int                 `db:"id"`
+	ProjectID       int                 `db:"project_id"`
+	ProjectKey      string              `db:"project_key"`
+	Number          int                 `db:"number"`
+	Rank            int                 `db:"rank"`
+	Title           string              `db:"title"`
+	Description     string              `db:"description"`
+	TaskTypeID      int                 `db:"task_type_id"`
+	WorkflowID      int                 `db:"workflow_id"`
+	StatusID        int                 `db:"status_id"`
+	PriorityID      int                 `db:"priority_id"`
+	ModuleID        sql.Null[int]       `db:"module_id"`
+	EstimateSeconds sql.Null[int]       `db:"estimate_seconds"`
+	DueDate         sql.Null[time.Time] `db:"due_date"`
+	CreatedAt       time.Time           `db:"created_at"`
+	UpdatedAt       time.Time           `db:"updated_at"`
+}
+
+type listTaskOrderTransformer = bob.SliceTransformer[ListTaskOrderRow, []ListTaskOrderRow]
+
+type listTaskOrder struct {
+	ProjectID bob.Expression
+}
+
+func (o listTaskOrder) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      339,
+			Stop:       341,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+	}
+}
+
+func (o listTaskOrder) raw(from, to int) string {
+	return listTaskOrderSQL[from:to]
+}
+
+func (o listTaskOrder) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(listTaskOrderSQL, from, to, o.args())
+}
+
+func (o listTaskOrder) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(listTaskOrderSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var getLastRankSQL = formattedQueries_queries[2748:2827]
+
+type GetLastRankQuery = orm.ModQuery[*dialect.SelectQuery, getLastRank, int, []int, getLastRankTransformer]
+
+func GetLastRank(ProjectID int) *GetLastRankQuery {
+	var expressionTypArgs getLastRank
+
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+
+	return &GetLastRankQuery{
+		Query: orm.Query[getLastRank, int, []int, getLastRankTransformer]{
+			ExecQuery: orm.ExecQuery[getLastRank]{
+				BaseQuery: bob.BaseQuery[getLastRank]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeSelect,
+				},
+			},
+			Scanner: scan.ColumnMapper[int]("rank"),
+		},
+		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
+			q.AppendSelect(expressionTypArgs.subExpr(9, 13))
+			q.SetTable(expressionTypArgs.subExpr(21, 26))
+			q.AppendWhere(expressionTypArgs.subExpr(35, 50))
+			q.AppendOrder(expressionTypArgs.subExpr(62, 71))
+			q.SetLimit(expressionTypArgs.subExpr(78, 79))
+		}),
+		Build: psql.Select,
+	}
+}
+
+type GetLastRankRow = struct {
+	Rank int `db:"rank"`
+}
+
+type getLastRankTransformer = bob.SliceTransformer[int, []int]
+
+type getLastRank struct {
+	ProjectID bob.Expression
+}
+
+func (o getLastRank) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      48,
+			Stop:       50,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+	}
+}
+
+func (o getLastRank) raw(from, to int) string {
+	return getLastRankSQL[from:to]
+}
+
+func (o getLastRank) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(getLastRankSQL, from, to, o.args())
+}
+
+func (o getLastRank) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(getLastRankSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var getPreviousRankSQL = formattedQueries_queries[2849:2959]
+
+type GetPreviousRankQuery = orm.ModQuery[*dialect.SelectQuery, getPreviousRank, int, []int, getPreviousRankTransformer]
+
+func GetPreviousRank(ProjectID int, ID int, Rank int) *GetPreviousRankQuery {
+	var expressionTypArgs getPreviousRank
+
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+	expressionTypArgs.ID = psql.Arg(ID)
+	expressionTypArgs.Rank = psql.Arg(Rank)
+
+	return &GetPreviousRankQuery{
+		Query: orm.Query[getPreviousRank, int, []int, getPreviousRankTransformer]{
+			ExecQuery: orm.ExecQuery[getPreviousRank]{
+				BaseQuery: bob.BaseQuery[getPreviousRank]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeSelect,
+				},
+			},
+			Scanner: scan.ColumnMapper[int]("rank"),
+		},
+		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
+			q.AppendSelect(expressionTypArgs.subExpr(9, 13))
+			q.SetTable(expressionTypArgs.subExpr(21, 26))
+			q.AppendWhere(expressionTypArgs.subExpr(35, 81))
+			q.AppendOrder(expressionTypArgs.subExpr(93, 102))
+			q.SetLimit(expressionTypArgs.subExpr(109, 110))
+		}),
+		Build: psql.Select,
+	}
+}
+
+type GetPreviousRankRow = struct {
+	Rank int `db:"rank"`
+}
+
+type getPreviousRankTransformer = bob.SliceTransformer[int, []int]
+
+type getPreviousRank struct {
+	ProjectID bob.Expression
+	ID        bob.Expression
+	Rank      bob.Expression
+}
+
+func (o getPreviousRank) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      48,
+			Stop:       50,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "id",
+			Start:      63,
+			Stop:       65,
+			Expression: o.ID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "rank",
+			Start:      79,
+			Stop:       81,
+			Expression: o.Rank,
+		}) {
+			return
+		}
+	}
+}
+
+func (o getPreviousRank) raw(from, to int) string {
+	return getPreviousRankSQL[from:to]
+}
+
+func (o getPreviousRank) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(getPreviousRankSQL, from, to, o.args())
+}
+
+func (o getPreviousRank) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(getPreviousRankSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var getNextRankSQL = formattedQueries_queries[2977:3082]
+
+type GetNextRankQuery = orm.ModQuery[*dialect.SelectQuery, getNextRank, int, []int, getNextRankTransformer]
+
+func GetNextRank(ProjectID int, ID int, Rank int) *GetNextRankQuery {
+	var expressionTypArgs getNextRank
+
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+	expressionTypArgs.ID = psql.Arg(ID)
+	expressionTypArgs.Rank = psql.Arg(Rank)
+
+	return &GetNextRankQuery{
+		Query: orm.Query[getNextRank, int, []int, getNextRankTransformer]{
+			ExecQuery: orm.ExecQuery[getNextRank]{
+				BaseQuery: bob.BaseQuery[getNextRank]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeSelect,
+				},
+			},
+			Scanner: scan.ColumnMapper[int]("rank"),
+		},
+		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
+			q.AppendSelect(expressionTypArgs.subExpr(9, 13))
+			q.SetTable(expressionTypArgs.subExpr(21, 26))
+			q.AppendWhere(expressionTypArgs.subExpr(35, 81))
+			q.AppendOrder(expressionTypArgs.subExpr(93, 97))
+			q.SetLimit(expressionTypArgs.subExpr(104, 105))
+		}),
+		Build: psql.Select,
+	}
+}
+
+type GetNextRankRow = struct {
+	Rank int `db:"rank"`
+}
+
+type getNextRankTransformer = bob.SliceTransformer[int, []int]
+
+type getNextRank struct {
+	ProjectID bob.Expression
+	ID        bob.Expression
+	Rank      bob.Expression
+}
+
+func (o getNextRank) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      48,
+			Stop:       50,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "id",
+			Start:      63,
+			Stop:       65,
+			Expression: o.ID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "rank",
+			Start:      79,
+			Stop:       81,
+			Expression: o.Rank,
+		}) {
+			return
+		}
+	}
+}
+
+func (o getNextRank) raw(from, to int) string {
+	return getNextRankSQL[from:to]
+}
+
+func (o getNextRank) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(getNextRankSQL, from, to, o.args())
+}
+
+func (o getNextRank) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(getNextRankSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var getLastColumnRankSQL = formattedQueries_queries[3106:3357]
+
+type GetLastColumnRankQuery = orm.ModQuery[*dialect.SelectQuery, getLastColumnRank, int, []int, getLastColumnRankTransformer]
+
+func GetLastColumnRank(ProjectID int, BoardID int, ColumnID int, ID int) *GetLastColumnRankQuery {
+	var expressionTypArgs getLastColumnRank
+
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+	expressionTypArgs.BoardID = psql.Arg(BoardID)
+	expressionTypArgs.ColumnID = psql.Arg(ColumnID)
+	expressionTypArgs.ID = psql.Arg(ID)
+
+	return &GetLastColumnRankQuery{
+		Query: orm.Query[getLastColumnRank, int, []int, getLastColumnRankTransformer]{
+			ExecQuery: orm.ExecQuery[getLastColumnRank]{
+				BaseQuery: bob.BaseQuery[getLastColumnRank]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeSelect,
+				},
+			},
+			Scanner: scan.ColumnMapper[int]("rank"),
+		},
+		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
+			q.AppendSelect(expressionTypArgs.subExpr(9, 15))
+			q.SetTable(expressionTypArgs.subExpr(23, 114))
+			q.AppendWhere(expressionTypArgs.subExpr(123, 220))
+			q.AppendOrder(expressionTypArgs.subExpr(232, 243))
+			q.SetLimit(expressionTypArgs.subExpr(250, 251))
+		}),
+		Build: psql.Select,
+	}
+}
+
+type GetLastColumnRankRow = struct {
+	Rank int `db:"rank"`
+}
+
+type getLastColumnRankTransformer = bob.SliceTransformer[int, []int]
+
+type getLastColumnRank struct {
+	ProjectID bob.Expression
+	BoardID   bob.Expression
+	ColumnID  bob.Expression
+	ID        bob.Expression
+}
+
+func (o getLastColumnRank) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      138,
+			Stop:       140,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "boardID",
+			Start:      169,
+			Stop:       171,
+			Expression: o.BoardID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "columnID",
+			Start:      201,
+			Stop:       203,
+			Expression: o.ColumnID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "id",
+			Start:      218,
+			Stop:       220,
+			Expression: o.ID,
+		}) {
+			return
+		}
+	}
+}
+
+func (o getLastColumnRank) raw(from, to int) string {
+	return getLastColumnRankSQL[from:to]
+}
+
+func (o getLastColumnRank) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(getLastColumnRankSQL, from, to, o.args())
+}
+
+func (o getLastColumnRank) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(getLastColumnRankSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var updateRankSQL = formattedQueries_queries[3374:3442]
+
+type UpdateRankQuery = orm.ModExecQuery[*dialect.UpdateQuery, updateRank]
+
+func UpdateRank(Rank int, ProjectID int, ID int) *UpdateRankQuery {
+	var expressionTypArgs updateRank
+
+	expressionTypArgs.Rank = psql.Arg(Rank)
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+	expressionTypArgs.ID = psql.Arg(ID)
+
+	return &UpdateRankQuery{
+		ExecQuery: orm.ExecQuery[updateRank]{
+			BaseQuery: bob.BaseQuery[updateRank]{
+				Expression: expressionTypArgs,
+				Dialect:    dialect.Dialect,
+				QueryType:  bob.QueryTypeUpdate,
+			},
+		},
+		Mod: bob.ModFunc[*dialect.UpdateQuery](func(q *dialect.UpdateQuery) {
+			q.Table.Expression = expressionTypArgs.subExpr(9, 14)
+			q.AppendSet(expressionTypArgs.subExpr(21, 30))
+			q.AppendWhere(expressionTypArgs.subExpr(39, 68))
+		}),
+		Build: psql.Update,
+	}
+}
+
+type updateRank struct {
+	Rank      bob.Expression
+	ProjectID bob.Expression
+	ID        bob.Expression
+}
+
+func (o updateRank) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "rank",
+			Start:      28,
+			Stop:       30,
+			Expression: o.Rank,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      52,
+			Stop:       54,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "id",
+			Start:      66,
+			Stop:       68,
+			Expression: o.ID,
+		}) {
+			return
+		}
+	}
+}
+
+func (o updateRank) raw(from, to int) string {
+	return updateRankSQL[from:to]
+}
+
+func (o updateRank) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(updateRankSQL, from, to, o.args())
+}
+
+func (o updateRank) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(updateRankSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var updatePositionSQL = formattedQueries_queries[3463:3605]
+
+type UpdatePositionQuery = orm.ModQuery[*dialect.UpdateQuery, updatePosition, UpdatePositionRow, []UpdatePositionRow, updatePositionTransformer]
+
+func UpdatePosition(Rank int, StatusID int, UpdatedAt time.Time, ProjectID int, ID int) *UpdatePositionQuery {
+	var expressionTypArgs updatePosition
+
+	expressionTypArgs.Rank = psql.Arg(Rank)
+	expressionTypArgs.StatusID = psql.Arg(StatusID)
+	expressionTypArgs.UpdatedAt = psql.Arg(UpdatedAt)
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+	expressionTypArgs.ID = psql.Arg(ID)
+
+	return &UpdatePositionQuery{
+		Query: orm.Query[updatePosition, UpdatePositionRow, []UpdatePositionRow, updatePositionTransformer]{
+			ExecQuery: orm.ExecQuery[updatePosition]{
+				BaseQuery: bob.BaseQuery[updatePosition]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeUpdate,
+				},
+			},
+			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (UpdatePositionRow, error)) {
+				return func(row *scan.Row) (any, error) {
+						var t UpdatePositionRow
+						row.ScheduleScanByIndex(0, &t.CreatedAt)
+						row.ScheduleScanByIndex(1, &t.UpdatedAt)
+						return &t, nil
+					}, func(v any) (UpdatePositionRow, error) {
+						return *v.(*UpdatePositionRow), nil
+					}
+			},
+		},
+		Mod: bob.ModFunc[*dialect.UpdateQuery](func(q *dialect.UpdateQuery) {
+			q.Table.Expression = expressionTypArgs.subExpr(9, 14)
+			q.AppendSet(expressionTypArgs.subExpr(21, 67))
+			q.AppendWhere(expressionTypArgs.subExpr(76, 105))
+			q.AppendReturning(expressionTypArgs.subExpr(118, 142))
+		}),
+		Build: psql.Update,
+	}
+}
+
+type UpdatePositionRow = struct {
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
+}
+
+type updatePositionTransformer = bob.SliceTransformer[UpdatePositionRow, []UpdatePositionRow]
+
+type updatePosition struct {
+	Rank      bob.Expression
+	StatusID  bob.Expression
+	UpdatedAt bob.Expression
+	ProjectID bob.Expression
+	ID        bob.Expression
+}
+
+func (o updatePosition) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "rank",
+			Start:      28,
+			Stop:       30,
+			Expression: o.Rank,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "statusID",
+			Start:      46,
+			Stop:       48,
+			Expression: o.StatusID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "updatedAt",
+			Start:      65,
+			Stop:       67,
+			Expression: o.UpdatedAt,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      89,
+			Stop:       91,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "id",
+			Start:      103,
+			Stop:       105,
+			Expression: o.ID,
+		}) {
+			return
+		}
+	}
+}
+
+func (o updatePosition) raw(from, to int) string {
+	return updatePositionSQL[from:to]
+}
+
+func (o updatePosition) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(updatePositionSQL, from, to, o.args())
+}
+
+func (o updatePosition) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(updatePositionSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var listBoardColumnTasksSQL = formattedQueries_queries[3632:4265]
+
+type ListBoardColumnTasksQuery = orm.ModQuery[*dialect.SelectQuery, listBoardColumnTasks, ListBoardColumnTasksRow, []ListBoardColumnTasksRow, listBoardColumnTasksTransformer]
+
+func ListBoardColumnTasks(ProjectID int, BoardID int, ColumnID int, AfterRank sql.Null[int], AfterNumber sql.Null[int], Arg6 int) *ListBoardColumnTasksQuery {
+	var expressionTypArgs listBoardColumnTasks
+
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+	expressionTypArgs.BoardID = psql.Arg(BoardID)
+	expressionTypArgs.ColumnID = psql.Arg(ColumnID)
+	expressionTypArgs.AfterRank = psql.Arg(AfterRank)
+	expressionTypArgs.AfterNumber = psql.Arg(AfterNumber)
+	expressionTypArgs.Arg6 = psql.Arg(Arg6)
+
+	return &ListBoardColumnTasksQuery{
+		Query: orm.Query[listBoardColumnTasks, ListBoardColumnTasksRow, []ListBoardColumnTasksRow, listBoardColumnTasksTransformer]{
+			ExecQuery: orm.ExecQuery[listBoardColumnTasks]{
+				BaseQuery: bob.BaseQuery[listBoardColumnTasks]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeSelect,
+				},
+			},
+			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (ListBoardColumnTasksRow, error)) {
+				return func(row *scan.Row) (any, error) {
+						var t ListBoardColumnTasksRow
+						row.ScheduleScanByIndex(0, &t.ID)
+						row.ScheduleScanByIndex(1, &t.ProjectID)
+						row.ScheduleScanByIndex(2, &t.ProjectKey)
+						row.ScheduleScanByIndex(3, &t.Number)
+						row.ScheduleScanByIndex(4, &t.Rank)
+						row.ScheduleScanByIndex(5, &t.Title)
+						row.ScheduleScanByIndex(6, &t.Description)
+						row.ScheduleScanByIndex(7, &t.TaskTypeID)
+						row.ScheduleScanByIndex(8, &t.WorkflowID)
+						row.ScheduleScanByIndex(9, &t.StatusID)
+						row.ScheduleScanByIndex(10, &t.PriorityID)
+						row.ScheduleScanByIndex(11, &t.ModuleID)
+						row.ScheduleScanByIndex(12, &t.EstimateSeconds)
+						row.ScheduleScanByIndex(13, &t.DueDate)
+						row.ScheduleScanByIndex(14, &t.CreatedAt)
+						row.ScheduleScanByIndex(15, &t.UpdatedAt)
+						return &t, nil
+					}, func(v any) (ListBoardColumnTasksRow, error) {
+						return *v.(*ListBoardColumnTasksRow), nil
+					}
+			},
+		},
+		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
+			q.AppendSelect(expressionTypArgs.subExpr(9, 253))
+			q.SetTable(expressionTypArgs.subExpr(261, 315))
+			q.AppendWhere(expressionTypArgs.subExpr(324, 594))
+			q.AppendOrder(expressionTypArgs.subExpr(606, 624))
+			q.SetLimit(expressionTypArgs.subExpr(631, 633))
+		}),
+		Build: psql.Select,
+	}
+}
+
+type ListBoardColumnTasksRow = struct {
+	ID              int                 `db:"id"`
+	ProjectID       int                 `db:"project_id"`
+	ProjectKey      string              `db:"project_key"`
+	Number          int                 `db:"number"`
+	Rank            int                 `db:"rank"`
+	Title           string              `db:"title"`
+	Description     string              `db:"description"`
+	TaskTypeID      int                 `db:"task_type_id"`
+	WorkflowID      int                 `db:"workflow_id"`
+	StatusID        int                 `db:"status_id"`
+	PriorityID      int                 `db:"priority_id"`
+	ModuleID        sql.Null[int]       `db:"module_id"`
+	EstimateSeconds sql.Null[int]       `db:"estimate_seconds"`
+	DueDate         sql.Null[time.Time] `db:"due_date"`
+	CreatedAt       time.Time           `db:"created_at"`
+	UpdatedAt       time.Time           `db:"updated_at"`
+}
+
+type listBoardColumnTasksTransformer = bob.SliceTransformer[ListBoardColumnTasksRow, []ListBoardColumnTasksRow]
+
+type listBoardColumnTasks struct {
+	ProjectID   bob.Expression
+	BoardID     bob.Expression
+	ColumnID    bob.Expression
+	AfterRank   bob.Expression
+	AfterNumber bob.Expression
+	Arg6        bob.Expression
+}
+
+func (o listBoardColumnTasks) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      339,
+			Stop:       341,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "boardID",
+			Start:      447,
+			Stop:       449,
+			Expression: o.BoardID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "columnID",
+			Start:      483,
+			Stop:       485,
+			Expression: o.ColumnID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "afterRank",
+			Start:      542,
+			Stop:       544,
+			Expression: o.AfterRank,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "afterRank",
+			Start:      586,
+			Stop:       588,
+			Expression: o.AfterRank,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "afterNumber",
+			Start:      590,
+			Stop:       592,
+			Expression: o.AfterNumber,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "arg6",
+			Start:      631,
+			Stop:       633,
+			Expression: o.Arg6,
+		}) {
+			return
+		}
+	}
+}
+
+func (o listBoardColumnTasks) raw(from, to int) string {
+	return listBoardColumnTasksSQL[from:to]
+}
+
+func (o listBoardColumnTasks) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(listBoardColumnTasksSQL, from, to, o.args())
+}
+
+func (o listBoardColumnTasks) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(listBoardColumnTasksSQL)).WriteSQL(ctx, w, d, start)
 }

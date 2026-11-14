@@ -96,3 +96,81 @@ func (o listStatuses) subExpr(from, to int) bob.Expression {
 func (o listStatuses) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
 	return o.subExpr(0, len(listStatusesSQL)).WriteSQL(ctx, w, d, start)
 }
+
+var listProjectStatusesSQL = formattedQueries_queries[473:840]
+
+type ListProjectStatusesQuery = orm.ModQuery[*dialect.SelectQuery, listProjectStatuses, ListProjectStatusesRow, []ListProjectStatusesRow, listProjectStatusesTransformer]
+
+func ListProjectStatuses(ID int) *ListProjectStatusesQuery {
+	var expressionTypArgs listProjectStatuses
+
+	expressionTypArgs.ID = psql.Arg(ID)
+
+	return &ListProjectStatusesQuery{
+		Query: orm.Query[listProjectStatuses, ListProjectStatusesRow, []ListProjectStatusesRow, listProjectStatusesTransformer]{
+			ExecQuery: orm.ExecQuery[listProjectStatuses]{
+				BaseQuery: bob.BaseQuery[listProjectStatuses]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeSelect,
+				},
+			},
+			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (ListProjectStatusesRow, error)) {
+				return func(row *scan.Row) (any, error) {
+						var t ListProjectStatusesRow
+						row.ScheduleScanByIndex(0, &t.ID)
+						row.ScheduleScanByIndex(1, &t.Name)
+						row.ScheduleScanByIndex(2, &t.Category)
+						return &t, nil
+					}, func(v any) (ListProjectStatusesRow, error) {
+						return *v.(*ListProjectStatusesRow), nil
+					}
+			},
+		},
+		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
+			q.Distinct.On = []any{}
+			q.AppendSelect(expressionTypArgs.subExpr(18, 61))
+			q.SetTable(expressionTypArgs.subExpr(69, 318))
+			q.AppendWhere(expressionTypArgs.subExpr(327, 342))
+			q.AppendOrder(expressionTypArgs.subExpr(354, 367))
+		}),
+		Build: psql.Select,
+	}
+}
+
+type ListProjectStatusesRow = struct {
+	ID       int    `db:"id"`
+	Name     string `db:"name"`
+	Category string `db:"category"`
+}
+
+type listProjectStatusesTransformer = bob.SliceTransformer[ListProjectStatusesRow, []ListProjectStatusesRow]
+
+type listProjectStatuses struct {
+	ID bob.Expression
+}
+
+func (o listProjectStatuses) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "id",
+			Start:      340,
+			Stop:       342,
+			Expression: o.ID,
+		}) {
+			return
+		}
+	}
+}
+
+func (o listProjectStatuses) raw(from, to int) string {
+	return listProjectStatusesSQL[from:to]
+}
+
+func (o listProjectStatuses) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(listProjectStatusesSQL, from, to, o.args())
+}
+
+func (o listProjectStatuses) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(listProjectStatusesSQL)).WriteSQL(ctx, w, d, start)
+}

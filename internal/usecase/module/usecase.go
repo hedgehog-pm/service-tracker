@@ -7,15 +7,15 @@ import (
 )
 
 type Usecase struct {
-	repository repository
+	modules moduleRepository
 }
 
-func New(repository repository) *Usecase {
-	return &Usecase{repository: repository}
+func New(modules moduleRepository) *Usecase {
+	return &Usecase{modules: modules}
 }
 
 func (u *Usecase) Get(ctx context.Context, projectID, id int) (domain.Module, error) {
-	return u.repository.GetModule(ctx, projectID, id)
+	return u.modules.GetModule(ctx, projectID, id)
 }
 
 func (u *Usecase) Create(ctx context.Context, projectID int, name string) (domain.Module, error) {
@@ -27,7 +27,7 @@ func (u *Usecase) Create(ctx context.Context, projectID int, name string) (domai
 		return domain.Module{}, err
 	}
 
-	return u.repository.InsertModule(ctx, value)
+	return u.modules.InsertModule(ctx, value)
 }
 
 func (u *Usecase) Update(
@@ -44,9 +44,9 @@ func (u *Usecase) Update(
 		return domain.Module{}, err
 	}
 
-	return u.repository.UpdateModule(ctx, value)
+	return u.modules.UpdateModule(ctx, value)
 }
 
 func (u *Usecase) Delete(ctx context.Context, projectID, id int) error {
-	return u.repository.DeleteModule(ctx, projectID, id)
+	return u.modules.DeleteModule(ctx, projectID, id)
 }

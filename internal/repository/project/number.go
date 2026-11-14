@@ -39,3 +39,23 @@ func (r *Postgres) ReserveTaskNumber(ctx context.Context, projectID int) (int, s
 
 	return row.Number, row.Key, nil
 }
+
+func (r *Postgres) LockProject(ctx context.Context, projectID int) error {
+	q := bobgen.LockProject(projectID)
+
+	query, args, err := bob.Build(ctx, q)
+	if err != nil {
+		return postgres.MapError(ctx, fmt.Errorf("build lock project query: %w", err))
+	}
+
+	_, err = pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
+	if errors.Is(err, sql.ErrNoRows) {
+		return domain.ErrProjectNotFound
+	}
+
+	if err != nil {
+		return postgres.MapError(ctx, fmt.Errorf("lock project: %w", err))
+	}
+
+	return nil
+}

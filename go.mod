@@ -16,6 +16,7 @@ require (
 	github.com/oapi-codegen/echo-v5-middleware v0.2.1
 	github.com/oapi-codegen/runtime v1.7.0
 	github.com/pressly/goose/v3 v3.29.0
+	github.com/samber/lo v1.53.0
 	github.com/stephenafamo/bob v0.50.0
 	github.com/stephenafamo/scan v0.9.0
 )

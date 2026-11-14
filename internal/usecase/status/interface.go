@@ -7,10 +7,10 @@ import (
 )
 
 type (
-	projects interface {
-		GetProject(ctx context.Context, projectID int) (domain.Project, error)
-	}
-	reader interface {
+	statusReader interface {
 		ListStatuses(ctx context.Context, schemeID int) ([]domain.Status, error)
+	}
+	projectReader interface {
+		GetProject(ctx context.Context, projectID int) (domain.Project, error)
 	}
 )

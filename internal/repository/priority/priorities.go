@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/samber/lo"
 	"github.com/stephenafamo/bob"
 	"github.com/stephenafamo/scan/pgxscan"
 
@@ -43,10 +44,9 @@ func (r *Postgres) ListPriorities(ctx context.Context, schemeID int) ([]domain.P
 		return nil, postgres.MapError(ctx, fmt.Errorf("list priorities: %w", err))
 	}
 
-	items := make([]domain.Priority, 0, len(rows))
-	for _, row := range rows {
-		items = append(items, priorityToDomain(row))
-	}
+	items := lo.Map(rows, func(row bobgen.ListPrioritiesRow, _ int) domain.Priority {
+		return priorityToDomain(row)
+	})
 
 	return items, nil
 }

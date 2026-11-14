@@ -11,13 +11,13 @@ import (
 // Возвращает статусы всех workflow из схемы в [domain.Project.WorkflowSchemeID].
 // Общие для нескольких workflow статусы не повторяются.
 type Usecase struct {
-	reader   reader
-	projects projects
+	statuses statusReader
+	projects projectReader
 }
 
-func New(reader reader, projects projects) *Usecase {
+func New(statuses statusReader, projects projectReader) *Usecase {
 	return &Usecase{
-		reader:   reader,
+		statuses: statuses,
 		projects: projects,
 	}
 }
@@ -28,5 +28,5 @@ func (u *Usecase) List(ctx context.Context, projectID int) ([]domain.Status, err
 		return nil, err
 	}
 
-	return u.reader.ListStatuses(ctx, project.WorkflowSchemeID)
+	return u.statuses.ListStatuses(ctx, project.WorkflowSchemeID)
 }

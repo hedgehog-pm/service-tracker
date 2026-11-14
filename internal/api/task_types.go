@@ -3,6 +3,9 @@ package api
 import (
 	"context"
 
+	"github.com/samber/lo"
+
+	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	generated "github.com/hedgehog-pm/service-tracker/internal/generated/api/tasktypes"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/tasktype"
 )
@@ -22,15 +25,14 @@ func (h *TaskTypeHandler) ListTaskTypes(
 		return nil, err
 	}
 
-	items := make([]generated.TaskType, 0, len(values))
-	for _, value := range values {
-		items = append(items, generated.TaskType{
+	items := lo.Map(values, func(value domain.TaskTypeWithInitialStatus, _ int) generated.TaskType {
+		return generated.TaskType{
 			ID:            value.ID,
 			Name:          value.Name,
 			Position:      value.Position,
 			InitialStatus: statusToAPI(value.InitialStatus),
-		})
-	}
+		}
+	})
 
 	return generated.ListTaskTypes200JSONResponse(generated.TaskTypeList{Items: items}), nil
 }

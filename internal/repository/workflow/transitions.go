@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/samber/lo"
 	"github.com/stephenafamo/bob"
 	"github.com/stephenafamo/scan/pgxscan"
 
@@ -53,10 +54,9 @@ func (r *Postgres) ListTransitions(
 		return nil, postgres.MapError(ctx, fmt.Errorf("list transitions: %w", err))
 	}
 
-	items := make([]domain.Transition, 0, len(rows))
-	for _, row := range rows {
-		items = append(items, transitionToDomain(row))
-	}
+	items := lo.Map(rows, func(row bobgen.ListTransitionsRow, _ int) domain.Transition {
+		return transitionToDomain(row)
+	})
 
 	return items, nil
 }

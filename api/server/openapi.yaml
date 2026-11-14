@@ -23,3 +23,15 @@ paths:
     $ref: ./task-types/openapi.yaml#/x-paths/collection
   /projects/{project_id}/priorities:
     $ref: ./priorities/openapi.yaml#/x-paths/collection
+  /projects/{project_id}/boards:
+    $ref: ./boards/openapi.yaml#/x-paths/collection
+  /projects/{project_id}/boards/{board_id}:
+    $ref: ./boards/openapi.yaml#/x-paths/item
+  /projects/{project_id}/boards/{board_id}/columns:
+    $ref: ./boards/openapi.yaml#/x-paths/columns
+  /projects/{project_id}/boards/{board_id}/columns/{column_id}:
+    $ref: ./boards/openapi.yaml#/x-paths/column
+  /projects/{project_id}/boards/{board_id}/columns/{column_id}/tasks:
+    $ref: ./boards/openapi.yaml#/x-paths/column-tasks
+  /projects/{project_id}/boards/{board_id}/tasks/{task_id}/move:
+    $ref: ./boards/openapi.yaml#/x-paths/move

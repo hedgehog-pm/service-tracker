@@ -26,6 +26,11 @@ func (e *Error) Error() string {
 }
 
 var (
+	ErrBoardNotFound         = NewError(CodeNotFound, "board not found")
+	ErrBoardColumnNotFound   = NewError(CodeNotFound, "board column not found")
+	ErrStatusUnavailable     = NewError(CodeInvalidInput, "status is not available in this project")
+	ErrStatusAlreadyMapped   = NewError(CodeConflict, "status already belongs to another column")
+	ErrRankExhausted         = NewError(CodeConflict, "task order requires rebalancing")
 	ErrProjectNotFound       = NewError(CodeNotFound, "project not found")
 	ErrTaskNotFound          = NewError(CodeNotFound, "task not found")
 	ErrTransitionNotFound    = NewError(CodeNotFound, "transition not found")

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/samber/lo"
 	"github.com/stephenafamo/bob"
 	"github.com/stephenafamo/scan/pgxscan"
 
@@ -26,10 +27,29 @@ func (r *Postgres) ListStatuses(ctx context.Context, schemeID int) ([]domain.Sta
 		return nil, postgres.MapError(ctx, fmt.Errorf("list statuses: %w", err))
 	}
 
-	items := make([]domain.Status, 0, len(rows))
-	for _, row := range rows {
-		items = append(items, statusToDomain(row))
+	items := lo.Map(rows, func(row bobgen.ListStatusesRow, _ int) domain.Status {
+		return statusToDomain(row)
+	})
+
+	return items, nil
+}
+
+func (r *Postgres) ListProjectStatuses(ctx context.Context, projectID int) ([]domain.Status, error) {
+	q := bobgen.ListProjectStatuses(projectID)
+
+	query, args, err := bob.Build(ctx, q)
+	if err != nil {
+		return nil, postgres.MapError(ctx, fmt.Errorf("build statuses query: %w", err))
 	}
+
+	rows, err := pgxscan.All(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
+	if err != nil {
+		return nil, postgres.MapError(ctx, fmt.Errorf("list statuses: %w", err))
+	}
+
+	items := lo.Map(rows, func(row bobgen.ListProjectStatusesRow, _ int) domain.Status {
+		return statusToDomain(row)
+	})
 
 	return items, nil
 }

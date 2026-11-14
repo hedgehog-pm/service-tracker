@@ -3,6 +3,8 @@ package api
 import (
 	"context"
 
+	"github.com/samber/lo"
+
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	generated "github.com/hedgehog-pm/service-tracker/internal/generated/api/modules"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/listmodules"
@@ -68,10 +70,9 @@ func (h *ModuleHandler) ListModules(
 		return nil, err
 	}
 
-	items := make([]generated.Module, 0, len(values))
-	for _, value := range values {
-		items = append(items, moduleToAPI(value))
-	}
+	items := lo.Map(values, func(value domain.Module, _ int) generated.Module {
+		return moduleToAPI(value)
+	})
 
 	return generated.ListModules200JSONResponse(generated.ModuleList{
 		Items:  items,

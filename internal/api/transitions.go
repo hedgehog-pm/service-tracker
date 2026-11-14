@@ -3,6 +3,9 @@ package api
 import (
 	"context"
 
+	"github.com/samber/lo"
+
+	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	generated "github.com/hedgehog-pm/service-tracker/internal/generated/api/transitions"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/listtasktransitions"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/transitiontask"
@@ -32,14 +35,13 @@ func (h *TransitionHandler) ListTaskTransitions(
 		return nil, err
 	}
 
-	items := make([]generated.Transition, 0, len(values))
-	for _, value := range values {
-		items = append(items, generated.Transition{
+	items := lo.Map(values, func(value domain.Transition, _ int) generated.Transition {
+		return generated.Transition{
 			ID:   value.ID,
 			Name: value.Name,
 			To:   statusToAPI(value.ToStatus),
-		})
-	}
+		}
+	})
 
 	return generated.ListTaskTransitions200JSONResponse(generated.TransitionList{Items: items}), nil
 }

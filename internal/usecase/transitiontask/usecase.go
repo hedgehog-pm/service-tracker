@@ -25,17 +25,17 @@ type (
 	//
 	// Проверка перехода и сохранение статуса проходят в одной транзакции под блокировкой задачи.
 	Usecase struct {
-		repository repository
-		workflows  workflows
-		transactor transactor
+		tasks       taskRepository
+		transitions transitionReader
+		transactor  transactor
 	}
 )
 
-func New(repository repository, workflows workflows, transactor transactor) *Usecase {
+func New(tasks taskRepository, transitions transitionReader, transactor transactor) *Usecase {
 	return &Usecase{
-		repository: repository,
-		workflows:  workflows,
-		transactor: transactor,
+		tasks:       tasks,
+		transitions: transitions,
+		transactor:  transactor,
 	}
 }
 
@@ -47,12 +47,12 @@ func (u *Usecase) Do(ctx context.Context, params Params) (domain.Task, error) {
 
 		// Блокируем задачу до проверки перехода, чтобы параллельный запрос
 		// не применил переход по устаревшему статусу.
-		task, err = u.repository.GetTaskForUpdate(ctx, params.ProjectID, params.TaskID)
+		task, err = u.tasks.GetTaskForUpdate(ctx, params.ProjectID, params.TaskID)
 		if err != nil {
 			return err
 		}
 
-		transition, err := u.workflows.GetTransition(ctx, params.TransitionID)
+		transition, err := u.transitions.GetTransition(ctx, params.TransitionID)
 		if err != nil {
 			return err
 		}
@@ -62,7 +62,7 @@ func (u *Usecase) Do(ctx context.Context, params Params) (domain.Task, error) {
 		}
 
 		task.UpdatedAt = time.Now().UTC()
-		task, err = u.repository.UpdateStatus(ctx, task)
+		task, err = u.tasks.UpdateStatus(ctx, task)
 
 		return err
 	})

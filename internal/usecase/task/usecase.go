@@ -7,17 +7,17 @@ import (
 )
 
 type Usecase struct {
-	repository repository
+	tasks taskRepository
 }
 
-func New(repository repository) *Usecase {
-	return &Usecase{repository: repository}
+func New(tasks taskRepository) *Usecase {
+	return &Usecase{tasks: tasks}
 }
 
 func (u *Usecase) Get(ctx context.Context, projectID, taskID int) (domain.Task, error) {
-	return u.repository.GetTask(ctx, projectID, taskID)
+	return u.tasks.GetTask(ctx, projectID, taskID)
 }
 
 func (u *Usecase) Delete(ctx context.Context, projectID, taskID int) error {
-	return u.repository.DeleteTask(ctx, projectID, taskID)
+	return u.tasks.DeleteTask(ctx, projectID, taskID)
 }

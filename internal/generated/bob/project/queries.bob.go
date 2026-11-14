@@ -10,6 +10,7 @@ import (
 	"iter"
 
 	"github.com/stephenafamo/bob"
+	"github.com/stephenafamo/bob/clause"
 	"github.com/stephenafamo/bob/dialect/psql"
 	"github.com/stephenafamo/bob/dialect/psql/dialect"
 	"github.com/stephenafamo/bob/expr"
@@ -558,4 +559,69 @@ func (o reserveTaskNumber) subExpr(from, to int) bob.Expression {
 
 func (o reserveTaskNumber) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
 	return o.subExpr(0, len(reserveTaskNumberSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var lockProjectSQL = formattedQueries_queries[1048:1109]
+
+type LockProjectQuery = orm.ModQuery[*dialect.SelectQuery, lockProject, int, []int, lockProjectTransformer]
+
+func LockProject(ID int) *LockProjectQuery {
+	var expressionTypArgs lockProject
+
+	expressionTypArgs.ID = psql.Arg(ID)
+
+	return &LockProjectQuery{
+		Query: orm.Query[lockProject, int, []int, lockProjectTransformer]{
+			ExecQuery: orm.ExecQuery[lockProject]{
+				BaseQuery: bob.BaseQuery[lockProject]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeSelect,
+				},
+			},
+			Scanner: scan.ColumnMapper[int]("id"),
+		},
+		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
+			q.AppendLock(clause.Lock{Strength: "NO KEY UPDATE", Tables: []interface{}(nil), Wait: ""})
+			q.AppendSelect(expressionTypArgs.subExpr(9, 11))
+			q.SetTable(expressionTypArgs.subExpr(19, 27))
+			q.AppendWhere(expressionTypArgs.subExpr(36, 43))
+		}),
+		Build: psql.Select,
+	}
+}
+
+type LockProjectRow = struct {
+	ID int `db:"id"`
+}
+
+type lockProjectTransformer = bob.SliceTransformer[int, []int]
+
+type lockProject struct {
+	ID bob.Expression
+}
+
+func (o lockProject) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "id",
+			Start:      41,
+			Stop:       43,
+			Expression: o.ID,
+		}) {
+			return
+		}
+	}
+}
+
+func (o lockProject) raw(from, to int) string {
+	return lockProjectSQL[from:to]
+}
+
+func (o lockProject) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(lockProjectSQL, from, to, o.args())
+}
+
+func (o lockProject) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(lockProjectSQL)).WriteSQL(ctx, w, d, start)
 }

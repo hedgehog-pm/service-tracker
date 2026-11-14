@@ -3,6 +3,8 @@ package task
 import (
 	"database/sql"
 
+	"github.com/samber/lo"
+
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	bobgen "github.com/hedgehog-pm/service-tracker/internal/generated/bob/task"
 )
@@ -23,13 +25,9 @@ func updatedTaskToDomain(task domain.Task, row bobgen.UpdateTaskRow) domain.Task
 }
 
 func pointerToNull[T any](value *T) sql.Null[T] {
-	if value == nil {
-		return sql.Null[T]{}
-	}
-
 	return sql.Null[T]{
-		V:     *value,
-		Valid: true,
+		V:     lo.FromPtr(value),
+		Valid: value != nil,
 	}
 }
 
@@ -39,6 +37,7 @@ func taskToDomain(row bobgen.GetTaskRow) domain.Task {
 		ProjectID:       row.ProjectID,
 		ProjectKey:      row.ProjectKey,
 		Number:          row.Number,
+		Rank:            row.Rank,
 		TaskTypeID:      row.TaskTypeID,
 		WorkflowID:      row.WorkflowID,
 		StatusID:        row.StatusID,

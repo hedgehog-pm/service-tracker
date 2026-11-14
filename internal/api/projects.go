@@ -3,6 +3,8 @@ package api
 import (
 	"context"
 
+	"github.com/samber/lo"
+
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	generated "github.com/hedgehog-pm/service-tracker/internal/generated/api/projects"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/createproject"
@@ -73,10 +75,9 @@ func (h *ProjectHandler) ListProjects(
 		return nil, err
 	}
 
-	items := make([]generated.Project, 0, len(values))
-	for _, value := range values {
-		items = append(items, projectToAPI(value))
-	}
+	items := lo.Map(values, func(value domain.Project, _ int) generated.Project {
+		return projectToAPI(value)
+	})
 
 	return generated.ListProjects200JSONResponse(generated.ProjectList{
 		Items:  items,

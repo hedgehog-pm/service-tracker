@@ -3,6 +3,9 @@ package api
 import (
 	"context"
 
+	"github.com/samber/lo"
+
+	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	generated "github.com/hedgehog-pm/service-tracker/internal/generated/api/priorities"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/priority"
 )
@@ -22,14 +25,13 @@ func (h *PriorityHandler) ListPriorities(
 		return nil, err
 	}
 
-	items := make([]generated.Priority, 0, len(result.Items))
-	for _, value := range result.Items {
-		items = append(items, generated.Priority{
+	items := lo.Map(result.Items, func(value domain.Priority, _ int) generated.Priority {
+		return generated.Priority{
 			ID:       value.ID,
 			Name:     value.Name,
 			Position: value.Position,
-		})
-	}
+		}
+	})
 
 	return generated.ListPriorities200JSONResponse(generated.PriorityList{
 		Items:             items,

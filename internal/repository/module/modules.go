@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/samber/lo"
 	"github.com/stephenafamo/bob"
 	"github.com/stephenafamo/scan/pgxscan"
 
@@ -101,10 +102,9 @@ func (r *Postgres) ListModules(
 		return nil, postgres.MapError(ctx, fmt.Errorf("list modules: %w", err))
 	}
 
-	items := make([]domain.Module, 0, len(rows))
-	for _, row := range rows {
-		items = append(items, moduleToDomain(row))
-	}
+	items := lo.Map(rows, func(row bobgen.ListModulesRow, _ int) domain.Module {
+		return moduleToDomain(row)
+	})
 
 	return items, nil
 }

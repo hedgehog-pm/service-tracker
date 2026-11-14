@@ -12,14 +12,14 @@ import (
 // [domain.TaskTypeWithInitialStatus.InitialStatus] берётся из workflow,
 // выбранного для типа задачи в этой схеме.
 type Usecase struct {
-	reader   reader
-	projects projects
+	taskTypes taskTypeReader
+	projects  projectReader
 }
 
-func New(reader reader, projects projects) *Usecase {
+func New(taskTypes taskTypeReader, projects projectReader) *Usecase {
 	return &Usecase{
-		reader:   reader,
-		projects: projects,
+		taskTypes: taskTypes,
+		projects:  projects,
 	}
 }
 
@@ -32,5 +32,5 @@ func (u *Usecase) List(
 		return nil, err
 	}
 
-	return u.reader.ListTaskTypes(ctx, project.WorkflowSchemeID)
+	return u.taskTypes.ListTaskTypes(ctx, project.WorkflowSchemeID)
 }

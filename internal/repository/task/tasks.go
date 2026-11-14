@@ -17,6 +17,7 @@ import (
 func (r *Postgres) InsertTask(ctx context.Context, task domain.Task) (domain.Task, error) {
 	q := bobgen.InsertTask(
 		task.Number,
+		task.Rank,
 		task.Title,
 		task.Description,
 		task.TaskTypeID,

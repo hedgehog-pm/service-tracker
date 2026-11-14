@@ -7,13 +7,13 @@ import (
 )
 
 type (
-	repository interface {
+	projectRepository interface {
 		InsertProject(ctx context.Context, project domain.Project) (domain.Project, error)
 	}
-	workflows interface {
+	workflowSchemeReader interface {
 		GetDefaultWorkflowScheme(ctx context.Context) (int, error)
 	}
-	priorities interface {
+	prioritySchemeReader interface {
 		GetDefaultPriorityScheme(ctx context.Context) (int, error)
 	}
 )

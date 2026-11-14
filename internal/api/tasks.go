@@ -3,6 +3,8 @@ package api
 import (
 	"context"
 
+	"github.com/samber/lo"
+
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	generated "github.com/hedgehog-pm/service-tracker/internal/generated/api/tasks"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/createtask"
@@ -41,14 +43,12 @@ func (h *TaskHandler) CreateTask(
 	params := createtask.Params{
 		ProjectID:       request.ProjectID,
 		Title:           body.Title,
+		Description:     lo.FromPtr(body.Description),
 		ModuleID:        body.ModuleID,
 		TaskTypeID:      body.TaskTypeID,
 		PriorityID:      body.PriorityID,
 		EstimateSeconds: body.EstimateSeconds,
 		DueDate:         dateToDomain(body.DueDate),
-	}
-	if body.Description != nil {
-		params.Description = *body.Description
 	}
 
 	task, err := h.createTask.Do(ctx, params)
@@ -90,10 +90,9 @@ func (h *TaskHandler) ListTasks(
 		return nil, err
 	}
 
-	items := make([]generated.Task, 0, len(tasks))
-	for _, task := range tasks {
-		items = append(items, taskToAPI(task))
-	}
+	items := lo.Map(tasks, func(task domain.Task, _ int) generated.Task {
+		return taskToAPI(task)
+	})
 
 	return generated.ListTasks200JSONResponse(generated.TaskList{
 		Items:  items,

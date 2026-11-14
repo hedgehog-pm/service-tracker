@@ -16,15 +16,15 @@ type (
 	// [Result.Items] и [Result.DefaultPriorityID] берутся из одной схемы,
 	// указанной в [domain.Project.PrioritySchemeID].
 	Usecase struct {
-		reader   reader
-		projects projects
+		priorities priorityReader
+		projects   projectReader
 	}
 )
 
-func New(reader reader, projects projects) *Usecase {
+func New(priorities priorityReader, projects projectReader) *Usecase {
 	return &Usecase{
-		reader:   reader,
-		projects: projects,
+		priorities: priorities,
+		projects:   projects,
 	}
 }
 
@@ -34,12 +34,12 @@ func (u *Usecase) List(ctx context.Context, projectID int) (Result, error) {
 		return Result{}, err
 	}
 
-	defaultID, err := u.reader.GetDefaultPriority(ctx, project.PrioritySchemeID)
+	defaultID, err := u.priorities.GetDefaultPriority(ctx, project.PrioritySchemeID)
 	if err != nil {
 		return Result{}, err
 	}
 
-	items, err := u.reader.ListPriorities(ctx, project.PrioritySchemeID)
+	items, err := u.priorities.ListPriorities(ctx, project.PrioritySchemeID)
 	if err != nil {
 		return Result{}, err
 	}

@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v5"
 	echomiddleware "github.com/oapi-codegen/echo-v5-middleware"
 
+	"github.com/hedgehog-pm/service-tracker/internal/generated/api/boards"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/modules"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/priorities"
 	"github.com/hedgehog-pm/service-tracker/internal/generated/api/projects"
@@ -23,6 +24,7 @@ func NewServer(
 	transitionHandler transitions.StrictServerInterface,
 	taskTypeHandler tasktypes.StrictServerInterface,
 	priorityHandler priorities.StrictServerInterface,
+	boardHandler boards.StrictServerInterface,
 ) (*echo.Echo, error) {
 	projectSpec, err := projects.GetSpec()
 	if err != nil {
@@ -59,6 +61,11 @@ func NewServer(
 		return nil, fmt.Errorf("load priorities OpenAPI contract: %w", err)
 	}
 
+	boardSpec, err := boards.GetSpec()
+	if err != nil {
+		return nil, fmt.Errorf("load boards OpenAPI contract: %w", err)
+	}
+
 	server := echo.New()
 	server.HTTPErrorHandler = HTTPErrorHandler
 	projects.RegisterHandlers(
@@ -89,6 +96,11 @@ func NewServer(
 	priorities.RegisterHandlers(
 		server.Group("", echomiddleware.OapiRequestValidator(prioritiesSpec)),
 		priorities.NewStrictHandler(priorityHandler, nil),
+	)
+
+	boards.RegisterHandlers(
+		server.Group("", echomiddleware.OapiRequestValidator(boardSpec)),
+		boards.NewStrictHandler(boardHandler, nil),
 	)
 
 	return server, nil

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/samber/lo"
 	"github.com/stephenafamo/bob"
 	"github.com/stephenafamo/bob/dialect/psql"
 	"github.com/stephenafamo/bob/dialect/psql/sm"
@@ -98,10 +99,29 @@ func (r *Postgres) ListTasks(
 		return nil, postgres.MapError(ctx, fmt.Errorf("list tasks: %w", err))
 	}
 
-	tasks := make([]domain.Task, 0, len(rows))
-	for _, row := range rows {
-		tasks = append(tasks, taskToDomain(row))
+	tasks := lo.Map(rows, func(row bobgen.ListTasksRow, _ int) domain.Task {
+		return taskToDomain(row)
+	})
+
+	return tasks, nil
+}
+
+func (r *Postgres) ListBoardColumnTasks(ctx context.Context, projectID, boardID, columnID int, afterRank, afterNumber *int, limit int) ([]domain.Task, error) {
+	q := bobgen.ListBoardColumnTasks(projectID, boardID, columnID, pointerToNull(afterRank), pointerToNull(afterNumber), limit)
+
+	query, args, err := bob.Build(ctx, q)
+	if err != nil {
+		return nil, postgres.MapError(ctx, fmt.Errorf("build column tasks query: %w", err))
 	}
+
+	rows, err := pgxscan.All(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...)
+	if err != nil {
+		return nil, postgres.MapError(ctx, fmt.Errorf("read column tasks: %w", err))
+	}
+
+	tasks := lo.Map(rows, func(row bobgen.ListBoardColumnTasksRow, _ int) domain.Task {
+		return taskToDomain(row)
+	})
 
 	return tasks, nil
 }

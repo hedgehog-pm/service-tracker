@@ -58,6 +58,7 @@ nav:
       - Создать первую задачу: quick-start.md
   - Руководства:
       - Работа с задачами и проектами: guides/tasks.md
+      - Работа с досками: guides/boards.md
   - Ограничения: limitations.md
   - FAQ: faq.md
   - API и Swagger: api/index.md

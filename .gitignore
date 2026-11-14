@@ -2,3 +2,4 @@
 /.venv-docs/
 /site/
 /scripts/__pycache__/
+*.drawio.bkp

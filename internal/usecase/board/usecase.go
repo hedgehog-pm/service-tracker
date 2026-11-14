@@ -6,9 +6,12 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 )
 
-type Usecase struct{ boards boardRepository }
+type Usecase struct {
+	boards boardRepository
+}
 
 func New(boards boardRepository) *Usecase { return &Usecase{boards: boards} }
+
 func (u *Usecase) Get(ctx context.Context, projectID, boardID int) (domain.Board, error) {
 	return u.boards.GetBoard(ctx, projectID, boardID)
 }

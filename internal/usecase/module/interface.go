@@ -6,11 +6,9 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 )
 
-type (
-	moduleRepository interface {
-		GetModule(ctx context.Context, projectID, moduleID int) (domain.Module, error)
-		InsertModule(ctx context.Context, module domain.Module) (domain.Module, error)
-		UpdateModule(ctx context.Context, module domain.Module) (domain.Module, error)
-		DeleteModule(ctx context.Context, projectID, moduleID int) error
-	}
-)
+type moduleRepository interface {
+	GetModule(ctx context.Context, projectID, moduleID int) (domain.Module, error)
+	InsertModule(ctx context.Context, module domain.Module) (domain.Module, error)
+	UpdateModule(ctx context.Context, module domain.Module) (domain.Module, error)
+	DeleteModule(ctx context.Context, projectID, moduleID int) error
+}

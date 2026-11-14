@@ -1,6 +1,6 @@
-<mxfile host="Electron">
-  <diagram name="Страница-1" id="oRmOzETqidd5_IPAJQPx">
-    <mxGraphModel dx="319" dy="237" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#FFFFFF" math="0" shadow="0" adaptiveColors="auto">
+<mxfile host="Electron" pages="2">
+  <diagram name="Классы — общее" id="oRmOzETqidd5_IPAJQPx">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#FFFFFF" math="0" shadow="0" adaptiveColors="auto">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -321,6 +321,78 @@
         <mxCell id="tracker-link-18" data-fk-columns="priority_scheme_id,priority_id" data-source-multiplicity="0..*" data-target-columns="scheme_id,priority_id" edge="1" parent="1" source="T2cpyjtkUnrIWHlbGqH--8" style="shape=connector;rounded=0;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontFamily=Helvetica;fontSize=11;labelBackgroundColor=#FFFFFF;endFill=0;startArrow=none;startFill=0;exitX=0.7307692307692307;exitY=0.0;exitDx=0;exitDy=0;entryX=0.5;entryY=1.0;entryDx=0;entryDy=0;endArrow=open;edgeStyle=orthogonalEdgeStyle;curved=0;exitPerimeter=0;entryPerimeter=0;orthogonalLoop=1;jettySize=0;" target="tracker-class-priority_scheme_priorities" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="SIQVk-jJLtbONmq0toKZ" name="Состояния — default workflow">
+    <mxGraphModel dx="2196" dy="1016" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="x9hBX7UT77ZdO7A-Fb3o-1" parent="1" style="ellipse;aspect=fixed;fillColor=#000000;strokeColor=#000000;strokeWidth=2.5;shadow=0;" value="" vertex="1">
+          <mxGeometry height="28" width="28" x="-80" y="332" as="geometry" />
+        </mxCell>
+        <object placeholders="1" c4Name="Open" label="%c4Name%" id="x9hBX7UT77ZdO7A-Fb3o-2">
+          <mxCell parent="1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#EAEAEA;strokeColor=#EAEAEA;strokeWidth=2.5;fontFamily=Helvetica;fontSize=22;fontStyle=0;fontColor=#111111;align=center;verticalAlign=middle;shadow=0;metaEdit=1;" vertex="1">
+            <mxGeometry height="92" width="273" x="18" y="300" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="x9hBX7UT77ZdO7A-Fb3o-5" edge="1" parent="1" source="x9hBX7UT77ZdO7A-Fb3o-1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=20;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#111111;strokeWidth=2.5;startArrow=none;endArrow=block;endFill=1;endSize=10;fontFamily=Helvetica;fontSize=22;fontStyle=0;fontColor=#111111;labelBackgroundColor=#FFFFFF;align=center;verticalAlign=middle;shadow=0;defaultLabelBackgroundColor=page;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="x9hBX7UT77ZdO7A-Fb3o-2" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="290" y="260" as="sourcePoint" />
+            <mxPoint x="610" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <object placeholders="1" c4Name="In Progress" label="%c4Name%" id="x9hBX7UT77ZdO7A-Fb3o-6">
+          <mxCell parent="1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#EAEAEA;strokeColor=#EAEAEA;strokeWidth=2.5;fontFamily=Helvetica;fontSize=22;fontStyle=0;fontColor=#111111;align=center;verticalAlign=middle;shadow=0;metaEdit=1;" vertex="1">
+            <mxGeometry height="92" width="273" x="554" y="300" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="Done" label="%c4Name%" id="x9hBX7UT77ZdO7A-Fb3o-7">
+          <mxCell parent="1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#EAEAEA;strokeColor=#EAEAEA;strokeWidth=2.5;fontFamily=Helvetica;fontSize=22;fontStyle=0;fontColor=#111111;align=center;verticalAlign=middle;shadow=0;metaEdit=1;" vertex="1">
+            <mxGeometry height="92" width="273" x="554" y="120" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" label="%c4Name%" c4Name="Start progress" id="x9hBX7UT77ZdO7A-Fb3o-9">
+          <mxCell edge="1" parent="1" source="x9hBX7UT77ZdO7A-Fb3o-2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=20;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#111111;strokeWidth=2.5;startArrow=none;endArrow=block;endFill=1;endSize=10;fontFamily=Helvetica;fontSize=22;fontStyle=0;fontColor=#111111;labelBackgroundColor=none;align=center;verticalAlign=bottom;shadow=0;metaEdit=1;defaultLabelBackgroundColor=page;" target="x9hBX7UT77ZdO7A-Fb3o-6">
+            <mxGeometry relative="1" x="-0.0651" y="6" as="geometry">
+              <mxPoint as="offset" />
+              <mxPoint x="430" y="210" as="sourcePoint" />
+              <mxPoint x="750" y="210" as="targetPoint" />
+            </mxGeometry>
+          </mxCell>
+        </object>
+        <object placeholders="1" label="%c4Name%" c4Name="Return to open" id="x9hBX7UT77ZdO7A-Fb3o-10">
+          <mxCell edge="1" parent="1" source="x9hBX7UT77ZdO7A-Fb3o-6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=20;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#111111;strokeWidth=2.5;startArrow=none;endArrow=block;endFill=1;endSize=10;fontFamily=Helvetica;fontSize=22;fontStyle=0;fontColor=#111111;labelBackgroundColor=none;align=center;verticalAlign=bottom;shadow=0;metaEdit=1;defaultLabelBackgroundColor=page;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="x9hBX7UT77ZdO7A-Fb3o-2">
+            <mxGeometry relative="1" x="0.0077" as="geometry">
+              <mxPoint x="1" as="offset" />
+              <Array as="points">
+                <mxPoint x="690.5" y="450" />
+                <mxPoint x="154.5" y="450" />
+              </Array>
+              <mxPoint x="300" y="470" as="sourcePoint" />
+              <mxPoint x="563" y="470" as="targetPoint" />
+            </mxGeometry>
+          </mxCell>
+        </object>
+        <object placeholders="1" label="%c4Name%" c4Name="Complete" id="x9hBX7UT77ZdO7A-Fb3o-11">
+          <mxCell edge="1" parent="1" source="x9hBX7UT77ZdO7A-Fb3o-6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=20;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#111111;strokeWidth=2.5;startArrow=none;endArrow=block;endFill=1;endSize=10;fontFamily=Helvetica;fontSize=22;fontStyle=0;fontColor=#111111;labelBackgroundColor=none;align=center;verticalAlign=bottom;shadow=0;metaEdit=1;defaultLabelBackgroundColor=page;" target="x9hBX7UT77ZdO7A-Fb3o-7">
+            <mxGeometry relative="1" x="-0.5455" y="-60" as="geometry">
+              <mxPoint as="offset" />
+              <mxPoint x="400" y="590" as="sourcePoint" />
+              <mxPoint x="663" y="590" as="targetPoint" />
+            </mxGeometry>
+          </mxCell>
+        </object>
+        <object placeholders="1" label="%c4Name%" c4Name="Reopen" id="x9hBX7UT77ZdO7A-Fb3o-12">
+          <mxCell edge="1" parent="1" source="x9hBX7UT77ZdO7A-Fb3o-7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=20;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#111111;strokeWidth=2.5;startArrow=none;endArrow=block;endFill=1;endSize=10;fontFamily=Helvetica;fontSize=22;fontStyle=0;fontColor=#111111;labelBackgroundColor=none;align=center;verticalAlign=bottom;shadow=0;metaEdit=1;defaultLabelBackgroundColor=page;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="x9hBX7UT77ZdO7A-Fb3o-2">
+            <mxGeometry relative="1" x="-0.4602" as="geometry">
+              <mxPoint as="offset" />
+              <mxPoint x="340" y="80" as="sourcePoint" />
+              <mxPoint x="603" y="80" as="targetPoint" />
+            </mxGeometry>
+          </mxCell>
+        </object>
       </root>
     </mxGraphModel>
   </diagram>

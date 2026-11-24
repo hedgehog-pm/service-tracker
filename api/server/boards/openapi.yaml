@@ -266,7 +266,7 @@ x-paths:
       operationId: createBoard
       tags:
       - boards
-      summary: Создать доску проекта без колонок
+      summary: Создать доску
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       requestBody:
@@ -295,7 +295,7 @@ x-paths:
       operationId: getBoard
       tags:
       - boards
-      summary: Получить доску и её колонки в порядке position. status_ids в колонках упорядочены по возрастанию
+      summary: Получить доску с колонками
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: '#/components/parameters/BoardID'
@@ -343,7 +343,7 @@ x-paths:
       operationId: deleteBoard
       tags:
       - boards
-      summary: Удалить доску и её конфигурацию, сохранив задачи проекта
+      summary: Удалить доску
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: '#/components/parameters/BoardID'
@@ -361,8 +361,7 @@ x-paths:
       operationId: createBoardColumn
       tags:
       - boards
-      summary: Вставить колонку в position со сдвигом следующих колонок. Статусы должны использоваться в workflow проекта.
-        status_ids в ответе упорядочены по возрастанию
+      summary: Добавить колонку
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: '#/components/parameters/BoardID'
@@ -397,8 +396,7 @@ x-paths:
       operationId: updateBoardColumn
       tags:
       - boards
-      summary: Заменить название, position и статусы колонки со сдвигом соседних колонок. Статус относится максимум к одной
-        колонке доски. status_ids в ответе упорядочены по возрастанию
+      summary: Изменить колонку
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: '#/components/parameters/BoardID'
@@ -428,7 +426,7 @@ x-paths:
       operationId: deleteBoardColumn
       tags:
       - boards
-      summary: Удалить колонку и её связи со статусами, сохранив задачи и их статусы
+      summary: Удалить колонку
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: '#/components/parameters/BoardID'
@@ -506,9 +504,7 @@ x-paths:
       operationId: moveBoardTask
       tags:
       - boards
-      summary: Атомарно переместить задачу в колонку через workflow и изменить общий rank проекта. before_task_id задаёт якорь
-        в целевой колонке, null означает конец колонки. transition_id=null сохраняет статус. Недоступный якорь или якорь вне
-        целевой колонки возвращает 409
+      summary: Переместить задачу на доске
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: '#/components/parameters/BoardID'

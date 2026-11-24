@@ -198,7 +198,7 @@ func (o getModule) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialec
 	return o.subExpr(0, len(getModuleSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var listModulesSQL = formattedQueries_queries[409:522]
+var listModulesSQL = formattedQueries_queries[409:865]
 
 type ListModulesQuery = orm.ModQuery[*dialect.SelectQuery, listModules, ListModulesRow, []ListModulesRow, listModulesTransformer]
 
@@ -224,6 +224,8 @@ func ListModules(ProjectID int, Offset int, Limit int) *ListModulesQuery {
 						row.ScheduleScanByIndex(0, &t.ID)
 						row.ScheduleScanByIndex(1, &t.ProjectID)
 						row.ScheduleScanByIndex(2, &t.Name)
+						row.ScheduleScanByIndex(3, &t.TasksTotal)
+						row.ScheduleScanByIndex(4, &t.TasksDone)
 						return &t, nil
 					}, func(v any) (ListModulesRow, error) {
 						return *v.(*ListModulesRow), nil
@@ -231,21 +233,22 @@ func ListModules(ProjectID int, Offset int, Limit int) *ListModulesQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendSelect(expressionTypArgs.subExpr(9, 33))
-			q.SetTable(expressionTypArgs.subExpr(41, 48))
-			q.AppendWhere(expressionTypArgs.subExpr(57, 72))
-			q.AppendOrder(expressionTypArgs.subExpr(84, 90))
-			q.SetOffset(expressionTypArgs.subExpr(100, 102))
-			q.SetLimit(expressionTypArgs.subExpr(111, 113))
+			q.AppendCTE(expressionTypArgs.subExpr(5, 129))
+			q.AppendSelect(expressionTypArgs.subExpr(139, 263))
+			q.SetTable(expressionTypArgs.subExpr(269, 406))
+			q.AppendGroup(expressionTypArgs.subExpr(416, 442))
+			q.AppendOrder(expressionTypArgs.subExpr(452, 456))
 		}),
 		Build: psql.Select,
 	}
 }
 
 type ListModulesRow = struct {
-	ID        int    `db:"id"`
-	ProjectID int    `db:"project_id"`
-	Name      string `db:"name"`
+	ID         int    `db:"id"`
+	ProjectID  int    `db:"project_id"`
+	Name       string `db:"name"`
+	TasksTotal int    `db:"tasks_total"`
+	TasksDone  int    `db:"tasks_done"`
 }
 
 type listModulesTransformer = bob.SliceTransformer[ListModulesRow, []ListModulesRow]
@@ -260,8 +263,8 @@ func (o listModules) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      70,
-			Stop:       72,
+			Start:      88,
+			Stop:       90,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -269,8 +272,8 @@ func (o listModules) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "offset",
-			Start:      100,
-			Stop:       102,
+			Start:      114,
+			Stop:       116,
 			Expression: o.Offset,
 		}) {
 			return
@@ -278,8 +281,8 @@ func (o listModules) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "limit",
-			Start:      111,
-			Stop:       113,
+			Start:      125,
+			Stop:       127,
 			Expression: o.Limit,
 		}) {
 			return
@@ -299,7 +302,7 @@ func (o listModules) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dial
 	return o.subExpr(0, len(listModulesSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var updateModuleSQL = formattedQueries_queries[541:648]
+var updateModuleSQL = formattedQueries_queries[884:991]
 
 type UpdateModuleQuery = orm.ModQuery[*dialect.UpdateQuery, updateModule, UpdateModuleRow, []UpdateModuleRow, updateModuleTransformer]
 
@@ -398,7 +401,7 @@ func (o updateModule) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dia
 	return o.subExpr(0, len(updateModuleSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var deleteModuleSQL = formattedQueries_queries[667:726]
+var deleteModuleSQL = formattedQueries_queries[1010:1069]
 
 type DeleteModuleQuery = orm.ModExecQuery[*dialect.DeleteQuery, deleteModule]
 

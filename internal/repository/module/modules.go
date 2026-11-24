@@ -13,6 +13,7 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	bobgen "github.com/hedgehog-pm/service-tracker/internal/generated/bob/module"
 	"github.com/hedgehog-pm/service-tracker/internal/storage/postgres"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/listmodules"
 )
 
 func (r *Postgres) InsertModule(ctx context.Context, value domain.Module) (domain.Module, error) {
@@ -89,7 +90,7 @@ func (r *Postgres) ListModules(
 	projectID int,
 	limit int,
 	offset int,
-) ([]domain.Module, error) {
+) ([]listmodules.ModuleWithProgress, error) {
 	q := bobgen.ListModules(projectID, offset, limit)
 
 	query, args, err := bob.Build(ctx, q)
@@ -102,8 +103,14 @@ func (r *Postgres) ListModules(
 		return nil, postgres.MapError(ctx, fmt.Errorf("list modules: %w", err))
 	}
 
-	items := lo.Map(rows, func(row bobgen.ListModulesRow, _ int) domain.Module {
-		return moduleToDomain(row)
+	items := lo.Map(rows, func(row bobgen.ListModulesRow, _ int) listmodules.ModuleWithProgress {
+		return listmodules.ModuleWithProgress{
+			ID:         row.ID,
+			ProjectID:  row.ProjectID,
+			Name:       row.Name,
+			TasksTotal: int64(row.TasksTotal),
+			TasksDone:  int64(row.TasksDone),
+		}
 	})
 
 	return items, nil

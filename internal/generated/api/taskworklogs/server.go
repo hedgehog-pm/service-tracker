@@ -29,6 +29,44 @@ type CreateTaskWorklog struct {
 	TimeSpentSeconds int       `json:"time_spent_seconds"`
 }
 
+// ProjectWorklog defines model for ProjectWorklog.
+type ProjectWorklog struct {
+	Comment          *string   `json:"comment"`
+	ID               int       `json:"id"`
+	StartedAt        time.Time `json:"started_at"`
+	TaskID           int       `json:"task_id"`
+	TaskKey          string    `json:"task_key"`
+	TaskTitle        string    `json:"task_title"`
+	TimeSpentSeconds int       `json:"time_spent_seconds"`
+}
+
+// ProjectWorklogByTask defines model for ProjectWorklogByTask.
+type ProjectWorklogByTask struct {
+	TaskID           int    `json:"task_id"`
+	TaskKey          string `json:"task_key"`
+	TaskTitle        string `json:"task_title"`
+	TimeSpentSeconds int64  `json:"time_spent_seconds"`
+	WorklogsCount    int64  `json:"worklogs_count"`
+}
+
+// ProjectWorklogByTaskList defines model for ProjectWorklogByTaskList.
+type ProjectWorklogByTaskList struct {
+	Items                 []ProjectWorklogByTask `json:"items"`
+	Limit                 int                    `json:"limit"`
+	Offset                int                    `json:"offset"`
+	TotalEstimateSeconds  *int64                 `json:"total_estimate_seconds"`
+	TotalTimeSpentSeconds int64                  `json:"total_time_spent_seconds"`
+}
+
+// ProjectWorklogList defines model for ProjectWorklogList.
+type ProjectWorklogList struct {
+	Items                 []ProjectWorklog `json:"items"`
+	Limit                 int              `json:"limit"`
+	Offset                int              `json:"offset"`
+	TotalEstimateSeconds  *int64           `json:"total_estimate_seconds"`
+	TotalTimeSpentSeconds int64            `json:"total_time_spent_seconds"`
+}
+
 // TaskWorklog defines model for TaskWorklog.
 type TaskWorklog struct {
 	Comment          *string   `json:"comment"`
@@ -55,13 +93,40 @@ type UpdateTaskWorklog struct {
 	TimeSpentSeconds int       `json:"time_spent_seconds"`
 }
 
+// WorklogFrom defines model for WorklogFrom.
+type WorklogFrom = time.Time
+
 // WorklogID defines model for WorklogID.
 type WorklogID = int
+
+// WorklogQuery defines model for WorklogQuery.
+type WorklogQuery = string
+
+// WorklogTo defines model for WorklogTo.
+type WorklogTo = time.Time
 
 // ListTaskWorklogsParams defines parameters for ListTaskWorklogs.
 type ListTaskWorklogsParams struct {
 	Limit  *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
 	Offset *externalRef0.Offset `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
+// ListProjectWorklogsParams defines parameters for ListProjectWorklogs.
+type ListProjectWorklogsParams struct {
+	Limit  *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *externalRef0.Offset `form:"offset,omitempty" json:"offset,omitempty"`
+	From   *WorklogFrom         `form:"from,omitempty" json:"from,omitempty"`
+	To     *WorklogTo           `form:"to,omitempty" json:"to,omitempty"`
+	Q      *WorklogQuery        `form:"q,omitempty" json:"q,omitempty"`
+}
+
+// ListProjectWorklogsByTaskParams defines parameters for ListProjectWorklogsByTask.
+type ListProjectWorklogsByTaskParams struct {
+	Limit  *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *externalRef0.Offset `form:"offset,omitempty" json:"offset,omitempty"`
+	From   *WorklogFrom         `form:"from,omitempty" json:"from,omitempty"`
+	To     *WorklogTo           `form:"to,omitempty" json:"to,omitempty"`
+	Q      *WorklogQuery        `form:"q,omitempty" json:"q,omitempty"`
 }
 
 // CreateTaskWorklogJSONRequestBody defines body for CreateTaskWorklog for application/json ContentType.
@@ -87,6 +152,12 @@ type ServerInterface interface {
 	// UpdateTaskWorklog Заменить дату работы, длительность и комментарий существующей записи трудозатрат
 	// (PUT /projects/{project_id}/tasks/{task_id}/worklogs/{worklog_id})
 	UpdateTaskWorklog(ctx *echo.Context, projectID externalRef0.ProjectID, taskID externalRef0.TaskID, worklogID WorklogID) error
+	// ListProjectWorklogs Получить журнал трудозатрат проекта
+	// (GET /projects/{project_id}/worklogs)
+	ListProjectWorklogs(ctx *echo.Context, projectID externalRef0.ProjectID, params ListProjectWorklogsParams) error
+	// ListProjectWorklogsByTask Получить трудозатраты по задачам проекта
+	// (GET /projects/{project_id}/worklogs/by-task)
+	ListProjectWorklogsByTask(ctx *echo.Context, projectID externalRef0.ProjectID, params ListProjectWorklogsByTaskParams) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -254,6 +325,112 @@ func (w *ServerInterfaceWrapper) UpdateTaskWorklog(ctx *echo.Context) error {
 	return err
 }
 
+// ListProjectWorklogs converts echo context to params.
+func (w *ServerInterfaceWrapper) ListProjectWorklogs(ctx *echo.Context) error {
+	var err error
+	// ------------- Path parameter "project_id" -------------
+	var projectID externalRef0.ProjectID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "project_id", ctx.Param("project_id"), &projectID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "int32", ValueIsUnescaped: ctx.Request().URL.RawPath == ""})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter project_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListProjectWorklogsParams
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", ctx.QueryParams(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "offset", ctx.QueryParams(), &params.Offset, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", ctx.QueryParams(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter from: %s", err))
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", ctx.QueryParams(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter to: %s", err))
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", ctx.QueryParams(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter q: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ListProjectWorklogs(ctx, projectID, params)
+	return err
+}
+
+// ListProjectWorklogsByTask converts echo context to params.
+func (w *ServerInterfaceWrapper) ListProjectWorklogsByTask(ctx *echo.Context) error {
+	var err error
+	// ------------- Path parameter "project_id" -------------
+	var projectID externalRef0.ProjectID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "project_id", ctx.Param("project_id"), &projectID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "int32", ValueIsUnescaped: ctx.Request().URL.RawPath == ""})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter project_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListProjectWorklogsByTaskParams
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", ctx.QueryParams(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "offset", ctx.QueryParams(), &params.Offset, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", ctx.QueryParams(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter from: %s", err))
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", ctx.QueryParams(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter to: %s", err))
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", ctx.QueryParams(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter q: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ListProjectWorklogsByTask(ctx, projectID, params)
+	return err
+}
+
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -301,6 +478,8 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 		Handler: si,
 	}
 
+	router.GET(options.BaseURL+"/projects/:project_id/worklogs", wrapper.ListProjectWorklogs, options.OperationMiddlewares["listProjectWorklogs"]...)
+	router.GET(options.BaseURL+"/projects/:project_id/worklogs/by-task", wrapper.ListProjectWorklogsByTask, options.OperationMiddlewares["listProjectWorklogsByTask"]...)
 	router.GET(options.BaseURL+"/projects/:project_id/tasks/:task_id/worklogs", wrapper.ListTaskWorklogs, options.OperationMiddlewares["listTaskWorklogs"]...)
 	router.POST(options.BaseURL+"/projects/:project_id/tasks/:task_id/worklogs", wrapper.CreateTaskWorklog, options.OperationMiddlewares["createTaskWorklog"]...)
 	router.DELETE(options.BaseURL+"/projects/:project_id/tasks/:task_id/worklogs/:worklog_id", wrapper.DeleteTaskWorklog, options.OperationMiddlewares["deleteTaskWorklog"]...)
@@ -664,6 +843,148 @@ func (response UpdateTaskWorklog500JSONResponse) VisitUpdateTaskWorklogResponse(
 	return err
 }
 
+type ListProjectWorklogsRequestObject struct {
+	ProjectID externalRef0.ProjectID `json:"project_id"`
+	Params    ListProjectWorklogsParams
+}
+
+type ListProjectWorklogsResponseObject interface {
+	VisitListProjectWorklogsResponse(w http.ResponseWriter) error
+}
+
+type ListProjectWorklogs200JSONResponse ProjectWorklogList
+
+func (response ListProjectWorklogs200JSONResponse) VisitListProjectWorklogsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListProjectWorklogs400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response ListProjectWorklogs400JSONResponse) VisitListProjectWorklogsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListProjectWorklogs404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response ListProjectWorklogs404JSONResponse) VisitListProjectWorklogsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListProjectWorklogs500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response ListProjectWorklogs500JSONResponse) VisitListProjectWorklogsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListProjectWorklogsByTaskRequestObject struct {
+	ProjectID externalRef0.ProjectID `json:"project_id"`
+	Params    ListProjectWorklogsByTaskParams
+}
+
+type ListProjectWorklogsByTaskResponseObject interface {
+	VisitListProjectWorklogsByTaskResponse(w http.ResponseWriter) error
+}
+
+type ListProjectWorklogsByTask200JSONResponse ProjectWorklogByTaskList
+
+func (response ListProjectWorklogsByTask200JSONResponse) VisitListProjectWorklogsByTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListProjectWorklogsByTask400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response ListProjectWorklogsByTask400JSONResponse) VisitListProjectWorklogsByTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListProjectWorklogsByTask404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response ListProjectWorklogsByTask404JSONResponse) VisitListProjectWorklogsByTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListProjectWorklogsByTask500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response ListProjectWorklogsByTask500JSONResponse) VisitListProjectWorklogsByTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// ListTaskWorklogs Получить записи трудозатрат по убыванию started_at и id и сумму времени по всем записям задачи
@@ -681,6 +1002,12 @@ type StrictServerInterface interface {
 	// UpdateTaskWorklog Заменить дату работы, длительность и комментарий существующей записи трудозатрат
 	// (PUT /projects/{project_id}/tasks/{task_id}/worklogs/{worklog_id})
 	UpdateTaskWorklog(ctx context.Context, request UpdateTaskWorklogRequestObject) (UpdateTaskWorklogResponseObject, error)
+	// ListProjectWorklogs Получить журнал трудозатрат проекта
+	// (GET /projects/{project_id}/worklogs)
+	ListProjectWorklogs(ctx context.Context, request ListProjectWorklogsRequestObject) (ListProjectWorklogsResponseObject, error)
+	// ListProjectWorklogsByTask Получить трудозатраты по задачам проекта
+	// (GET /projects/{project_id}/worklogs/by-task)
+	ListProjectWorklogsByTask(ctx context.Context, request ListProjectWorklogsByTaskRequestObject) (ListProjectWorklogsByTaskResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx *echo.Context, request any) (any, error)
@@ -861,36 +1188,93 @@ func (sh *strictHandler) UpdateTaskWorklog(ctx *echo.Context, projectID external
 	return nil
 }
 
+// ListProjectWorklogs operation middleware
+func (sh *strictHandler) ListProjectWorklogs(ctx *echo.Context, projectID externalRef0.ProjectID, params ListProjectWorklogsParams) error {
+	var request ListProjectWorklogsRequestObject
+
+	request.ProjectID = projectID
+	request.Params = params
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ListProjectWorklogs(ctx.Request().Context(), request.(ListProjectWorklogsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListProjectWorklogs")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ListProjectWorklogsResponseObject); ok {
+		return validResponse.VisitListProjectWorklogsResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// ListProjectWorklogsByTask operation middleware
+func (sh *strictHandler) ListProjectWorklogsByTask(ctx *echo.Context, projectID externalRef0.ProjectID, params ListProjectWorklogsByTaskParams) error {
+	var request ListProjectWorklogsByTaskRequestObject
+
+	request.ProjectID = projectID
+	request.Params = params
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ListProjectWorklogsByTask(ctx.Request().Context(), request.(ListProjectWorklogsByTaskRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListProjectWorklogsByTask")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ListProjectWorklogsByTaskResponseObject); ok {
+		return validResponse.VisitListProjectWorklogsByTaskResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
 // Base64 encoded, compressed with deflate, json marshaled OpenAPI spec.
 // Stored as a slice of fixed-width chunks rather than one concatenated
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
-	"KUXS1Q0TWjMPE25QKi+HCEuSfixJb+DgIPtnAA==",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

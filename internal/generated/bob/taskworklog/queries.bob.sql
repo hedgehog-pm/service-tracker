@@ -105,3 +105,99 @@ WHERE
     SELECT 1 FROM tasks AS t
     WHERE t.id = w.task_id AND t.project_id = $3
   );
+
+-- ListProjectWorklogs
+WITH filtered AS (
+  SELECT
+    w.id, w.task_id, w.started_at, w.time_spent_seconds, w.comment,
+    p.key || '-' || t.number::TEXT AS task_key,
+    t.title AS task_title
+  FROM task_worklogs AS w
+  JOIN tasks AS t ON t.id = w.task_id
+  JOIN projects AS p ON p.id = t.project_id
+  WHERE t.project_id = $1
+    AND ($2::TIMESTAMPTZ IS NULL OR w.started_at >= $2)
+    AND ($3::TIMESTAMPTZ IS NULL OR w.started_at < $3)
+    AND (
+      $4::TEXT = ''
+      OR strpos(lower(t.title), lower($4)) > 0
+      OR strpos(lower(p.key || '-' || t.number::TEXT), lower($4)) > 0
+    )
+),
+time_total AS (
+  SELECT COALESCE(SUM(time_spent_seconds), 0)::BIGINT AS total_time_spent_seconds
+  FROM filtered
+),
+page AS (
+  SELECT id, task_id, task_key, task_title, started_at, time_spent_seconds, comment
+  FROM filtered
+  ORDER BY started_at DESC, id DESC
+  LIMIT $6
+  OFFSET $5
+)
+SELECT
+  time_total.total_time_spent_seconds,
+  (SELECT SUM(estimate_seconds) FROM tasks WHERE project_id = p.id)
+    AS total_estimate_seconds,
+  page.id,
+  page.task_id,
+  page.task_key,
+  page.task_title,
+  page.started_at,
+  page.time_spent_seconds,
+  page.comment
+FROM projects AS p
+CROSS JOIN time_total
+LEFT JOIN page ON TRUE
+WHERE p.id = $1
+ORDER BY page.started_at DESC, page.id DESC;
+
+-- ListProjectWorklogsByTask
+WITH filtered AS (
+  SELECT
+    w.task_id, w.time_spent_seconds,
+    p.key || '-' || t.number::TEXT AS task_key,
+    t.title AS task_title
+  FROM task_worklogs AS w
+  JOIN tasks AS t ON t.id = w.task_id
+  JOIN projects AS p ON p.id = t.project_id
+  WHERE t.project_id = $1
+    AND ($2::TIMESTAMPTZ IS NULL OR w.started_at >= $2)
+    AND ($3::TIMESTAMPTZ IS NULL OR w.started_at < $3)
+    AND (
+      $4::TEXT = ''
+      OR strpos(lower(t.title), lower($4)) > 0
+      OR strpos(lower(p.key || '-' || t.number::TEXT), lower($4)) > 0
+    )
+),
+task_totals AS (
+  SELECT task_id, task_key, task_title,
+    COUNT(*) AS worklogs_count, SUM(time_spent_seconds) AS time_spent_seconds
+  FROM filtered
+  GROUP BY task_id, task_key, task_title
+),
+time_total AS (
+  SELECT COALESCE(SUM(time_spent_seconds), 0)::BIGINT AS total_time_spent_seconds
+  FROM task_totals
+),
+page AS (
+  SELECT task_id, task_key, task_title, worklogs_count, time_spent_seconds
+  FROM task_totals
+  ORDER BY time_spent_seconds DESC, task_id
+  LIMIT $6
+  OFFSET $5
+)
+SELECT
+  time_total.total_time_spent_seconds,
+  (SELECT SUM(estimate_seconds) FROM tasks WHERE project_id = p.id)
+    AS total_estimate_seconds,
+  page.task_id,
+  page.task_key,
+  page.task_title,
+  page.worklogs_count,
+  page.time_spent_seconds
+FROM projects AS p
+CROSS JOIN time_total
+LEFT JOIN page ON TRUE
+WHERE p.id = $1
+ORDER BY page.time_spent_seconds DESC, page.task_id;

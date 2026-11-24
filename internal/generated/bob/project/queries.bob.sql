@@ -90,3 +90,56 @@ FROM
 WHERE
   id = $1
 FOR NO KEY UPDATE;
+
+-- GetProjectSummary
+WITH project_tasks AS (
+  SELECT
+    t.id, t.number, t.title, t.status_id, t.priority_id,
+    t.due_date, t.estimate_seconds, s.category
+  FROM tasks AS t
+  JOIN statuses AS s ON s.id = t.status_id
+  WHERE t.project_id = $1
+),
+task_totals AS (
+  SELECT
+    COUNT(*) AS tasks_total,
+    COUNT(*) FILTER (WHERE category <> 'done') AS tasks_open,
+    COUNT(*) FILTER (
+      WHERE category <> 'done' AND due_date >= $2::DATE AND due_date < $2::DATE + 7
+    ) AS tasks_due_soon,
+    COUNT(*) FILTER (WHERE category <> 'done' AND due_date < $2::DATE) AS tasks_overdue,
+    SUM(estimate_seconds) AS total_estimate_seconds
+  FROM project_tasks
+),
+time_total AS (
+  SELECT COALESCE(SUM(w.time_spent_seconds), 0)::BIGINT AS total_time_spent_seconds
+  FROM task_worklogs AS w
+  JOIN project_tasks AS t ON t.id = w.task_id
+),
+deadlines AS (
+  SELECT id, number, title, status_id, priority_id, due_date
+  FROM project_tasks
+  WHERE category <> 'done' AND due_date >= $2::DATE
+  ORDER BY due_date, number
+  LIMIT 5
+)
+SELECT
+  totals.tasks_total,
+  totals.tasks_open,
+  totals.tasks_due_soon,
+  totals.tasks_overdue,
+  totals.total_estimate_seconds,
+  time_total.total_time_spent_seconds,
+  p.key AS project_key,
+  d.id,
+  d.number,
+  d.title,
+  d.status_id,
+  d.priority_id,
+  d.due_date
+FROM projects AS p
+CROSS JOIN task_totals AS totals
+CROSS JOIN time_total
+LEFT JOIN deadlines AS d ON TRUE
+WHERE p.id = $1
+ORDER BY d.due_date, d.number;

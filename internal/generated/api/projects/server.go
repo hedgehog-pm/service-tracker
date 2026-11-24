@@ -19,6 +19,7 @@ import (
 	externalRef0 "github.com/hedgehog-pm/service-tracker/internal/generated/api/common"
 	"github.com/labstack/echo/v5"
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // CreateProject defines model for CreateProject.
@@ -39,6 +40,27 @@ type ProjectList struct {
 	Items  []Project `json:"items"`
 	Limit  int       `json:"limit"`
 	Offset int       `json:"offset"`
+}
+
+// ProjectSummary defines model for ProjectSummary.
+type ProjectSummary struct {
+	TasksDueSoon          int64          `json:"tasks_due_soon"`
+	TasksOpen             int64          `json:"tasks_open"`
+	TasksOverdue          int64          `json:"tasks_overdue"`
+	TasksTotal            int64          `json:"tasks_total"`
+	TotalEstimateSeconds  *int64         `json:"total_estimate_seconds"`
+	TotalTimeSpentSeconds int64          `json:"total_time_spent_seconds"`
+	UpcomingTasks         []UpcomingTask `json:"upcoming_tasks"`
+}
+
+// UpcomingTask defines model for UpcomingTask.
+type UpcomingTask struct {
+	DueDate    openapi_types.Date `json:"due_date"`
+	ID         int                `json:"id"`
+	Key        string             `json:"key"`
+	PriorityID int                `json:"priority_id"`
+	StatusID   int                `json:"status_id"`
+	Title      string             `json:"title"`
 }
 
 // UpdateProject defines model for UpdateProject.
@@ -75,6 +97,9 @@ type ServerInterface interface {
 	// UpdateProject Переименовать проект
 	// (PUT /projects/{project_id})
 	UpdateProject(ctx *echo.Context, projectID int) error
+	// GetProjectSummary Получить сводку проекта
+	// (GET /projects/{project_id}/summary)
+	GetProjectSummary(ctx *echo.Context, projectID externalRef0.ProjectID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -164,6 +189,22 @@ func (w *ServerInterfaceWrapper) UpdateProject(ctx *echo.Context) error {
 	return err
 }
 
+// GetProjectSummary converts echo context to params.
+func (w *ServerInterfaceWrapper) GetProjectSummary(ctx *echo.Context) error {
+	var err error
+	// ------------- Path parameter "project_id" -------------
+	var projectID externalRef0.ProjectID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "project_id", ctx.Param("project_id"), &projectID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "int32", ValueIsUnescaped: ctx.Request().URL.RawPath == ""})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter project_id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetProjectSummary(ctx, projectID)
+	return err
+}
+
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -211,6 +252,7 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 		Handler: si,
 	}
 
+	router.GET(options.BaseURL+"/projects/:project_id/summary", wrapper.GetProjectSummary, options.OperationMiddlewares["getProjectSummary"]...)
 	router.GET(options.BaseURL+"/projects", wrapper.ListProjects, options.OperationMiddlewares["listProjects"]...)
 	router.POST(options.BaseURL+"/projects", wrapper.CreateProject, options.OperationMiddlewares["createProject"]...)
 	router.DELETE(options.BaseURL+"/projects/:project_id", wrapper.DeleteProject, options.OperationMiddlewares["deleteProject"]...)
@@ -564,6 +606,76 @@ func (response UpdateProject500JSONResponse) VisitUpdateProjectResponse(w http.R
 	return err
 }
 
+type GetProjectSummaryRequestObject struct {
+	ProjectID externalRef0.ProjectID `json:"project_id"`
+}
+
+type GetProjectSummaryResponseObject interface {
+	VisitGetProjectSummaryResponse(w http.ResponseWriter) error
+}
+
+type GetProjectSummary200JSONResponse ProjectSummary
+
+func (response GetProjectSummary200JSONResponse) VisitGetProjectSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetProjectSummary400JSONResponse struct {
+	externalRef0.BadRequestJSONResponse
+}
+
+func (response GetProjectSummary400JSONResponse) VisitGetProjectSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetProjectSummary404JSONResponse struct {
+	externalRef0.NotFoundJSONResponse
+}
+
+func (response GetProjectSummary404JSONResponse) VisitGetProjectSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetProjectSummary500JSONResponse struct {
+	externalRef0.InternalErrorJSONResponse
+}
+
+func (response GetProjectSummary500JSONResponse) VisitGetProjectSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// ListProjects Получить список проектов
@@ -581,6 +693,9 @@ type StrictServerInterface interface {
 	// UpdateProject Переименовать проект
 	// (PUT /projects/{project_id})
 	UpdateProject(ctx context.Context, request UpdateProjectRequestObject) (UpdateProjectResponseObject, error)
+	// GetProjectSummary Получить сводку проекта
+	// (GET /projects/{project_id}/summary)
+	GetProjectSummary(ctx context.Context, request GetProjectSummaryRequestObject) (GetProjectSummaryResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx *echo.Context, request any) (any, error)
@@ -750,31 +865,60 @@ func (sh *strictHandler) UpdateProject(ctx *echo.Context, projectID int) error {
 	return nil
 }
 
+// GetProjectSummary operation middleware
+func (sh *strictHandler) GetProjectSummary(ctx *echo.Context, projectID externalRef0.ProjectID) error {
+	var request GetProjectSummaryRequestObject
+
+	request.ProjectID = projectID
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetProjectSummary(ctx.Request().Context(), request.(GetProjectSummaryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetProjectSummary")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetProjectSummaryResponseObject); ok {
+		return validResponse.VisitGetProjectSummaryResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
 // Base64 encoded, compressed with deflate, json marshaled OpenAPI spec.
 // Stored as a slice of fixed-width chunks rather than one concatenated
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"7Ffdbts2FH4V46x3Y2w1SS+qu7X7QYFgC4btZoFncBLtsJVIhaKDGoaA/AzozYA9QjfsBYIiQb0kc4A9",
-	"wdEbDaRsy3Ysx4mdxFlzY1gUdfjxnO/8fG3wZBhJwYSOwW1DRBUNmWbKPtGI12KmdpmqeTIMpajJiAmz",
-	"usFDrs0WLsCFnSZTLSAgaMjAhcC+JBB72yykZpfP6rQZaHCfOQTqUoVUgwtc6LVVIBDStzxshuCuOg6B",
-	"kIvs6SkB3YpYtpE1mAICb1caciVfhSQhU1B+V6/HrBCmzN5OxDkRZh+YMxOwhIBicSRFzK5w5gvqf892",
-	"miy2UD0pNBM6+yQKuEc1l6LyOpbCrOVgnyhWBxc+q+QhrGRv40rxYV8pJVUGz2exp3hkzIMLMNWVL6Wo",
-	"B9xbYoSvhGZK0CD7fGlhfiv117Ip/PtFmPRZb6n5UjGq2aaSr1kWYer73OylwaaSEVOaGw7XaRAzAtHQ",
-	"UhvesFZWOLRxP7jw89YXKz9VzY+z8rz6+RMYZEusFRcNSPoZ2DYptcFEQ28PZ3t/m02gnSZXzAd3yx7U",
-	"+7I62Ct/sZATAjdDz20cilN9phpE7s4J3Acyoyc2eHxtb2gWjv6ZRry+x5MBBqoUbZnnoN8eFlrrSb9k",
-	"u+25q/OYW+19yaBz9c6Z5N0fI//GuXKTiBeG+aq8vx40T/oWGhPGh1vAxS4NuF/jImoajwipa3Vbtwh4",
-	"/V5AgPeKbo3ZM6vjtxl1fc591oc4/fIWFYFx430nmO1c1KU1xHVg3v2gqPeGqVKURchEdZepOCt8Tnm1",
-	"7FgiZa4CF9bKTnkNiMndbeuJyuBLtw2NjG3GU7Y2v/LBBZNZm7n54Zlpa3LK5FsqV81UCZnDRG/gSapj",
-	"s8eq4yys3wyXl4Lut+44RVYGsCozzUMJgWfzGRsdC2zja4YhVS1wAd9jF8/Sw/QddtKD9LdSuo8X2En3",
-	"sYunJbxI97CLJ3iaHmAXPwABTRsmyDCgSDUhEMl4AklGe2pGaxbrF9JvLSwUo2cko9mjVZMll3jwdNE8",
-	"uBMOrDvP5zE2GF5vmU5/Yhc/4jEeWTIN88cwq1tK99MDPEr3Mj5hF/8u4TF20308NQ+TCZaQvCRV2r1/",
-	"Ne4nmWAJmGaX2felXc/ZN1ajrBwyFS9XQ7lhGGfRsEKac1SaUJnWs3vcMn/W5zE2mNlvmT9/Ge7gGXYK",
-	"+IMf0n08wXPslPAjHlmmvcOjbKHz7x94jl08Tg/xLP3dLBZVrIld7RumHwRfnAdawR4EA8cb4ggH8cJw",
-	"sIPHeIL/pAfYSX/FDp6acofddC89LOyQzQl8Gx2kl41yi2/Wo/edqVl/8lR/IH3/PZ6ke3iCHTw3qWGb",
-	"++UZoKC9J4aDA/XhySBgXhaaAvkRzCI/yuVKdoNK7wblFg2DIkVxSXpc7/OllB0zXCEP/DTJcS1D9yU3",
-	"vEe5sZjYj5acaxkqLjeLo9BtSQyuWThNUPj/M0ExF0PWb2qoeIxbHEPuVUQ0HkXEp8m6OxQOzUfhsKTC",
-	"4f7pveTdez6hkPw3AA==",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

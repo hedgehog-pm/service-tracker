@@ -5,9 +5,11 @@ package project
 
 import (
 	"context"
+	"database/sql"
 	_ "embed"
 	"io"
 	"iter"
+	"time"
 
 	"github.com/stephenafamo/bob"
 	"github.com/stephenafamo/bob/clause"
@@ -624,4 +626,152 @@ func (o lockProject) subExpr(from, to int) bob.Expression {
 
 func (o lockProject) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
 	return o.subExpr(0, len(lockProjectSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var getProjectSummarySQL = formattedQueries_queries[1133:2560]
+
+type GetProjectSummaryQuery = orm.ModQuery[*dialect.SelectQuery, getProjectSummary, GetProjectSummaryRow, []GetProjectSummaryRow, getProjectSummaryTransformer]
+
+func GetProjectSummary(ProjectID int, Today time.Time) *GetProjectSummaryQuery {
+	var expressionTypArgs getProjectSummary
+
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+	expressionTypArgs.Today = psql.Arg(Today)
+
+	return &GetProjectSummaryQuery{
+		Query: orm.Query[getProjectSummary, GetProjectSummaryRow, []GetProjectSummaryRow, getProjectSummaryTransformer]{
+			ExecQuery: orm.ExecQuery[getProjectSummary]{
+				BaseQuery: bob.BaseQuery[getProjectSummary]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeSelect,
+				},
+			},
+			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (GetProjectSummaryRow, error)) {
+				return func(row *scan.Row) (any, error) {
+						var t GetProjectSummaryRow
+						row.ScheduleScanByIndex(0, &t.TasksTotal)
+						row.ScheduleScanByIndex(1, &t.TasksOpen)
+						row.ScheduleScanByIndex(2, &t.TasksDueSoon)
+						row.ScheduleScanByIndex(3, &t.TasksOverdue)
+						row.ScheduleScanByIndex(4, &t.TotalEstimateSeconds)
+						row.ScheduleScanByIndex(5, &t.TotalTimeSpentSeconds)
+						row.ScheduleScanByIndex(6, &t.ProjectKey)
+						row.ScheduleScanByIndex(7, &t.ID)
+						row.ScheduleScanByIndex(8, &t.Number)
+						row.ScheduleScanByIndex(9, &t.Title)
+						row.ScheduleScanByIndex(10, &t.StatusID)
+						row.ScheduleScanByIndex(11, &t.PriorityID)
+						row.ScheduleScanByIndex(12, &t.DueDate)
+						return &t, nil
+					}, func(v any) (GetProjectSummaryRow, error) {
+						return *v.(*GetProjectSummaryRow), nil
+					}
+			},
+		},
+		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
+			q.AppendCTE(expressionTypArgs.subExpr(5, 225))
+			q.AppendCTE(expressionTypArgs.subExpr(227, 638))
+			q.AppendCTE(expressionTypArgs.subExpr(640, 813))
+			q.AppendCTE(expressionTypArgs.subExpr(815, 1003))
+			q.AppendSelect(expressionTypArgs.subExpr(1013, 1274))
+			q.SetTable(expressionTypArgs.subExpr(1280, 1381))
+			q.AppendWhere(expressionTypArgs.subExpr(1388, 1397))
+			q.AppendOrder(expressionTypArgs.subExpr(1407, 1427))
+		}),
+		Build: psql.Select,
+	}
+}
+
+type GetProjectSummaryRow = struct {
+	TasksTotal            int                 `db:"tasks_total"`
+	TasksOpen             int                 `db:"tasks_open"`
+	TasksDueSoon          int                 `db:"tasks_due_soon"`
+	TasksOverdue          int                 `db:"tasks_overdue"`
+	TotalEstimateSeconds  *int64              `db:"total_estimate_seconds"`
+	TotalTimeSpentSeconds int                 `db:"total_time_spent_seconds"`
+	ProjectKey            string              `db:"project_key"`
+	ID                    sql.Null[int]       `db:"id"`
+	Number                sql.Null[int]       `db:"number"`
+	Title                 sql.Null[string]    `db:"title"`
+	StatusID              sql.Null[int]       `db:"status_id"`
+	PriorityID            sql.Null[int]       `db:"priority_id"`
+	DueDate               sql.Null[time.Time] `db:"due_date"`
+}
+
+type getProjectSummaryTransformer = bob.SliceTransformer[GetProjectSummaryRow, []GetProjectSummaryRow]
+
+type getProjectSummary struct {
+	ProjectID bob.Expression
+	Today     bob.Expression
+}
+
+func (o getProjectSummary) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      221,
+			Stop:       223,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "today",
+			Start:      413,
+			Stop:       415,
+			Expression: o.Today,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "today",
+			Start:      437,
+			Stop:       439,
+			Expression: o.Today,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "today",
+			Start:      536,
+			Stop:       538,
+			Expression: o.Today,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "today",
+			Start:      955,
+			Stop:       957,
+			Expression: o.Today,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      1395,
+			Stop:       1397,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+	}
+}
+
+func (o getProjectSummary) raw(from, to int) string {
+	return getProjectSummarySQL[from:to]
+}
+
+func (o getProjectSummary) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(getProjectSummarySQL, from, to, o.args())
+}
+
+func (o getProjectSummary) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(getProjectSummarySQL)).WriteSQL(ctx, w, d, start)
 }

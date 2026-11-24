@@ -7,6 +7,10 @@ paths:
     $ref: '#/x-paths/collection'
   /projects/{project_id}/tasks/{task_id}/worklogs/{worklog_id}:
     $ref: '#/x-paths/item'
+  /projects/{project_id}/worklogs:
+    $ref: '#/x-paths/project'
+  /projects/{project_id}/worklogs/by-task:
+    $ref: '#/x-paths/project-by-task'
 components:
   schemas:
     TaskWorklog:
@@ -113,7 +117,156 @@ components:
           type: integer
           format: int64
           minimum: 0
+    ProjectWorklog:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - task_id
+      - task_key
+      - task_title
+      - started_at
+      - time_spent_seconds
+      - comment
+      properties:
+        id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        task_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        task_key:
+          type: string
+        task_title:
+          type: string
+        started_at:
+          type: string
+          format: date-time
+        time_spent_seconds:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        comment:
+          type: string
+          nullable: true
+    ProjectWorklogByTask:
+      type: object
+      additionalProperties: false
+      required:
+      - task_id
+      - task_key
+      - task_title
+      - worklogs_count
+      - time_spent_seconds
+      properties:
+        task_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        task_key:
+          type: string
+        task_title:
+          type: string
+        worklogs_count:
+          type: integer
+          format: int64
+          minimum: 0
+        time_spent_seconds:
+          type: integer
+          format: int64
+          minimum: 0
+    ProjectWorklogList:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - limit
+      - offset
+      - total_time_spent_seconds
+      - total_estimate_seconds
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectWorklog'
+        limit:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+          maximum: 200
+        offset:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 0
+        total_time_spent_seconds:
+          type: integer
+          format: int64
+          minimum: 0
+        total_estimate_seconds:
+          type: integer
+          format: int64
+          nullable: true
+    ProjectWorklogByTaskList:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - limit
+      - offset
+      - total_time_spent_seconds
+      - total_estimate_seconds
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectWorklogByTask'
+        limit:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+          maximum: 200
+        offset:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 0
+        total_time_spent_seconds:
+          type: integer
+          format: int64
+          minimum: 0
+        total_estimate_seconds:
+          type: integer
+          format: int64
+          nullable: true
   parameters:
+    WorklogFrom:
+      name: from
+      in: query
+      schema:
+        type: string
+        format: date-time
+    WorklogTo:
+      name: to
+      in: query
+      schema:
+        type: string
+        format: date-time
+    WorklogQuery:
+      name: q
+      in: query
+      schema:
+        type: string
+        maxLength: 200
+        pattern: '^[^\x00]*$'
     WorklogID:
       name: worklog_id
       in: path
@@ -124,6 +277,58 @@ components:
         x-go-type: int
         minimum: 1
 x-paths:
+  project:
+    get:
+      operationId: listProjectWorklogs
+      tags:
+      - task-worklogs
+      summary: Получить журнал трудозатрат проекта
+      parameters:
+      - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
+      - $ref: ../common/openapi.yaml#/components/parameters/Limit
+      - $ref: ../common/openapi.yaml#/components/parameters/Offset
+      - $ref: '#/components/parameters/WorklogFrom'
+      - $ref: '#/components/parameters/WorklogTo'
+      - $ref: '#/components/parameters/WorklogQuery'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectWorklogList'
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
+  project-by-task:
+    get:
+      operationId: listProjectWorklogsByTask
+      tags:
+      - task-worklogs
+      summary: Получить трудозатраты по задачам проекта
+      parameters:
+      - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
+      - $ref: ../common/openapi.yaml#/components/parameters/Limit
+      - $ref: ../common/openapi.yaml#/components/parameters/Offset
+      - $ref: '#/components/parameters/WorklogFrom'
+      - $ref: '#/components/parameters/WorklogTo'
+      - $ref: '#/components/parameters/WorklogQuery'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectWorklogByTaskList'
+        '400':
+          $ref: ../common/openapi.yaml#/components/responses/BadRequest
+        '404':
+          $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '500':
+          $ref: ../common/openapi.yaml#/components/responses/InternalError
   collection:
     get:
       operationId: listTaskWorklogs

@@ -637,3 +637,384 @@ func (o deleteTaskWorklog) subExpr(from, to int) bob.Expression {
 func (o deleteTaskWorklog) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
 	return o.subExpr(0, len(deleteTaskWorklogSQL)).WriteSQL(ctx, w, d, start)
 }
+
+var listProjectWorklogsSQL = formattedQueries_queries[2036:3287]
+
+type ListProjectWorklogsQuery = orm.ModQuery[*dialect.SelectQuery, listProjectWorklogs, ListProjectWorklogsRow, []ListProjectWorklogsRow, listProjectWorklogsTransformer]
+
+func ListProjectWorklogs(ProjectID int, FromTime *time.Time, ToTime *time.Time, Search string, Limit int, Offset int) *ListProjectWorklogsQuery {
+	var expressionTypArgs listProjectWorklogs
+
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+	expressionTypArgs.FromTime = psql.Arg(FromTime)
+	expressionTypArgs.ToTime = psql.Arg(ToTime)
+	expressionTypArgs.Search = psql.Arg(Search)
+	expressionTypArgs.Limit = psql.Arg(Limit)
+	expressionTypArgs.Offset = psql.Arg(Offset)
+
+	return &ListProjectWorklogsQuery{
+		Query: orm.Query[listProjectWorklogs, ListProjectWorklogsRow, []ListProjectWorklogsRow, listProjectWorklogsTransformer]{
+			ExecQuery: orm.ExecQuery[listProjectWorklogs]{
+				BaseQuery: bob.BaseQuery[listProjectWorklogs]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeSelect,
+				},
+			},
+			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (ListProjectWorklogsRow, error)) {
+				return func(row *scan.Row) (any, error) {
+						var t ListProjectWorklogsRow
+						row.ScheduleScanByIndex(0, &t.TotalTimeSpentSeconds)
+						row.ScheduleScanByIndex(1, &t.TotalEstimateSeconds)
+						row.ScheduleScanByIndex(2, &t.ID)
+						row.ScheduleScanByIndex(3, &t.TaskID)
+						row.ScheduleScanByIndex(4, &t.TaskKey)
+						row.ScheduleScanByIndex(5, &t.TaskTitle)
+						row.ScheduleScanByIndex(6, &t.StartedAt)
+						row.ScheduleScanByIndex(7, &t.TimeSpentSeconds)
+						row.ScheduleScanByIndex(8, &t.Comment)
+						return &t, nil
+					}, func(v any) (ListProjectWorklogsRow, error) {
+						return *v.(*ListProjectWorklogsRow), nil
+					}
+			},
+		},
+		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
+			q.AppendCTE(expressionTypArgs.subExpr(5, 569))
+			q.AppendCTE(expressionTypArgs.subExpr(571, 686))
+			q.AppendCTE(expressionTypArgs.subExpr(688, 858))
+			q.AppendSelect(expressionTypArgs.subExpr(868, 1127))
+			q.SetTable(expressionTypArgs.subExpr(1133, 1191))
+			q.AppendWhere(expressionTypArgs.subExpr(1198, 1207))
+			q.AppendOrder(expressionTypArgs.subExpr(1217, 1251))
+		}),
+		Build: psql.Select,
+	}
+}
+
+type ListProjectWorklogsRow = struct {
+	TotalTimeSpentSeconds int                 `db:"total_time_spent_seconds"`
+	TotalEstimateSeconds  *int64              `db:"total_estimate_seconds"`
+	ID                    sql.Null[int]       `db:"id"`
+	TaskID                sql.Null[int]       `db:"task_id"`
+	TaskKey               sql.Null[string]    `db:"task_key"`
+	TaskTitle             sql.Null[string]    `db:"task_title"`
+	StartedAt             sql.Null[time.Time] `db:"started_at"`
+	TimeSpentSeconds      sql.Null[int]       `db:"time_spent_seconds"`
+	Comment               sql.Null[string]    `db:"comment"`
+}
+
+type listProjectWorklogsTransformer = bob.SliceTransformer[ListProjectWorklogsRow, []ListProjectWorklogsRow]
+
+type listProjectWorklogs struct {
+	ProjectID bob.Expression
+	FromTime  bob.Expression
+	ToTime    bob.Expression
+	Search    bob.Expression
+	Limit     bob.Expression
+	Offset    bob.Expression
+}
+
+func (o listProjectWorklogs) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      301,
+			Stop:       303,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "fromTime",
+			Start:      313,
+			Stop:       315,
+			Expression: o.FromTime,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "fromTime",
+			Start:      356,
+			Stop:       358,
+			Expression: o.FromTime,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "toTime",
+			Start:      369,
+			Stop:       371,
+			Expression: o.ToTime,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "toTime",
+			Start:      411,
+			Stop:       413,
+			Expression: o.ToTime,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "search",
+			Start:      431,
+			Stop:       433,
+			Expression: o.Search,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "search",
+			Start:      483,
+			Stop:       485,
+			Expression: o.Search,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "search",
+			Start:      553,
+			Stop:       555,
+			Expression: o.Search,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "limit",
+			Start:      842,
+			Stop:       844,
+			Expression: o.Limit,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "offset",
+			Start:      854,
+			Stop:       856,
+			Expression: o.Offset,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      1205,
+			Stop:       1207,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+	}
+}
+
+func (o listProjectWorklogs) raw(from, to int) string {
+	return listProjectWorklogsSQL[from:to]
+}
+
+func (o listProjectWorklogs) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(listProjectWorklogsSQL, from, to, o.args())
+}
+
+func (o listProjectWorklogs) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(listProjectWorklogsSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var listProjectWorklogsByTaskSQL = formattedQueries_queries[3319:4724]
+
+type ListProjectWorklogsByTaskQuery = orm.ModQuery[*dialect.SelectQuery, listProjectWorklogsByTask, ListProjectWorklogsByTaskRow, []ListProjectWorklogsByTaskRow, listProjectWorklogsByTaskTransformer]
+
+func ListProjectWorklogsByTask(ProjectID int, FromTime *time.Time, ToTime *time.Time, Search string, Limit int, Offset int) *ListProjectWorklogsByTaskQuery {
+	var expressionTypArgs listProjectWorklogsByTask
+
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+	expressionTypArgs.FromTime = psql.Arg(FromTime)
+	expressionTypArgs.ToTime = psql.Arg(ToTime)
+	expressionTypArgs.Search = psql.Arg(Search)
+	expressionTypArgs.Limit = psql.Arg(Limit)
+	expressionTypArgs.Offset = psql.Arg(Offset)
+
+	return &ListProjectWorklogsByTaskQuery{
+		Query: orm.Query[listProjectWorklogsByTask, ListProjectWorklogsByTaskRow, []ListProjectWorklogsByTaskRow, listProjectWorklogsByTaskTransformer]{
+			ExecQuery: orm.ExecQuery[listProjectWorklogsByTask]{
+				BaseQuery: bob.BaseQuery[listProjectWorklogsByTask]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeSelect,
+				},
+			},
+			Scanner: func(context.Context, []string) (func(*scan.Row) (any, error), func(any) (ListProjectWorklogsByTaskRow, error)) {
+				return func(row *scan.Row) (any, error) {
+						var t ListProjectWorklogsByTaskRow
+						row.ScheduleScanByIndex(0, &t.TotalTimeSpentSeconds)
+						row.ScheduleScanByIndex(1, &t.TotalEstimateSeconds)
+						row.ScheduleScanByIndex(2, &t.TaskID)
+						row.ScheduleScanByIndex(3, &t.TaskKey)
+						row.ScheduleScanByIndex(4, &t.TaskTitle)
+						row.ScheduleScanByIndex(5, &t.WorklogsCount)
+						row.ScheduleScanByIndex(6, &t.TimeSpentSeconds)
+						return &t, nil
+					}, func(v any) (ListProjectWorklogsByTaskRow, error) {
+						return *v.(*ListProjectWorklogsByTaskRow), nil
+					}
+			},
+		},
+		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
+			q.AppendCTE(expressionTypArgs.subExpr(5, 538))
+			q.AppendCTE(expressionTypArgs.subExpr(540, 733))
+			q.AppendCTE(expressionTypArgs.subExpr(735, 853))
+			q.AppendCTE(expressionTypArgs.subExpr(855, 1027))
+			q.AppendSelect(expressionTypArgs.subExpr(1037, 1273))
+			q.SetTable(expressionTypArgs.subExpr(1279, 1337))
+			q.AppendWhere(expressionTypArgs.subExpr(1344, 1353))
+			q.AppendOrder(expressionTypArgs.subExpr(1363, 1405))
+		}),
+		Build: psql.Select,
+	}
+}
+
+type ListProjectWorklogsByTaskRow = struct {
+	TotalTimeSpentSeconds int              `db:"total_time_spent_seconds"`
+	TotalEstimateSeconds  *int64           `db:"total_estimate_seconds"`
+	TaskID                sql.Null[int]    `db:"task_id"`
+	TaskKey               sql.Null[string] `db:"task_key"`
+	TaskTitle             sql.Null[string] `db:"task_title"`
+	WorklogsCount         sql.Null[int]    `db:"worklogs_count"`
+	TimeSpentSeconds      sql.Null[int]    `db:"time_spent_seconds"`
+}
+
+type listProjectWorklogsByTaskTransformer = bob.SliceTransformer[ListProjectWorklogsByTaskRow, []ListProjectWorklogsByTaskRow]
+
+type listProjectWorklogsByTask struct {
+	ProjectID bob.Expression
+	FromTime  bob.Expression
+	ToTime    bob.Expression
+	Search    bob.Expression
+	Limit     bob.Expression
+	Offset    bob.Expression
+}
+
+func (o listProjectWorklogsByTask) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      270,
+			Stop:       272,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "fromTime",
+			Start:      282,
+			Stop:       284,
+			Expression: o.FromTime,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "fromTime",
+			Start:      325,
+			Stop:       327,
+			Expression: o.FromTime,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "toTime",
+			Start:      338,
+			Stop:       340,
+			Expression: o.ToTime,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "toTime",
+			Start:      380,
+			Stop:       382,
+			Expression: o.ToTime,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "search",
+			Start:      400,
+			Stop:       402,
+			Expression: o.Search,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "search",
+			Start:      452,
+			Stop:       454,
+			Expression: o.Search,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "search",
+			Start:      522,
+			Stop:       524,
+			Expression: o.Search,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "limit",
+			Start:      1011,
+			Stop:       1013,
+			Expression: o.Limit,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "offset",
+			Start:      1023,
+			Stop:       1025,
+			Expression: o.Offset,
+		}) {
+			return
+		}
+
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      1351,
+			Stop:       1353,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+	}
+}
+
+func (o listProjectWorklogsByTask) raw(from, to int) string {
+	return listProjectWorklogsByTaskSQL[from:to]
+}
+
+func (o listProjectWorklogsByTask) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(listProjectWorklogsByTaskSQL, from, to, o.args())
+}
+
+func (o listProjectWorklogsByTask) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(listProjectWorklogsByTaskSQL)).WriteSQL(ctx, w, d, start)
+}

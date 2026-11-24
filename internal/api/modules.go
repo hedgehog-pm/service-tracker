@@ -70,9 +70,18 @@ func (h *ModuleHandler) ListModules(
 		return nil, err
 	}
 
-	items := lo.Map(values, func(value domain.Module, _ int) generated.Module {
-		return moduleToAPI(value)
-	})
+	items := lo.Map(
+		values,
+		func(value listmodules.ModuleWithProgress, _ int) generated.ModuleListItem {
+			return generated.ModuleListItem{
+				ID:         value.ID,
+				ProjectID:  value.ProjectID,
+				Name:       value.Name,
+				TasksTotal: value.TasksTotal,
+				TasksDone:  value.TasksDone,
+			}
+		},
+	)
 
 	return generated.ListModules200JSONResponse(generated.ModuleList{
 		Items:  items,

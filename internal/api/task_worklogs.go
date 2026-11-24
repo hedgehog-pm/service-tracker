@@ -7,15 +7,23 @@ import (
 
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	generated "github.com/hedgehog-pm/service-tracker/internal/generated/api/taskworklogs"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/projectworklogs"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/taskworklog"
 )
 
 type TaskWorklogHandler struct {
-	worklogs *taskworklog.Usecase
+	worklogs        *taskworklog.Usecase
+	projectWorklogs *projectworklogs.Usecase
 }
 
-func NewTaskWorklogHandler(worklogs *taskworklog.Usecase) *TaskWorklogHandler {
-	return &TaskWorklogHandler{worklogs: worklogs}
+func NewTaskWorklogHandler(
+	worklogs *taskworklog.Usecase,
+	projectWorklogs *projectworklogs.Usecase,
+) *TaskWorklogHandler {
+	return &TaskWorklogHandler{
+		worklogs:        worklogs,
+		projectWorklogs: projectWorklogs,
+	}
 }
 
 func (h *TaskWorklogHandler) GetTaskWorklog(ctx context.Context, request generated.GetTaskWorklogRequestObject) (generated.GetTaskWorklogResponseObject, error) {

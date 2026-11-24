@@ -48,6 +48,37 @@ components:
         name:
           type: string
           minLength: 1
+    ModuleListItem:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - project_id
+      - name
+      - tasks_total
+      - tasks_done
+      properties:
+        id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        project_id:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+        tasks_total:
+          type: integer
+          format: int64
+          minimum: 0
+        tasks_done:
+          type: integer
+          format: int64
+          minimum: 0
     ModuleList:
       type: object
       additionalProperties: false
@@ -59,7 +90,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Module"
+            $ref: "#/components/schemas/ModuleListItem"
         limit:
           type: integer
           format: int32

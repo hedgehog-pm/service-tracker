@@ -8,7 +8,12 @@ import (
 
 type (
 	moduleReader interface {
-		ListModules(ctx context.Context, projectID int, limit int, offset int) ([]domain.Module, error)
+		ListModules(
+			ctx context.Context,
+			projectID int,
+			limit int,
+			offset int,
+		) ([]ModuleWithProgress, error)
 	}
 	projectReader interface {
 		GetProject(ctx context.Context, projectID int) (domain.Project, error)

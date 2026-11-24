@@ -1,4 +1,4 @@
-.PHONY: fmt lint generate generate-api generate-sql docs
+.PHONY: fmt lint generate generate-api generate-sql docs test-e2e
 
 export DATABASE_URL ?= postgres://tracker:tracker@localhost:5433/tracker?sslmode=disable
 export PSQL_DSN ?= $(DATABASE_URL)
@@ -9,6 +9,13 @@ lint:
 
 fmt:
 	go tool golangci-lint fmt
+
+test-e2e:
+	@set -e; \
+		if [ -z "$$DOCKER_HOST" ]; then \
+			DOCKER_HOST=$$(docker context inspect --format '{{.Endpoints.docker.Host}}'); \
+		fi; \
+		DOCKER_HOST="$$DOCKER_HOST" TRACKER_E2E=1 go test -count=1 -timeout=5m ./tests/e2e
 
 .PHONY: fix
 fix:

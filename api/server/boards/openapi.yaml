@@ -447,8 +447,7 @@ x-paths:
       operationId: listBoardColumnTasks
       tags:
       - boards
-      summary: Получить задачи колонки с фильтрами по общему rank проекта.
-        q ищет по ключу или названию без учёта регистра
+      summary: Получить задачи колонки с фильтрами
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: '#/components/parameters/BoardID'

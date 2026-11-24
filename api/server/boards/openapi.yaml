@@ -474,7 +474,7 @@ x-paths:
       tags:
       - boards
       summary: Получить задачи колонки с фильтрами по общему rank проекта. q ищет по ключу или названию без учёта регистра.
-        Курсор действует для тех же фильтров и не фиксирует снимок данных. next_cursor=null завершает выдачу
+        Курсор не фиксирует снимок данных. При смене фильтров запросите первую страницу без курсора. next_cursor=null завершает выдачу
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: '#/components/parameters/BoardID'

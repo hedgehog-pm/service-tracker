@@ -302,8 +302,8 @@ WHERE
       AND membership.column_id = $3
       AND membership.status_id = t.status_id
   )
-  AND ($4::BIGINT IS NULL OR (t.rank, t.number) > ($4, $5))
 ORDER BY
   t.rank,
   t.number
-LIMIT $6;
+LIMIT $5
+OFFSET $4;

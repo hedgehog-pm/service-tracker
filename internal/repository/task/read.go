@@ -103,9 +103,8 @@ func (r *Postgres) ListBoardColumnTasks(
 		params.ProjectID,
 		params.BoardID,
 		params.ColumnID,
-		pointerToNull(params.AfterRank),
-		pointerToNull(params.AfterNumber),
 		params.Limit,
+		params.Offset,
 	).With()
 
 	filters := params.Filters

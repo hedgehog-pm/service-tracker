@@ -40,11 +40,7 @@ type BoardColumn struct {
 }
 
 // BoardColumnTaskList defines model for BoardColumnTaskList.
-type BoardColumnTaskList struct {
-	Items      []externalRef1.Task `json:"items"`
-	Limit      int                 `json:"limit"`
-	NextCursor *string             `json:"next_cursor"`
-}
+type BoardColumnTaskList = externalRef1.TaskList
 
 // BoardList defines model for BoardList.
 type BoardList struct {
@@ -97,9 +93,6 @@ type BoardID = int
 // ColumnID defines model for ColumnID.
 type ColumnID = int
 
-// Cursor defines model for Cursor.
-type Cursor = string
-
 // ListBoardsParams defines parameters for ListBoards.
 type ListBoardsParams struct {
 	Limit  *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
@@ -108,13 +101,13 @@ type ListBoardsParams struct {
 
 // ListBoardColumnTasksParams defines parameters for ListBoardColumnTasks.
 type ListBoardColumnTasksParams struct {
-	Limit    *externalRef0.Limit `form:"limit,omitempty" json:"limit,omitempty"`
-	Cursor   *Cursor             `form:"cursor,omitempty" json:"cursor,omitempty"`
-	Q        *string             `form:"q,omitempty" json:"q,omitempty"`
-	Status   *int                `form:"status,omitempty" json:"status,omitempty"`
-	Module   *int                `form:"module,omitempty" json:"module,omitempty"`
-	Priority *int                `form:"priority,omitempty" json:"priority,omitempty"`
-	TaskType *int                `form:"task_type,omitempty" json:"task_type,omitempty"`
+	Limit    *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset   *externalRef0.Offset `form:"offset,omitempty" json:"offset,omitempty"`
+	Q        *string              `form:"q,omitempty" json:"q,omitempty"`
+	Status   *int                 `form:"status,omitempty" json:"status,omitempty"`
+	Module   *int                 `form:"module,omitempty" json:"module,omitempty"`
+	Priority *int                 `form:"priority,omitempty" json:"priority,omitempty"`
+	TaskType *int                 `form:"task_type,omitempty" json:"task_type,omitempty"`
 }
 
 // CreateBoardJSONRequestBody defines body for CreateBoard for application/json ContentType.
@@ -158,7 +151,7 @@ type ServerInterface interface {
 	// UpdateBoardColumn Заменить название, position и статусы колонки со сдвигом соседних колонок. Статус относится максимум к одной колонке доски. status_ids в ответе упорядочены по возрастанию
 	// (PUT /projects/{project_id}/boards/{board_id}/columns/{column_id})
 	UpdateBoardColumn(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID, columnID ColumnID) error
-	// ListBoardColumnTasks Получить задачи колонки с фильтрами по общему rank проекта. q ищет по ключу или названию без учёта регистра. Курсор не фиксирует снимок данных. При смене фильтров запросите первую страницу без курсора. next_cursor=null завершает выдачу
+	// ListBoardColumnTasks Получить задачи колонки с фильтрами по общему rank проекта. q ищет по ключу или названию без учёта регистра
 	// (GET /projects/{project_id}/boards/{board_id}/columns/{column_id}/tasks)
 	ListBoardColumnTasks(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID, columnID ColumnID, params ListBoardColumnTasksParams) error
 	// MoveBoardTask Атомарно переместить задачу в колонку через workflow и изменить общий rank проекта. before_task_id задаёт якорь в целевой колонке, null означает конец колонки. transition_id=null сохраняет статус. Недоступный якорь или якорь вне целевой колонки возвращает 409
@@ -415,11 +408,11 @@ func (w *ServerInterfaceWrapper) ListBoardColumnTasks(ctx *echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
 	}
 
-	// ------------- Optional query parameter "cursor" -------------
+	// ------------- Optional query parameter "offset" -------------
 
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", ctx.QueryParams(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "offset", ctx.QueryParams(), &params.Offset, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter cursor: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
 	}
 
 	// ------------- Optional query parameter "q" -------------
@@ -1335,7 +1328,7 @@ type StrictServerInterface interface {
 	// UpdateBoardColumn Заменить название, position и статусы колонки со сдвигом соседних колонок. Статус относится максимум к одной колонке доски. status_ids в ответе упорядочены по возрастанию
 	// (PUT /projects/{project_id}/boards/{board_id}/columns/{column_id})
 	UpdateBoardColumn(ctx context.Context, request UpdateBoardColumnRequestObject) (UpdateBoardColumnResponseObject, error)
-	// ListBoardColumnTasks Получить задачи колонки с фильтрами по общему rank проекта. q ищет по ключу или названию без учёта регистра. Курсор не фиксирует снимок данных. При смене фильтров запросите первую страницу без курсора. next_cursor=null завершает выдачу
+	// ListBoardColumnTasks Получить задачи колонки с фильтрами по общему rank проекта. q ищет по ключу или названию без учёта регистра
 	// (GET /projects/{project_id}/boards/{board_id}/columns/{column_id}/tasks)
 	ListBoardColumnTasks(ctx context.Context, request ListBoardColumnTasksRequestObject) (ListBoardColumnTasksResponseObject, error)
 	// MoveBoardTask Атомарно переместить задачу в колонку через workflow и изменить общий rank проекта. before_task_id задаёт якорь в целевой колонке, null означает конец колонки. transition_id=null сохраняет статус. Недоступный якорь или якорь вне целевой колонки возвращает 409
@@ -1704,50 +1697,48 @@ func (sh *strictHandler) MoveBoardTask(ctx *echo.Context, projectID externalRef0
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

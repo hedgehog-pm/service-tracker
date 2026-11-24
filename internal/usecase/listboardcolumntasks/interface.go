@@ -15,13 +15,12 @@ type Filters struct {
 }
 
 type Query struct {
-	ProjectID   int
-	BoardID     int
-	ColumnID    int
-	Filters     Filters
-	AfterRank   *int
-	AfterNumber *int
-	Limit       int
+	ProjectID int
+	BoardID   int
+	ColumnID  int
+	Filters   Filters
+	Limit     int
+	Offset    int
 }
 
 type (

@@ -193,27 +193,7 @@ components:
           x-go-type: int
           minimum: 0
     BoardColumnTaskList:
-      type: object
-      additionalProperties: false
-      required:
-      - items
-      - limit
-      - next_cursor
-      properties:
-        items:
-          type: array
-          items:
-            $ref: ../tasks/openapi.yaml#/components/schemas/Task
-        limit:
-          type: integer
-          format: int32
-          x-go-type: int
-          minimum: 1
-          maximum: 200
-        next_cursor:
-          type: string
-          minLength: 1
-          nullable: true
+      $ref: ../tasks/openapi.yaml#/components/schemas/TaskList
     MoveBoardTask:
       type: object
       additionalProperties: false
@@ -258,12 +238,6 @@ components:
         format: int32
         x-go-type: int
         minimum: 1
-    Cursor:
-      name: cursor
-      in: query
-      schema:
-        type: string
-        minLength: 1
 x-paths:
   collection:
     get:
@@ -474,14 +448,13 @@ x-paths:
       tags:
       - boards
       summary: Получить задачи колонки с фильтрами по общему rank проекта.
-        q ищет по ключу или названию без учёта регистра. Курсор не фиксирует снимок данных.
-        При смене фильтров запросите первую страницу без курсора. next_cursor=null завершает выдачу
+        q ищет по ключу или названию без учёта регистра
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: '#/components/parameters/BoardID'
       - $ref: '#/components/parameters/ColumnID'
       - $ref: ../common/openapi.yaml#/components/parameters/Limit
-      - $ref: '#/components/parameters/Cursor'
+      - $ref: ../common/openapi.yaml#/components/parameters/Offset
       - name: q
         in: query
         schema:

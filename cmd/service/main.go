@@ -38,6 +38,8 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/moveboardtask"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/priority"
 	projectusecase "github.com/hedgehog-pm/service-tracker/internal/usecase/project"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/projectsummary"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/projectworklogs"
 	statususecase "github.com/hedgehog-pm/service-tracker/internal/usecase/status"
 	taskusecase "github.com/hedgehog-pm/service-tracker/internal/usecase/task"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/tasktype"
@@ -86,7 +88,10 @@ func run(ctx context.Context) error {
 	)
 
 	worklogs := taskworklogrepository.NewPostgres(db)
-	taskWorklogHandler := api.NewTaskWorklogHandler(taskworklog.New(worklogs))
+	taskWorklogHandler := api.NewTaskWorklogHandler(
+		taskworklog.New(worklogs),
+		projectworklogs.New(worklogs),
+	)
 
 	statuses := statusrepository.NewPostgres(db)
 	modules := modulerepository.NewPostgres(db)
@@ -94,6 +99,7 @@ func run(ctx context.Context) error {
 	projectHandler := api.NewProjectHandler(
 		projectusecase.New(projects),
 		createproject.New(projects, boards, workflows, priorities, transactor),
+		projectsummary.New(projects),
 	)
 	statusHandler := api.NewStatusHandler(statususecase.New(statuses, projects))
 	moduleHandler := api.NewModuleHandler(

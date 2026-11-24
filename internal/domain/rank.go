@@ -1,39 +1,46 @@
 package domain
 
-import "math"
+import (
+	"math"
+
+	"github.com/samber/lo"
+)
 
 const rankStep = 1024
 
 func RankBetween(previous, next *int) (int, error) {
+	previousRank := lo.FromPtr(previous)
+	nextRank := lo.FromPtr(next)
+
 	switch {
 	case previous == nil && next == nil:
 		return rankStep, nil
 	case previous == nil:
-		if *next < math.MinInt+rankStep {
+		if nextRank < math.MinInt+rankStep {
 			return 0, ErrRankExhausted
 		}
 
-		return *next - rankStep, nil
+		return nextRank - rankStep, nil
 	case next == nil:
-		if *previous > math.MaxInt-rankStep {
+		if previousRank > math.MaxInt-rankStep {
 			return 0, ErrRankExhausted
 		}
 
-		return *previous + rankStep, nil
+		return previousRank + rankStep, nil
 	}
 
-	if *previous >= *next {
+	if previousRank >= nextRank {
 		return 0, ErrRankExhausted
 	}
 
 	var rank int
-	if *previous < 0 && *next >= 0 {
-		rank = (*previous + *next) / 2
+	if previousRank < 0 && nextRank >= 0 {
+		rank = (previousRank + nextRank) / 2
 	} else {
-		rank = *previous + (*next-*previous)/2
+		rank = previousRank + (nextRank-previousRank)/2
 	}
 
-	if rank <= *previous || rank >= *next {
+	if rank <= previousRank || rank >= nextRank {
 		return 0, ErrRankExhausted
 	}
 

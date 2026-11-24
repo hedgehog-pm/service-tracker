@@ -3,26 +3,31 @@ package api
 import (
 	"context"
 
+	openapiTypes "github.com/oapi-codegen/runtime/types"
 	"github.com/samber/lo"
 
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	generated "github.com/hedgehog-pm/service-tracker/internal/generated/api/projects"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/createproject"
 	"github.com/hedgehog-pm/service-tracker/internal/usecase/project"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/projectsummary"
 )
 
 type ProjectHandler struct {
 	projects      *project.Usecase
 	createProject *createproject.Usecase
+	summary       *projectsummary.Usecase
 }
 
 func NewProjectHandler(
 	projects *project.Usecase,
 	createProject *createproject.Usecase,
+	summary *projectsummary.Usecase,
 ) *ProjectHandler {
 	return &ProjectHandler{
 		projects:      projects,
 		createProject: createProject,
+		summary:       summary,
 	}
 }
 
@@ -50,6 +55,40 @@ func (h *ProjectHandler) GetProject(
 	}
 
 	return generated.GetProject200JSONResponse(projectToAPI(value)), nil
+}
+
+func (h *ProjectHandler) GetProjectSummary(
+	ctx context.Context,
+	request generated.GetProjectSummaryRequestObject,
+) (generated.GetProjectSummaryResponseObject, error) {
+	value, err := h.summary.Do(ctx, request.ProjectID)
+	if err != nil {
+		return nil, err
+	}
+
+	upcoming := lo.Map(
+		value.UpcomingTasks,
+		func(task projectsummary.UpcomingTask, _ int) generated.UpcomingTask {
+			return generated.UpcomingTask{
+				ID:         task.ID,
+				Key:        task.Key,
+				Title:      task.Title,
+				StatusID:   task.StatusID,
+				PriorityID: task.PriorityID,
+				DueDate:    openapiTypes.Date{Time: task.DueDate},
+			}
+		},
+	)
+
+	return generated.GetProjectSummary200JSONResponse(generated.ProjectSummary{
+		TasksTotal:            value.TasksTotal,
+		TasksOpen:             value.TasksOpen,
+		TasksDueSoon:          value.TasksDueSoon,
+		TasksOverdue:          value.TasksOverdue,
+		TotalTimeSpentSeconds: value.TotalTimeSpentSeconds,
+		TotalEstimateSeconds:  value.TotalEstimateSeconds,
+		UpcomingTasks:         upcoming,
+	}), nil
 }
 
 func (h *ProjectHandler) UpdateProject(

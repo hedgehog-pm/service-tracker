@@ -1,10 +1,14 @@
 package listmodules
 
-import (
-	"context"
+import "context"
 
-	"github.com/hedgehog-pm/service-tracker/internal/domain"
-)
+type ModuleWithProgress struct {
+	ID         int
+	ProjectID  int
+	Name       string
+	TasksTotal int64
+	TasksDone  int64
+}
 
 type Usecase struct {
 	modules  moduleReader
@@ -23,7 +27,7 @@ func (u *Usecase) Do(
 	projectID int,
 	limit int,
 	offset int,
-) ([]domain.Module, error) {
+) ([]ModuleWithProgress, error) {
 	if _, err := u.projects.GetProject(ctx, projectID); err != nil {
 		return nil, err
 	}

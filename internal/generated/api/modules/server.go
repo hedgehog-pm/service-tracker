@@ -35,9 +35,18 @@ type Module struct {
 
 // ModuleList defines model for ModuleList.
 type ModuleList struct {
-	Items  []Module `json:"items"`
-	Limit  int      `json:"limit"`
-	Offset int      `json:"offset"`
+	Items  []ModuleListItem `json:"items"`
+	Limit  int              `json:"limit"`
+	Offset int              `json:"offset"`
+}
+
+// ModuleListItem defines model for ModuleListItem.
+type ModuleListItem struct {
+	ID         int    `json:"id"`
+	Name       string `json:"name"`
+	ProjectID  int    `json:"project_id"`
+	TasksDone  int64  `json:"tasks_done"`
+	TasksTotal int64  `json:"tasks_total"`
 }
 
 // UpdateModule defines model for UpdateModule.
@@ -851,24 +860,25 @@ func (sh *strictHandler) UpdateModule(ctx *echo.Context, projectID int, moduleID
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

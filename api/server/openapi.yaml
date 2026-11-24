@@ -7,6 +7,8 @@ paths:
     $ref: ./projects/openapi.yaml#/x-paths/collection
   /projects/{project_id}:
     $ref: ./projects/openapi.yaml#/x-paths/item
+  /projects/{project_id}/summary:
+    $ref: ./projects/openapi.yaml#/x-paths/summary
   /projects/{project_id}/statuses:
     $ref: ./statuses/openapi.yaml#/x-paths/collection
   /projects/{project_id}/modules:
@@ -21,6 +23,10 @@ paths:
     $ref: ./task-worklogs/openapi.yaml#/x-paths/collection
   /projects/{project_id}/tasks/{task_id}/worklogs/{worklog_id}:
     $ref: ./task-worklogs/openapi.yaml#/x-paths/item
+  /projects/{project_id}/worklogs:
+    $ref: ./task-worklogs/openapi.yaml#/x-paths/project
+  /projects/{project_id}/worklogs/by-task:
+    $ref: ./task-worklogs/openapi.yaml#/x-paths/project-by-task
   /projects/{project_id}/tasks/{task_id}/transitions:
     $ref: ./transitions/openapi.yaml#/x-paths/collection
   /projects/{project_id}/task-types:

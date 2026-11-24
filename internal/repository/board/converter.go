@@ -9,7 +9,13 @@ func boardsToDomain(rows []bobgen.GetBoardRow) []domain.Board {
 	boards := make([]domain.Board, 0)
 	for _, row := range rows {
 		if len(boards) == 0 || boards[len(boards)-1].ID != row.ID {
-			boards = append(boards, domain.Board{ID: row.ID, ProjectID: row.ProjectID, Name: row.Name})
+			boards = append(boards, domain.Board{
+				ID:           row.ID,
+				ProjectID:    row.ProjectID,
+				Name:         row.Name,
+				SchemeID:     row.BoardSchemeID,
+				SharedScheme: row.IsShared,
+			})
 		}
 
 		if !row.ColumnID.Valid {

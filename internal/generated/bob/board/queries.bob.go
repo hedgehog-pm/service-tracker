@@ -23,7 +23,7 @@ import (
 //go:embed queries.bob.sql
 var formattedQueries_queries string
 
-var getBoardSQL = formattedQueries_queries[146:563]
+var getBoardSQL = formattedQueries_queries[146:673]
 
 type GetBoardQuery = orm.ModQuery[*dialect.SelectQuery, getBoard, GetBoardRow, []GetBoardRow, getBoardTransformer]
 
@@ -48,10 +48,12 @@ func GetBoard(ProjectID int, ID int) *GetBoardQuery {
 						row.ScheduleScanByIndex(0, &t.ID)
 						row.ScheduleScanByIndex(1, &t.ProjectID)
 						row.ScheduleScanByIndex(2, &t.Name)
-						row.ScheduleScanByIndex(3, &t.ColumnID)
-						row.ScheduleScanByIndex(4, &t.ColumnName)
-						row.ScheduleScanByIndex(5, &t.Position)
-						row.ScheduleScanByIndex(6, &t.StatusID)
+						row.ScheduleScanByIndex(3, &t.BoardSchemeID)
+						row.ScheduleScanByIndex(4, &t.IsShared)
+						row.ScheduleScanByIndex(5, &t.ColumnID)
+						row.ScheduleScanByIndex(6, &t.ColumnName)
+						row.ScheduleScanByIndex(7, &t.Position)
+						row.ScheduleScanByIndex(8, &t.StatusID)
 						return &t, nil
 					}, func(v any) (GetBoardRow, error) {
 						return *v.(*GetBoardRow), nil
@@ -59,23 +61,25 @@ func GetBoard(ProjectID int, ID int) *GetBoardQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendSelect(expressionTypArgs.subExpr(9, 148))
-			q.SetTable(expressionTypArgs.subExpr(156, 329))
-			q.AppendWhere(expressionTypArgs.subExpr(338, 371))
-			q.AppendOrder(expressionTypArgs.subExpr(383, 417))
+			q.AppendSelect(expressionTypArgs.subExpr(9, 184))
+			q.SetTable(expressionTypArgs.subExpr(192, 439))
+			q.AppendWhere(expressionTypArgs.subExpr(448, 481))
+			q.AppendOrder(expressionTypArgs.subExpr(493, 527))
 		}),
 		Build: psql.Select,
 	}
 }
 
 type GetBoardRow = struct {
-	ID         int              `db:"id"`
-	ProjectID  int              `db:"project_id"`
-	Name       string           `db:"name"`
-	ColumnID   sql.Null[int]    `db:"column_id"`
-	ColumnName sql.Null[string] `db:"column_name"`
-	Position   int              `db:"position"`
-	StatusID   sql.Null[int]    `db:"status_id"`
+	ID            int              `db:"id"`
+	ProjectID     int              `db:"project_id"`
+	Name          string           `db:"name"`
+	BoardSchemeID int              `db:"board_scheme_id"`
+	IsShared      bool             `db:"is_shared"`
+	ColumnID      sql.Null[int]    `db:"column_id"`
+	ColumnName    sql.Null[string] `db:"column_name"`
+	Position      int              `db:"position"`
+	StatusID      sql.Null[int]    `db:"status_id"`
 }
 
 type getBoardTransformer = bob.SliceTransformer[GetBoardRow, []GetBoardRow]
@@ -89,8 +93,8 @@ func (o getBoard) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      353,
-			Stop:       355,
+			Start:      463,
+			Stop:       465,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -98,8 +102,8 @@ func (o getBoard) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "id",
-			Start:      369,
-			Stop:       371,
+			Start:      479,
+			Stop:       481,
 			Expression: o.ID,
 		}) {
 			return
@@ -119,7 +123,7 @@ func (o getBoard) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect
 	return o.subExpr(0, len(getBoardSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var listBoardsSQL = formattedQueries_queries[580:1107]
+var listBoardsSQL = formattedQueries_queries[690:1348]
 
 type ListBoardsQuery = orm.ModQuery[*dialect.SelectQuery, listBoards, ListBoardsRow, []ListBoardsRow, listBoardsTransformer]
 
@@ -145,10 +149,12 @@ func ListBoards(ProjectID int, Arg2 int, Arg3 int) *ListBoardsQuery {
 						row.ScheduleScanByIndex(0, &t.ID)
 						row.ScheduleScanByIndex(1, &t.ProjectID)
 						row.ScheduleScanByIndex(2, &t.Name)
-						row.ScheduleScanByIndex(3, &t.ColumnID)
-						row.ScheduleScanByIndex(4, &t.ColumnName)
-						row.ScheduleScanByIndex(5, &t.Position)
-						row.ScheduleScanByIndex(6, &t.StatusID)
+						row.ScheduleScanByIndex(3, &t.BoardSchemeID)
+						row.ScheduleScanByIndex(4, &t.IsShared)
+						row.ScheduleScanByIndex(5, &t.ColumnID)
+						row.ScheduleScanByIndex(6, &t.ColumnName)
+						row.ScheduleScanByIndex(7, &t.Position)
+						row.ScheduleScanByIndex(8, &t.StatusID)
 						return &t, nil
 					}, func(v any) (ListBoardsRow, error) {
 						return *v.(*ListBoardsRow), nil
@@ -156,23 +162,25 @@ func ListBoards(ProjectID int, Arg2 int, Arg3 int) *ListBoardsQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendCTE(expressionTypArgs.subExpr(5, 145))
-			q.AppendSelect(expressionTypArgs.subExpr(155, 294))
-			q.SetTable(expressionTypArgs.subExpr(302, 473))
-			q.AppendOrder(expressionTypArgs.subExpr(485, 527))
+			q.AppendCTE(expressionTypArgs.subExpr(5, 166))
+			q.AppendSelect(expressionTypArgs.subExpr(176, 351))
+			q.SetTable(expressionTypArgs.subExpr(359, 604))
+			q.AppendOrder(expressionTypArgs.subExpr(616, 658))
 		}),
 		Build: psql.Select,
 	}
 }
 
 type ListBoardsRow = struct {
-	ID         int              `db:"id"`
-	ProjectID  int              `db:"project_id"`
-	Name       string           `db:"name"`
-	ColumnID   sql.Null[int]    `db:"column_id"`
-	ColumnName sql.Null[string] `db:"column_name"`
-	Position   int              `db:"position"`
-	StatusID   sql.Null[int]    `db:"status_id"`
+	ID            int              `db:"id"`
+	ProjectID     int              `db:"project_id"`
+	Name          string           `db:"name"`
+	BoardSchemeID int              `db:"board_scheme_id"`
+	IsShared      bool             `db:"is_shared"`
+	ColumnID      sql.Null[int]    `db:"column_id"`
+	ColumnName    sql.Null[string] `db:"column_name"`
+	Position      int              `db:"position"`
+	StatusID      sql.Null[int]    `db:"status_id"`
 }
 
 type listBoardsTransformer = bob.SliceTransformer[ListBoardsRow, []ListBoardsRow]
@@ -187,8 +195,8 @@ func (o listBoards) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      100,
-			Stop:       102,
+			Start:      121,
+			Stop:       123,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -196,8 +204,8 @@ func (o listBoards) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "arg2",
-			Start:      129,
-			Stop:       131,
+			Start:      150,
+			Stop:       152,
 			Expression: o.Arg2,
 		}) {
 			return
@@ -205,8 +213,8 @@ func (o listBoards) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "arg3",
-			Start:      141,
-			Stop:       143,
+			Start:      162,
+			Stop:       164,
 			Expression: o.Arg3,
 		}) {
 			return
@@ -226,15 +234,15 @@ func (o listBoards) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Diale
 	return o.subExpr(0, len(listBoardsSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var insertBoardSQL = formattedQueries_queries[1125:1243]
+var insertBoardSQL = formattedQueries_queries[1366:1830]
 
 type InsertBoardQuery = orm.ModQuery[*dialect.InsertQuery, insertBoard, InsertBoardRow, []InsertBoardRow, insertBoardTransformer]
 
-func InsertBoard(Name string, ProjectID int) *InsertBoardQuery {
+func InsertBoard(ID int, Arg2 string) *InsertBoardQuery {
 	var expressionTypArgs insertBoard
 
-	expressionTypArgs.Name = psql.Arg(Name)
-	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+	expressionTypArgs.ID = psql.Arg(ID)
+	expressionTypArgs.Arg2 = psql.Arg(Arg2)
 
 	return &InsertBoardQuery{
 		Query: orm.Query[insertBoard, InsertBoardRow, []InsertBoardRow, insertBoardTransformer]{
@@ -251,6 +259,7 @@ func InsertBoard(Name string, ProjectID int) *InsertBoardQuery {
 						row.ScheduleScanByIndex(0, &t.ID)
 						row.ScheduleScanByIndex(1, &t.ProjectID)
 						row.ScheduleScanByIndex(2, &t.Name)
+						row.ScheduleScanByIndex(3, &t.BoardSchemeID)
 						return &t, nil
 					}, func(v any) (InsertBoardRow, error) {
 						return *v.(*InsertBoardRow), nil
@@ -258,48 +267,51 @@ func InsertBoard(Name string, ProjectID int) *InsertBoardQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.InsertQuery](func(q *dialect.InsertQuery) {
-			q.TableRef.Columns = []string{"project_id", "name"}
-			q.TableRef.Expression = expressionTypArgs.subExpr(12, 18)
+			q.TableRef.Columns = []string{"project_id", "name", "board_scheme_id", "workflow_scheme_id"}
+			q.AppendCTE(expressionTypArgs.subExpr(5, 83))
+			q.AppendCTE(expressionTypArgs.subExpr(85, 241))
+			q.TableRef.Expression = expressionTypArgs.subExpr(254, 260)
 			q.Query = bob.BaseQuery[bob.Expression]{
-				Expression: expressionTypArgs.subExpr(38, 87),
+				Expression: expressionTypArgs.subExpr(317, 416),
 				Dialect:    dialect.Dialect,
 				QueryType:  bob.QueryTypeSelect,
 			}
-			q.AppendReturning(expressionTypArgs.subExpr(98, 118))
+			q.AppendReturning(expressionTypArgs.subExpr(427, 464))
 		}),
 		Build: psql.Insert,
 	}
 }
 
 type InsertBoardRow = struct {
-	ID        int    `db:"id"`
-	ProjectID int    `db:"project_id"`
-	Name      string `db:"name"`
+	ID            int    `db:"id"`
+	ProjectID     int    `db:"project_id"`
+	Name          string `db:"name"`
+	BoardSchemeID int    `db:"board_scheme_id"`
 }
 
 type insertBoardTransformer = bob.SliceTransformer[InsertBoardRow, []InsertBoardRow]
 
 type insertBoard struct {
-	Name      bob.Expression
-	ProjectID bob.Expression
+	ID   bob.Expression
+	Arg2 bob.Expression
 }
 
 func (o insertBoard) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
-			Name:       "name",
-			Start:      53,
-			Stop:       55,
-			Expression: o.Name,
+			Name:       "id",
+			Start:      79,
+			Stop:       81,
+			Expression: o.ID,
 		}) {
 			return
 		}
 
 		if !yield(orm.ArgWithPosition{
-			Name:       "projectID",
-			Start:      85,
-			Stop:       87,
-			Expression: o.ProjectID,
+			Name:       "arg2",
+			Start:      181,
+			Stop:       183,
+			Expression: o.Arg2,
 		}) {
 			return
 		}
@@ -318,7 +330,76 @@ func (o insertBoard) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dial
 	return o.subExpr(0, len(insertBoardSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var updateBoardSQL = formattedQueries_queries[1261:1762]
+var insertDefaultBoardSQL = formattedQueries_queries[1855:2113]
+
+type InsertDefaultBoardQuery = orm.ModQuery[*dialect.InsertQuery, insertDefaultBoard, int, []int, insertDefaultBoardTransformer]
+
+func InsertDefaultBoard(ProjectID int) *InsertDefaultBoardQuery {
+	var expressionTypArgs insertDefaultBoard
+
+	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
+
+	return &InsertDefaultBoardQuery{
+		Query: orm.Query[insertDefaultBoard, int, []int, insertDefaultBoardTransformer]{
+			ExecQuery: orm.ExecQuery[insertDefaultBoard]{
+				BaseQuery: bob.BaseQuery[insertDefaultBoard]{
+					Expression: expressionTypArgs,
+					Dialect:    dialect.Dialect,
+					QueryType:  bob.QueryTypeInsert,
+				},
+			},
+			Scanner: scan.ColumnMapper[int]("id"),
+		},
+		Mod: bob.ModFunc[*dialect.InsertQuery](func(q *dialect.InsertQuery) {
+			q.TableRef.Columns = []string{"project_id", "name", "board_scheme_id", "workflow_scheme_id"}
+			q.TableRef.Expression = expressionTypArgs.subExpr(12, 18)
+			q.Query = bob.BaseQuery[bob.Expression]{
+				Expression: expressionTypArgs.subExpr(75, 245),
+				Dialect:    dialect.Dialect,
+				QueryType:  bob.QueryTypeSelect,
+			}
+			q.AppendReturning(expressionTypArgs.subExpr(256, 258))
+		}),
+		Build: psql.Insert,
+	}
+}
+
+type InsertDefaultBoardRow = struct {
+	ID int `db:"id"`
+}
+
+type insertDefaultBoardTransformer = bob.SliceTransformer[int, []int]
+
+type insertDefaultBoard struct {
+	ProjectID bob.Expression
+}
+
+func (o insertDefaultBoard) args() iter.Seq[orm.ArgWithPosition] {
+	return func(yield func(arg orm.ArgWithPosition) bool) {
+		if !yield(orm.ArgWithPosition{
+			Name:       "projectID",
+			Start:      243,
+			Stop:       245,
+			Expression: o.ProjectID,
+		}) {
+			return
+		}
+	}
+}
+
+func (o insertDefaultBoard) raw(from, to int) string {
+	return insertDefaultBoardSQL[from:to]
+}
+
+func (o insertDefaultBoard) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(insertDefaultBoardSQL, from, to, o.args())
+}
+
+func (o insertDefaultBoard) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(insertDefaultBoardSQL)).WriteSQL(ctx, w, d, start)
+}
+
+var updateBoardSQL = formattedQueries_queries[2131:2759]
 
 type UpdateBoardQuery = orm.ModQuery[*dialect.SelectQuery, updateBoard, UpdateBoardRow, []UpdateBoardRow, updateBoardTransformer]
 
@@ -344,10 +425,12 @@ func UpdateBoard(Name string, ProjectID int, ID int) *UpdateBoardQuery {
 						row.ScheduleScanByIndex(0, &t.ID)
 						row.ScheduleScanByIndex(1, &t.ProjectID)
 						row.ScheduleScanByIndex(2, &t.Name)
-						row.ScheduleScanByIndex(3, &t.ColumnID)
-						row.ScheduleScanByIndex(4, &t.ColumnName)
-						row.ScheduleScanByIndex(5, &t.Position)
-						row.ScheduleScanByIndex(6, &t.StatusID)
+						row.ScheduleScanByIndex(3, &t.BoardSchemeID)
+						row.ScheduleScanByIndex(4, &t.IsShared)
+						row.ScheduleScanByIndex(5, &t.ColumnID)
+						row.ScheduleScanByIndex(6, &t.ColumnName)
+						row.ScheduleScanByIndex(7, &t.Position)
+						row.ScheduleScanByIndex(8, &t.StatusID)
 						return &t, nil
 					}, func(v any) (UpdateBoardRow, error) {
 						return *v.(*UpdateBoardRow), nil
@@ -355,23 +438,25 @@ func UpdateBoard(Name string, ProjectID int, ID int) *UpdateBoardQuery {
 			},
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendCTE(expressionTypArgs.subExpr(5, 124))
-			q.AppendSelect(expressionTypArgs.subExpr(134, 273))
-			q.SetTable(expressionTypArgs.subExpr(281, 455))
-			q.AppendOrder(expressionTypArgs.subExpr(467, 501))
+			q.AppendCTE(expressionTypArgs.subExpr(5, 141))
+			q.AppendSelect(expressionTypArgs.subExpr(151, 326))
+			q.SetTable(expressionTypArgs.subExpr(334, 582))
+			q.AppendOrder(expressionTypArgs.subExpr(594, 628))
 		}),
 		Build: psql.Select,
 	}
 }
 
 type UpdateBoardRow = struct {
-	ID         int              `db:"id"`
-	ProjectID  int              `db:"project_id"`
-	Name       string           `db:"name"`
-	ColumnID   sql.Null[int]    `db:"column_id"`
-	ColumnName sql.Null[string] `db:"column_name"`
-	Position   int              `db:"position"`
-	StatusID   sql.Null[int]    `db:"status_id"`
+	ID            int              `db:"id"`
+	ProjectID     int              `db:"project_id"`
+	Name          string           `db:"name"`
+	BoardSchemeID int              `db:"board_scheme_id"`
+	IsShared      bool             `db:"is_shared"`
+	ColumnID      sql.Null[int]    `db:"column_id"`
+	ColumnName    sql.Null[string] `db:"column_name"`
+	Position      int              `db:"position"`
+	StatusID      sql.Null[int]    `db:"status_id"`
 }
 
 type updateBoardTransformer = bob.SliceTransformer[UpdateBoardRow, []UpdateBoardRow]
@@ -425,7 +510,7 @@ func (o updateBoard) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dial
 	return o.subExpr(0, len(updateBoardSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var lockBoardSQL = formattedQueries_queries[1778:1859]
+var lockBoardSQL = formattedQueries_queries[2775:2941]
 
 type LockBoardQuery = orm.ModQuery[*dialect.SelectQuery, lockBoard, int, []int, lockBoardTransformer]
 
@@ -447,10 +532,11 @@ func LockBoard(ProjectID int, ID int) *LockBoardQuery {
 			Scanner: scan.ColumnMapper[int]("id"),
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
-			q.AppendLock(clause.Lock{Strength: "NO KEY UPDATE", Tables: []interface{}(nil), Wait: ""})
-			q.AppendSelect(expressionTypArgs.subExpr(9, 11))
-			q.SetTable(expressionTypArgs.subExpr(19, 25))
-			q.AppendWhere(expressionTypArgs.subExpr(34, 63))
+			q.AppendLock(clause.Lock{Strength: "NO KEY UPDATE", Tables: []interface{}{"b"}, Wait: ""})
+			q.AppendLock(clause.Lock{Strength: "SHARE", Tables: []interface{}{"s"}, Wait: ""})
+			q.AppendSelect(expressionTypArgs.subExpr(9, 13))
+			q.SetTable(expressionTypArgs.subExpr(21, 86))
+			q.AppendWhere(expressionTypArgs.subExpr(95, 128))
 		}),
 		Build: psql.Select,
 	}
@@ -471,8 +557,8 @@ func (o lockBoard) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      47,
-			Stop:       49,
+			Start:      110,
+			Stop:       112,
 			Expression: o.ProjectID,
 		}) {
 			return
@@ -480,8 +566,8 @@ func (o lockBoard) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "id",
-			Start:      61,
-			Stop:       63,
+			Start:      126,
+			Stop:       128,
 			Expression: o.ID,
 		}) {
 			return
@@ -501,7 +587,7 @@ func (o lockBoard) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialec
 	return o.subExpr(0, len(lockBoardSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var deleteBoardSQL = formattedQueries_queries[1877:1935]
+var deleteBoardSQL = formattedQueries_queries[2959:3017]
 
 type DeleteBoardQuery = orm.ModExecQuery[*dialect.DeleteQuery, deleteBoard]
 
@@ -566,68 +652,68 @@ func (o deleteBoard) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dial
 	return o.subExpr(0, len(deleteBoardSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var deleteBoardStatusesSQL = formattedQueries_queries[1961:2014]
+var deleteSchemeStatusesSQL = formattedQueries_queries[3044:3105]
 
-type DeleteBoardStatusesQuery = orm.ModExecQuery[*dialect.DeleteQuery, deleteBoardStatuses]
+type DeleteSchemeStatusesQuery = orm.ModExecQuery[*dialect.DeleteQuery, deleteSchemeStatuses]
 
-func DeleteBoardStatuses(BoardID int) *DeleteBoardStatusesQuery {
-	var expressionTypArgs deleteBoardStatuses
+func DeleteSchemeStatuses(SchemeID int) *DeleteSchemeStatusesQuery {
+	var expressionTypArgs deleteSchemeStatuses
 
-	expressionTypArgs.BoardID = psql.Arg(BoardID)
+	expressionTypArgs.SchemeID = psql.Arg(SchemeID)
 
-	return &DeleteBoardStatusesQuery{
-		ExecQuery: orm.ExecQuery[deleteBoardStatuses]{
-			BaseQuery: bob.BaseQuery[deleteBoardStatuses]{
+	return &DeleteSchemeStatusesQuery{
+		ExecQuery: orm.ExecQuery[deleteSchemeStatuses]{
+			BaseQuery: bob.BaseQuery[deleteSchemeStatuses]{
 				Expression: expressionTypArgs,
 				Dialect:    dialect.Dialect,
 				QueryType:  bob.QueryTypeDelete,
 			},
 		},
 		Mod: bob.ModFunc[*dialect.DeleteQuery](func(q *dialect.DeleteQuery) {
-			q.Table.Expression = expressionTypArgs.subExpr(12, 33)
-			q.AppendWhere(expressionTypArgs.subExpr(40, 53))
+			q.Table.Expression = expressionTypArgs.subExpr(12, 40)
+			q.AppendWhere(expressionTypArgs.subExpr(47, 61))
 		}),
 		Build: psql.Delete,
 	}
 }
 
-type deleteBoardStatuses struct {
-	BoardID bob.Expression
+type deleteSchemeStatuses struct {
+	SchemeID bob.Expression
 }
 
-func (o deleteBoardStatuses) args() iter.Seq[orm.ArgWithPosition] {
+func (o deleteSchemeStatuses) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
-			Name:       "boardID",
-			Start:      51,
-			Stop:       53,
-			Expression: o.BoardID,
+			Name:       "schemeID",
+			Start:      59,
+			Stop:       61,
+			Expression: o.SchemeID,
 		}) {
 			return
 		}
 	}
 }
 
-func (o deleteBoardStatuses) raw(from, to int) string {
-	return deleteBoardStatusesSQL[from:to]
+func (o deleteSchemeStatuses) raw(from, to int) string {
+	return deleteSchemeStatusesSQL[from:to]
 }
 
-func (o deleteBoardStatuses) subExpr(from, to int) bob.Expression {
-	return orm.ArgsToExpression(deleteBoardStatusesSQL, from, to, o.args())
+func (o deleteSchemeStatuses) subExpr(from, to int) bob.Expression {
+	return orm.ArgsToExpression(deleteSchemeStatusesSQL, from, to, o.args())
 }
 
-func (o deleteBoardStatuses) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
-	return o.subExpr(0, len(deleteBoardStatusesSQL)).WriteSQL(ctx, w, d, start)
+func (o deleteSchemeStatuses) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
+	return o.subExpr(0, len(deleteSchemeStatusesSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var deleteRemovedColumnsSQL = formattedQueries_queries[2041:2122]
+var deleteRemovedColumnsSQL = formattedQueries_queries[3132:3221]
 
 type DeleteRemovedColumnsQuery = orm.ModExecQuery[*dialect.DeleteQuery, deleteRemovedColumns]
 
-func DeleteRemovedColumns(BoardID int, Arg2 pq.StringArray) *DeleteRemovedColumnsQuery {
+func DeleteRemovedColumns(SchemeID int, Arg2 pq.StringArray) *DeleteRemovedColumnsQuery {
 	var expressionTypArgs deleteRemovedColumns
 
-	expressionTypArgs.BoardID = psql.Arg(BoardID)
+	expressionTypArgs.SchemeID = psql.Arg(SchemeID)
 	expressionTypArgs.Arg2 = psql.Arg(Arg2)
 
 	return &DeleteRemovedColumnsQuery{
@@ -639,33 +725,33 @@ func DeleteRemovedColumns(BoardID int, Arg2 pq.StringArray) *DeleteRemovedColumn
 			},
 		},
 		Mod: bob.ModFunc[*dialect.DeleteQuery](func(q *dialect.DeleteQuery) {
-			q.Table.Expression = expressionTypArgs.subExpr(14, 27)
-			q.AppendWhere(expressionTypArgs.subExpr(36, 81))
+			q.Table.Expression = expressionTypArgs.subExpr(14, 34)
+			q.AppendWhere(expressionTypArgs.subExpr(43, 89))
 		}),
 		Build: psql.Delete,
 	}
 }
 
 type deleteRemovedColumns struct {
-	BoardID bob.Expression
-	Arg2    bob.Expression
+	SchemeID bob.Expression
+	Arg2     bob.Expression
 }
 
 func (o deleteRemovedColumns) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
-			Name:       "boardID",
-			Start:      47,
-			Stop:       49,
-			Expression: o.BoardID,
+			Name:       "schemeID",
+			Start:      55,
+			Stop:       57,
+			Expression: o.SchemeID,
 		}) {
 			return
 		}
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "arg2",
-			Start:      70,
-			Stop:       72,
+			Start:      78,
+			Stop:       80,
 			Expression: o.Arg2,
 		}) {
 			return
@@ -685,10 +771,10 @@ func (o deleteRemovedColumns) WriteSQL(ctx context.Context, w io.StringWriter, d
 	return o.subExpr(0, len(deleteRemovedColumnsSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var insertColumnSQL = formattedQueries_queries[2141:2226]
+var insertColumnSQL = formattedQueries_queries[3240:3333]
 
 type InsertColumn_Rows = struct {
-	BoardID  int
+	SchemeID int
 	Name     string
 	Position int
 }
@@ -703,28 +789,28 @@ func InsertColumn(Rows []InsertColumn_Rows) *InsertColumnQuery {
 		for i, child := range Rows {
 			expressions[i] = bob.ExpressionFunc(func(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
 				args := make([]any, 0, 3)
-				w.WriteString(insertColumnSQL[60:61])
-				BoardIDArgs, err := bob.Express(ctx, w, d, start+len(args), psql.Arg(child.BoardID))
+				w.WriteString(insertColumnSQL[68:69])
+				SchemeIDArgs, err := bob.Express(ctx, w, d, start+len(args), psql.Arg(child.SchemeID))
 				if err != nil {
 					return nil, err
 				}
-				args = append(args, BoardIDArgs...)
+				args = append(args, SchemeIDArgs...)
 
-				w.WriteString(insertColumnSQL[63:65])
+				w.WriteString(insertColumnSQL[71:73])
 				NameArgs, err := bob.Express(ctx, w, d, start+len(args), psql.Arg(child.Name))
 				if err != nil {
 					return nil, err
 				}
 				args = append(args, NameArgs...)
 
-				w.WriteString(insertColumnSQL[67:69])
+				w.WriteString(insertColumnSQL[75:77])
 				PositionArgs, err := bob.Express(ctx, w, d, start+len(args), psql.Arg(child.Position))
 				if err != nil {
 					return nil, err
 				}
 				args = append(args, PositionArgs...)
 
-				w.WriteString(insertColumnSQL[71:72])
+				w.WriteString(insertColumnSQL[79:80])
 				return args, nil
 			})
 		}
@@ -743,14 +829,14 @@ func InsertColumn(Rows []InsertColumn_Rows) *InsertColumnQuery {
 			Scanner: scan.ColumnMapper[int]("id"),
 		},
 		Mod: bob.ModFunc[*dialect.InsertQuery](func(q *dialect.InsertQuery) {
-			q.TableRef.Columns = []string{"board_id", "name", "position"}
-			q.TableRef.Expression = expressionTypArgs.subExpr(12, 25)
+			q.TableRef.Columns = []string{"scheme_id", "name", "position"}
+			q.TableRef.Expression = expressionTypArgs.subExpr(12, 32)
 			q.Query = bob.BaseQuery[bob.Expression]{
-				Expression: expressionTypArgs.subExpr(53, 72),
+				Expression: expressionTypArgs.subExpr(61, 80),
 				Dialect:    dialect.Dialect,
 				QueryType:  bob.QueryTypeSelect,
 			}
-			q.AppendReturning(expressionTypArgs.subExpr(83, 85))
+			q.AppendReturning(expressionTypArgs.subExpr(91, 93))
 		}),
 		Build: psql.Insert,
 	}
@@ -770,8 +856,8 @@ func (o insertColumn) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "rows",
-			Start:      60,
-			Stop:       72,
+			Start:      68,
+			Stop:       80,
 			Expression: o.Rows,
 		}) {
 			return
@@ -791,16 +877,16 @@ func (o insertColumn) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dia
 	return o.subExpr(0, len(insertColumnSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var updateColumnSQL = formattedQueries_queries[2245:2336]
+var updateColumnSQL = formattedQueries_queries[3352:3451]
 
 type UpdateColumnQuery = orm.ModExecQuery[*dialect.UpdateQuery, updateColumn]
 
-func UpdateColumn(Name string, Position int, BoardID int, ID int) *UpdateColumnQuery {
+func UpdateColumn(Name string, Position int, SchemeID int, ID int) *UpdateColumnQuery {
 	var expressionTypArgs updateColumn
 
 	expressionTypArgs.Name = psql.Arg(Name)
 	expressionTypArgs.Position = psql.Arg(Position)
-	expressionTypArgs.BoardID = psql.Arg(BoardID)
+	expressionTypArgs.SchemeID = psql.Arg(SchemeID)
 	expressionTypArgs.ID = psql.Arg(ID)
 
 	return &UpdateColumnQuery{
@@ -812,9 +898,9 @@ func UpdateColumn(Name string, Position int, BoardID int, ID int) *UpdateColumnQ
 			},
 		},
 		Mod: bob.ModFunc[*dialect.UpdateQuery](func(q *dialect.UpdateQuery) {
-			q.Table.Expression = expressionTypArgs.subExpr(9, 22)
-			q.AppendSet(expressionTypArgs.subExpr(29, 55))
-			q.AppendWhere(expressionTypArgs.subExpr(64, 91))
+			q.Table.Expression = expressionTypArgs.subExpr(9, 29)
+			q.AppendSet(expressionTypArgs.subExpr(36, 62))
+			q.AppendWhere(expressionTypArgs.subExpr(71, 99))
 		}),
 		Build: psql.Update,
 	}
@@ -823,7 +909,7 @@ func UpdateColumn(Name string, Position int, BoardID int, ID int) *UpdateColumnQ
 type updateColumn struct {
 	Name     bob.Expression
 	Position bob.Expression
-	BoardID  bob.Expression
+	SchemeID bob.Expression
 	ID       bob.Expression
 }
 
@@ -831,8 +917,8 @@ func (o updateColumn) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "name",
-			Start:      36,
-			Stop:       38,
+			Start:      43,
+			Stop:       45,
 			Expression: o.Name,
 		}) {
 			return
@@ -840,26 +926,26 @@ func (o updateColumn) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "position",
-			Start:      53,
-			Stop:       55,
+			Start:      60,
+			Stop:       62,
 			Expression: o.Position,
 		}) {
 			return
 		}
 
 		if !yield(orm.ArgWithPosition{
-			Name:       "boardID",
-			Start:      75,
-			Stop:       77,
-			Expression: o.BoardID,
+			Name:       "schemeID",
+			Start:      83,
+			Stop:       85,
+			Expression: o.SchemeID,
 		}) {
 			return
 		}
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "id",
-			Start:      89,
-			Stop:       91,
+			Start:      97,
+			Stop:       99,
 			Expression: o.ID,
 		}) {
 			return
@@ -879,10 +965,10 @@ func (o updateColumn) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dia
 	return o.subExpr(0, len(updateColumnSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var insertColumnStatusSQL = formattedQueries_queries[2361:2447]
+var insertColumnStatusSQL = formattedQueries_queries[3476:3570]
 
 type InsertColumnStatus_Rows = struct {
-	BoardID  int
+	SchemeID int
 	ColumnID int
 	StatusID int
 }
@@ -897,28 +983,28 @@ func InsertColumnStatus(Rows []InsertColumnStatus_Rows) *InsertColumnStatusQuery
 		for i, child := range Rows {
 			expressions[i] = bob.ExpressionFunc(func(ctx context.Context, w io.StringWriter, d bob.Dialect, start int) ([]any, error) {
 				args := make([]any, 0, 3)
-				w.WriteString(insertColumnStatusSQL[74:75])
-				BoardIDArgs, err := bob.Express(ctx, w, d, start+len(args), psql.Arg(child.BoardID))
+				w.WriteString(insertColumnStatusSQL[82:83])
+				SchemeIDArgs, err := bob.Express(ctx, w, d, start+len(args), psql.Arg(child.SchemeID))
 				if err != nil {
 					return nil, err
 				}
-				args = append(args, BoardIDArgs...)
+				args = append(args, SchemeIDArgs...)
 
-				w.WriteString(insertColumnStatusSQL[77:79])
+				w.WriteString(insertColumnStatusSQL[85:87])
 				ColumnIDArgs, err := bob.Express(ctx, w, d, start+len(args), psql.Arg(child.ColumnID))
 				if err != nil {
 					return nil, err
 				}
 				args = append(args, ColumnIDArgs...)
 
-				w.WriteString(insertColumnStatusSQL[81:83])
+				w.WriteString(insertColumnStatusSQL[89:91])
 				StatusIDArgs, err := bob.Express(ctx, w, d, start+len(args), psql.Arg(child.StatusID))
 				if err != nil {
 					return nil, err
 				}
 				args = append(args, StatusIDArgs...)
 
-				w.WriteString(insertColumnStatusSQL[85:86])
+				w.WriteString(insertColumnStatusSQL[93:94])
 				return args, nil
 			})
 		}
@@ -934,10 +1020,10 @@ func InsertColumnStatus(Rows []InsertColumnStatus_Rows) *InsertColumnStatusQuery
 			},
 		},
 		Mod: bob.ModFunc[*dialect.InsertQuery](func(q *dialect.InsertQuery) {
-			q.TableRef.Columns = []string{"board_id", "column_id", "status_id"}
-			q.TableRef.Expression = expressionTypArgs.subExpr(12, 33)
+			q.TableRef.Columns = []string{"scheme_id", "column_id", "status_id"}
+			q.TableRef.Expression = expressionTypArgs.subExpr(12, 40)
 			q.Query = bob.BaseQuery[bob.Expression]{
-				Expression: expressionTypArgs.subExpr(67, 86),
+				Expression: expressionTypArgs.subExpr(75, 94),
 				Dialect:    dialect.Dialect,
 				QueryType:  bob.QueryTypeSelect,
 			}
@@ -954,8 +1040,8 @@ func (o insertColumnStatus) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "rows",
-			Start:      74,
-			Stop:       86,
+			Start:      82,
+			Stop:       94,
 			Expression: o.Rows,
 		}) {
 			return

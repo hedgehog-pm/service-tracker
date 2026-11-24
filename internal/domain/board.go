@@ -8,10 +8,12 @@ import (
 )
 
 type Board struct {
-	ID        int
-	ProjectID int
-	Name      string
-	Columns   []BoardColumn
+	ID           int
+	ProjectID    int
+	Name         string
+	SchemeID     int
+	SharedScheme bool
+	Columns      []BoardColumn
 }
 
 type BoardColumn struct {
@@ -43,6 +45,10 @@ func (b Board) Column(id int) (BoardColumn, error) {
 }
 
 func (b *Board) AddColumn(column BoardColumn, available []Status) error {
+	if b.SharedScheme {
+		return ErrBoardSchemeShared
+	}
+
 	if column.Position < 0 || column.Position > len(b.Columns) {
 		return NewError(CodeInvalidInput, "column position is out of range")
 	}
@@ -58,6 +64,10 @@ func (b *Board) AddColumn(column BoardColumn, available []Status) error {
 }
 
 func (b *Board) UpdateColumn(column BoardColumn, available []Status) error {
+	if b.SharedScheme {
+		return ErrBoardSchemeShared
+	}
+
 	index := b.columnIndex(column.ID)
 	if index == -1 {
 		return ErrBoardColumnNotFound
@@ -79,6 +89,10 @@ func (b *Board) UpdateColumn(column BoardColumn, available []Status) error {
 }
 
 func (b *Board) RemoveColumn(id int) error {
+	if b.SharedScheme {
+		return ErrBoardSchemeShared
+	}
+
 	index := b.columnIndex(id)
 	if index == -1 {
 		return ErrBoardColumnNotFound

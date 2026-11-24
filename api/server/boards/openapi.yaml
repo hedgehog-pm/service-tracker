@@ -387,7 +387,7 @@ x-paths:
       operationId: createBoardColumn
       tags:
       - boards
-      summary: Вставить колонку в position со сдвигом следующих колонок. Статусы должны использоваться в workflow проекта.
+      summary: Вставить колонку в position со сдвигом следующих колонок на доске с собственной схемой. Статусы должны использоваться в workflow проекта.
         status_ids в ответе упорядочены по возрастанию
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
@@ -423,7 +423,7 @@ x-paths:
       operationId: updateBoardColumn
       tags:
       - boards
-      summary: Заменить название, position и статусы колонки со сдвигом соседних колонок. Статус относится максимум к одной
+      summary: Заменить название, position и статусы колонки на доске с собственной схемой. Статус относится максимум к одной
         колонке доски. status_ids в ответе упорядочены по возрастанию
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
@@ -454,7 +454,7 @@ x-paths:
       operationId: deleteBoardColumn
       tags:
       - boards
-      summary: Удалить колонку и её связи со статусами, сохранив задачи и их статусы
+      summary: Удалить колонку и её связи со статусами на доске с собственной схемой, сохранив задачи
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: '#/components/parameters/BoardID'
@@ -466,6 +466,8 @@ x-paths:
           $ref: ../common/openapi.yaml#/components/responses/BadRequest
         '404':
           $ref: ../common/openapi.yaml#/components/responses/NotFound
+        '409':
+          $ref: ../common/openapi.yaml#/components/responses/Conflict
         '500':
           $ref: ../common/openapi.yaml#/components/responses/InternalError
   column-tasks:

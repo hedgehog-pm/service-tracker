@@ -27,6 +27,7 @@ func (e *Error) Error() string {
 
 var (
 	ErrBoardNotFound         = NewError(CodeNotFound, "board not found")
+	ErrBoardSchemeShared     = NewError(CodeConflict, "columns belong to a shared board scheme")
 	ErrBoardColumnNotFound   = NewError(CodeNotFound, "board column not found")
 	ErrStatusUnavailable     = NewError(CodeInvalidInput, "status is not available in this project")
 	ErrStatusAlreadyMapped   = NewError(CodeConflict, "status already belongs to another column")

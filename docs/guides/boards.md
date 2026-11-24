@@ -5,7 +5,20 @@ description: Создать доску, настроить колонки, по�
 
 # Работа с досками
 
-Создайте доску с колонками для стандартного процесса и переместите задачу в работу.
+На стартовой доске уже можно перемещать задачи. Создайте отдельную доску,
+если вам нужно настроить свою группировку статусов.
+
+## Найти стартовую доску {#starter-board}
+
+В новом проекте доска «Основная» показывает задачи в колонках «Открытые», «В работе» и «Готово».
+Получите список досок проекта, чтобы узнать её `id`.
+
+```sh title="GET /projects/1/boards"
+curl http://localhost:8080/projects/1/boards
+```
+
+Колонки стартовой доски задаёт общая [схема](../concepts.md#board-scheme).
+Запросы на добавление, изменение и удаление таких колонок возвращают `409 Conflict`.
 
 ## Создать доску {#create-board}
 
@@ -17,6 +30,7 @@ curl http://localhost:8080/projects/1/boards --json '{
 
 В ответе `201 Created` вернётся доска с пустым массивом `columns`.
 Чтобы на ней появились задачи, добавьте колонки и свяжите их со статусами проекта.
+В примерах далее используется такая доска с `id` `2`.
 
 ## Настроить колонки {#columns}
 
@@ -26,7 +40,7 @@ curl http://localhost:8080/projects/1/boards --json '{
 curl http://localhost:8080/projects/1/statuses
 ```
 
-Для стандартного процесса добавьте колонки Очередь, В работе и Готово,
+Для стандартного процесса добавьте колонки Открытые, В работе и Готово,
 связав их со статусами `Open`, `In Progress` и `Done`.
 Идентификаторы этих статусов передайте в `status_ids` соответствующих колонок.
 
@@ -34,31 +48,31 @@ curl http://localhost:8080/projects/1/statuses
 но на одной доске каждый статус можно назначить только одной колонке.
 Задачи в статусах, которые не назначены ни одной колонке, на доске не отображаются.
 
-```sh title="POST /projects/1/boards/1/columns"
-curl http://localhost:8080/projects/1/boards/1/columns --json '{
-  "name": "Очередь",
+```sh title="POST /projects/1/boards/2/columns"
+curl http://localhost:8080/projects/1/boards/2/columns --json '{
+  "name": "Открытые",
   "position": 0,
   "status_ids": [1]
 }'
 ```
 
-```sh title="POST /projects/1/boards/1/columns"
-curl http://localhost:8080/projects/1/boards/1/columns --json '{
+```sh title="POST /projects/1/boards/2/columns"
+curl http://localhost:8080/projects/1/boards/2/columns --json '{
   "name": "В работе",
   "position": 1,
   "status_ids": [2]
 }'
 ```
 
-```sh title="POST /projects/1/boards/1/columns"
-curl http://localhost:8080/projects/1/boards/1/columns --json '{
+```sh title="POST /projects/1/boards/2/columns"
+curl http://localhost:8080/projects/1/boards/2/columns --json '{
   "name": "Готово",
   "position": 2,
   "status_ids": [3]
 }'
 ```
 
-Каждый запрос возвращает `201 Created` и колонку с её `id`.
+Каждый запрос возвращает `201 Created` и колонку с её `id`. В этом примере колонки получили ID `4`, `5` и `6`.
 
 Порядок колонок задаётся полем `position`, начиная с нуля.
 При вставке в указанную позицию следующие колонки сдвигаются.
@@ -66,8 +80,8 @@ curl http://localhost:8080/projects/1/boards/1/columns --json '{
 
 Проверить полученный порядок можно запросом доски вместе с её колонками:
 
-```sh title="GET /projects/1/boards/1"
-curl http://localhost:8080/projects/1/boards/1
+```sh title="GET /projects/1/boards/2"
+curl http://localhost:8080/projects/1/boards/2
 ```
 
 В ответе массив `columns` будет содержать колонки по возрастанию `position`.
@@ -78,8 +92,8 @@ curl http://localhost:8080/projects/1/boards/1
 Поэтому при обновлении передайте все три значения.
 Например, следующий запрос переименовывает вторую колонку и перемещает её на первое место:
 
-```sh title="PUT /projects/1/boards/1/columns/2"
-curl --request PUT http://localhost:8080/projects/1/boards/1/columns/2 --json '{
+```sh title="PUT /projects/1/boards/2/columns/5"
+curl --request PUT http://localhost:8080/projects/1/boards/2/columns/5 --json '{
   "name": "Выполняется",
   "position": 0,
   "status_ids": [2]
@@ -94,8 +108,8 @@ curl --request PUT http://localhost:8080/projects/1/boards/1/columns/2 --json '{
 
 ## Получить задачи колонки {#column-tasks}
 
-```sh title="GET /projects/1/boards/1/columns/2/tasks"
-curl 'http://localhost:8080/projects/1/boards/1/columns/2/tasks?limit=50'
+```sh title="GET /projects/1/boards/2/columns/5/tasks"
+curl 'http://localhost:8080/projects/1/boards/2/columns/5/tasks?limit=50'
 ```
 
 В `items` возвращается страница задач в порядке их размещения на доске.
@@ -118,9 +132,9 @@ curl 'http://localhost:8080/projects/1/boards/1/columns/2/tasks?limit=50'
 Чтобы выполнить этот переход и поставить задачу в конец колонки со статусом `In Progress`,
 отправьте запрос:
 
-```sh title="POST /projects/1/boards/1/tasks/1/move"
-curl http://localhost:8080/projects/1/boards/1/tasks/1/move --json '{
-  "column_id": 2,
+```sh title="POST /projects/1/boards/2/tasks/1/move"
+curl http://localhost:8080/projects/1/boards/2/tasks/1/move --json '{
+  "column_id": 5,
   "before_task_id": null,
   "transition_id": 1
 }'
@@ -141,12 +155,12 @@ curl http://localhost:8080/projects/1/boards/1/tasks/1/move --json '{
 Поэтому в новой колонке она может оказаться между другими задачами.
 
 Чтобы поставить задачу перед другой в той же колонке, укажите её в `before_task_id`.
-Например, если задачи `1` и `2` уже находятся в колонке `2`,
+Например, если задачи `1` и `2` уже находятся в колонке `5`,
 следующий запрос поставит первую перед второй:
 
-```sh title="POST /projects/1/boards/1/tasks/1/move"
-curl http://localhost:8080/projects/1/boards/1/tasks/1/move --json '{
-  "column_id": 2,
+```sh title="POST /projects/1/boards/2/tasks/1/move"
+curl http://localhost:8080/projects/1/boards/2/tasks/1/move --json '{
+  "column_id": 5,
   "before_task_id": 2,
   "transition_id": null
 }'
@@ -161,17 +175,17 @@ curl http://localhost:8080/projects/1/boards/1/tasks/1/move --json '{
 
 ## Удалить колонку или доску {#delete}
 
-```sh title="DELETE /projects/1/boards/1/columns/3"
-curl --request DELETE http://localhost:8080/projects/1/boards/1/columns/3
+```sh title="DELETE /projects/1/boards/2/columns/6"
+curl --request DELETE http://localhost:8080/projects/1/boards/2/columns/6
 ```
 
 Удаление колонки сохраняет задачи и их статусы.
 Если после удаления их статус больше не назначен ни одной колонке,
 эти задачи перестанут отображаться на доске.
 
-```sh title="DELETE /projects/1/boards/1"
-curl --request DELETE http://localhost:8080/projects/1/boards/1
+```sh title="DELETE /projects/1/boards/2"
+curl --request DELETE http://localhost:8080/projects/1/boards/2
 ```
 
-Этот запрос удаляет доску вместе с её колонками, сохраняя задачи проекта и другие доски.
+Этот запрос удаляет доску. Задачи проекта и другие доски остаются доступны.
 Оба запроса возвращают `204 No Content`.

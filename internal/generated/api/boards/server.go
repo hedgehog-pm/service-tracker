@@ -144,13 +144,13 @@ type ServerInterface interface {
 	// UpdateBoard Переименовать доску
 	// (PUT /projects/{project_id}/boards/{board_id})
 	UpdateBoard(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID) error
-	// CreateBoardColumn Вставить колонку в position со сдвигом следующих колонок. Статусы должны использоваться в workflow проекта. status_ids в ответе упорядочены по возрастанию
+	// CreateBoardColumn Вставить колонку в position со сдвигом следующих колонок на доске с собственной схемой. Статусы должны использоваться в workflow проекта. status_ids в ответе упорядочены по возрастанию
 	// (POST /projects/{project_id}/boards/{board_id}/columns)
 	CreateBoardColumn(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID) error
-	// DeleteBoardColumn Удалить колонку и её связи со статусами, сохранив задачи и их статусы
+	// DeleteBoardColumn Удалить колонку и её связи со статусами на доске с собственной схемой, сохранив задачи
 	// (DELETE /projects/{project_id}/boards/{board_id}/columns/{column_id})
 	DeleteBoardColumn(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID, columnID ColumnID) error
-	// UpdateBoardColumn Заменить название, position и статусы колонки со сдвигом соседних колонок. Статус относится максимум к одной колонке доски. status_ids в ответе упорядочены по возрастанию
+	// UpdateBoardColumn Заменить название, position и статусы колонки на доске с собственной схемой. Статус относится максимум к одной колонке доски. status_ids в ответе упорядочены по возрастанию
 	// (PUT /projects/{project_id}/boards/{board_id}/columns/{column_id})
 	UpdateBoardColumn(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID, columnID ColumnID) error
 	// ListBoardColumnTasks Получить задачи проекта в статусах колонки по общему rank проекта. Курсор не фиксирует снимок данных, next_cursor=null завершает выдачу
@@ -1002,6 +1002,22 @@ func (response DeleteBoardColumn404JSONResponse) VisitDeleteBoardColumnResponse(
 	return err
 }
 
+type DeleteBoardColumn409JSONResponse struct {
+	externalRef0.ConflictJSONResponse
+}
+
+func (response DeleteBoardColumn409JSONResponse) VisitDeleteBoardColumnResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type DeleteBoardColumn500JSONResponse struct {
 	externalRef0.InternalErrorJSONResponse
 }
@@ -1286,13 +1302,13 @@ type StrictServerInterface interface {
 	// UpdateBoard Переименовать доску
 	// (PUT /projects/{project_id}/boards/{board_id})
 	UpdateBoard(ctx context.Context, request UpdateBoardRequestObject) (UpdateBoardResponseObject, error)
-	// CreateBoardColumn Вставить колонку в position со сдвигом следующих колонок. Статусы должны использоваться в workflow проекта. status_ids в ответе упорядочены по возрастанию
+	// CreateBoardColumn Вставить колонку в position со сдвигом следующих колонок на доске с собственной схемой. Статусы должны использоваться в workflow проекта. status_ids в ответе упорядочены по возрастанию
 	// (POST /projects/{project_id}/boards/{board_id}/columns)
 	CreateBoardColumn(ctx context.Context, request CreateBoardColumnRequestObject) (CreateBoardColumnResponseObject, error)
-	// DeleteBoardColumn Удалить колонку и её связи со статусами, сохранив задачи и их статусы
+	// DeleteBoardColumn Удалить колонку и её связи со статусами на доске с собственной схемой, сохранив задачи
 	// (DELETE /projects/{project_id}/boards/{board_id}/columns/{column_id})
 	DeleteBoardColumn(ctx context.Context, request DeleteBoardColumnRequestObject) (DeleteBoardColumnResponseObject, error)
-	// UpdateBoardColumn Заменить название, position и статусы колонки со сдвигом соседних колонок. Статус относится максимум к одной колонке доски. status_ids в ответе упорядочены по возрастанию
+	// UpdateBoardColumn Заменить название, position и статусы колонки на доске с собственной схемой. Статус относится максимум к одной колонке доски. status_ids в ответе упорядочены по возрастанию
 	// (PUT /projects/{project_id}/boards/{board_id}/columns/{column_id})
 	UpdateBoardColumn(ctx context.Context, request UpdateBoardColumnRequestObject) (UpdateBoardColumnResponseObject, error)
 	// ListBoardColumnTasks Получить задачи проекта в статусах колонки по общему rank проекта. Курсор не фиксирует снимок данных, next_cursor=null завершает выдачу
@@ -1664,48 +1680,48 @@ func (sh *strictHandler) MoveBoardTask(ctx *echo.Context, projectID externalRef0
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
-	"h6IccMrFgMPdHnBo/38A",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

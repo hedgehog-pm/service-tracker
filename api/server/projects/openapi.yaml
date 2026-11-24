@@ -98,7 +98,7 @@ x-paths:
       operationId: createProject
       tags:
       - projects
-      summary: Создать проект
+      summary: Создать проект со стартовой доской
       requestBody:
         required: true
         content:

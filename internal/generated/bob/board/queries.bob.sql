@@ -6,14 +6,18 @@ SELECT
   b.id,
   b.project_id,
   b.name,
+  b.board_scheme_id,
+  s.is_shared,
   c.id AS column_id,
   c.name AS column_name,
   COALESCE(c.position, 0) AS position,
   membership.status_id
 FROM
   boards AS b
-  LEFT JOIN board_columns AS c ON c.board_id = b.id
-  LEFT JOIN board_column_statuses AS membership ON membership.column_id = c.id AND membership.board_id = b.id
+  JOIN board_schemes AS s ON s.id = b.board_scheme_id
+  LEFT JOIN board_scheme_columns AS c ON c.scheme_id = s.id
+  LEFT JOIN board_scheme_column_statuses AS membership ON membership.column_id = c.id
+    AND membership.scheme_id = s.id
 WHERE
   b.project_id = $1
   AND b.id = $2
@@ -26,7 +30,8 @@ WITH page AS (
   SELECT
     id,
     project_id,
-    name
+    name,
+    board_scheme_id
   FROM
     boards
   WHERE
@@ -40,29 +45,46 @@ SELECT
   b.id,
   b.project_id,
   b.name,
+  b.board_scheme_id,
+  s.is_shared,
   c.id AS column_id,
   c.name AS column_name,
   COALESCE(c.position, 0) AS position,
   membership.status_id
 FROM
   page AS b
-  LEFT JOIN board_columns AS c ON c.board_id = b.id
-  LEFT JOIN board_column_statuses AS membership ON membership.column_id = c.id AND membership.board_id = b.id
+  JOIN board_schemes AS s ON s.id = b.board_scheme_id
+  LEFT JOIN board_scheme_columns AS c ON c.scheme_id = s.id
+  LEFT JOIN board_scheme_column_statuses AS membership ON membership.column_id = c.id
+    AND membership.scheme_id = s.id
 ORDER BY
   b.id,
   c.position,
   membership.status_id;
 
 -- InsertBoard
-INSERT INTO boards (project_id, name)
-SELECT
-  id,
-  $1
-FROM
-  projects
-WHERE
-  id = $2
-RETURNING id, project_id, name;
+WITH project AS (
+  SELECT id, workflow_scheme_id
+  FROM projects
+  WHERE id = $1
+), scheme AS (
+  INSERT INTO board_schemes (workflow_scheme_id, name)
+  SELECT workflow_scheme_id, $2
+  FROM project
+  RETURNING id, workflow_scheme_id, name
+)
+INSERT INTO boards (project_id, name, board_scheme_id, workflow_scheme_id)
+SELECT project.id, scheme.name, scheme.id, scheme.workflow_scheme_id
+FROM project CROSS JOIN scheme
+RETURNING id, project_id, name, board_scheme_id;
+
+-- InsertDefaultBoard
+INSERT INTO boards (project_id, name, board_scheme_id, workflow_scheme_id)
+SELECT p.id, s.name, s.id, p.workflow_scheme_id
+FROM projects AS p
+JOIN board_schemes AS s ON s.workflow_scheme_id = p.workflow_scheme_id AND s.is_default
+WHERE p.id = $1
+RETURNING id;
 
 -- UpdateBoard
 WITH updated AS (
@@ -70,33 +92,39 @@ WITH updated AS (
   SET name = $1
   WHERE project_id = $2
     AND id = $3
-  RETURNING id, project_id, name
+  RETURNING id, project_id, name, board_scheme_id
 )
 SELECT
   b.id,
   b.project_id,
   b.name,
+  b.board_scheme_id,
+  s.is_shared,
   c.id AS column_id,
   c.name AS column_name,
   COALESCE(c.position, 0) AS position,
   membership.status_id
 FROM
   updated AS b
-  LEFT JOIN board_columns AS c ON c.board_id = b.id
-  LEFT JOIN board_column_statuses AS membership ON membership.column_id = c.id AND membership.board_id = b.id
+  JOIN board_schemes AS s ON s.id = b.board_scheme_id
+  LEFT JOIN board_scheme_columns AS c ON c.scheme_id = s.id
+  LEFT JOIN board_scheme_column_statuses AS membership ON membership.column_id = c.id
+    AND membership.scheme_id = s.id
 ORDER BY
   c.position,
   membership.status_id;
 
 -- LockBoard
 SELECT
-  id
+  b.id
 FROM
-  boards
+  boards AS b
+  JOIN board_schemes AS s ON s.id = b.board_scheme_id
 WHERE
-  project_id = $1
-  AND id = $2
-FOR NO KEY UPDATE;
+  b.project_id = $1
+  AND b.id = $2
+FOR NO KEY UPDATE OF b
+FOR SHARE OF s;
 
 -- DeleteBoard
 DELETE FROM
@@ -105,30 +133,30 @@ WHERE
   project_id = $1
   AND id = $2;
 
--- DeleteBoardStatuses
-DELETE FROM board_column_statuses WHERE board_id = $1;
+-- DeleteSchemeStatuses
+DELETE FROM board_scheme_column_statuses WHERE scheme_id = $1;
 
 -- DeleteRemovedColumns
 DELETE FROM
-  board_columns
+  board_scheme_columns
 WHERE
-  board_id = $1
+  scheme_id = $1
   AND NOT (id = ANY($2::INT[]));
 
 -- InsertColumn
-INSERT INTO board_columns (board_id, name, position)
+INSERT INTO board_scheme_columns (scheme_id, name, position)
 VALUES ($1, $2, $3)
 RETURNING id;
 
 -- UpdateColumn
 UPDATE
-  board_columns
+  board_scheme_columns
 SET
   name = $1,
   position = $2
 WHERE
-  board_id = $3
+  scheme_id = $3
   AND id = $4;
 
 -- InsertColumnStatus
-INSERT INTO board_column_statuses (board_id, column_id, status_id) VALUES ($1, $2, $3);
+INSERT INTO board_scheme_column_statuses (scheme_id, column_id, status_id) VALUES ($1, $2, $3);

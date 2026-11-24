@@ -77,7 +77,7 @@ func (r *Postgres) ListBoards(
 }
 
 func (r *Postgres) InsertBoard(ctx context.Context, board domain.Board) (domain.Board, error) {
-	q := bobgen.InsertBoard(board.Name, board.ProjectID)
+	q := bobgen.InsertBoard(board.ProjectID, board.Name)
 
 	query, args, err := bob.Build(ctx, q)
 	if err != nil {
@@ -94,8 +94,24 @@ func (r *Postgres) InsertBoard(ctx context.Context, board domain.Board) (domain.
 	}
 
 	board.ID = row.ID
+	board.SchemeID = row.BoardSchemeID
 
 	return board, nil
+}
+
+func (r *Postgres) InsertDefaultBoard(ctx context.Context, projectID int) error {
+	q := bobgen.InsertDefaultBoard(projectID)
+
+	query, args, err := bob.Build(ctx, q)
+	if err != nil {
+		return postgres.MapError(ctx, fmt.Errorf("build insert default board query: %w", err))
+	}
+
+	if _, err := pgxscan.One(ctx, postgres.Executor(ctx, r.db), q.Scanner, query, args...); err != nil {
+		return postgres.MapError(ctx, fmt.Errorf("insert default board for project %d: %w", projectID, err))
+	}
+
+	return nil
 }
 
 func (r *Postgres) UpdateBoard(ctx context.Context, board domain.Board) (domain.Board, error) {

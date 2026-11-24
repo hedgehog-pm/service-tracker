@@ -90,9 +90,10 @@ func run(ctx context.Context) error {
 
 	statuses := statusrepository.NewPostgres(db)
 	modules := modulerepository.NewPostgres(db)
+	boards := boardrepository.NewPostgres(db)
 	projectHandler := api.NewProjectHandler(
 		projectusecase.New(projects),
-		createproject.New(projects, workflows, priorities),
+		createproject.New(projects, boards, workflows, priorities, transactor),
 	)
 	statusHandler := api.NewStatusHandler(statususecase.New(statuses, projects))
 	moduleHandler := api.NewModuleHandler(
@@ -107,7 +108,6 @@ func run(ctx context.Context) error {
 	taskTypeHandler := api.NewTaskTypeHandler(tasktype.New(workflows, projects))
 	priorityHandler := api.NewPriorityHandler(priority.New(priorities, projects))
 
-	boards := boardrepository.NewPostgres(db)
 	boardHandler := api.NewBoardHandler(
 		board.New(boards),
 		listboards.New(boards, projects),

@@ -14,17 +14,21 @@ type Filters struct {
 	TaskTypeID *int
 }
 
+type Query struct {
+	ProjectID   int
+	BoardID     int
+	ColumnID    int
+	Filters     Filters
+	AfterRank   *int
+	AfterNumber *int
+	Limit       int
+}
+
 type (
 	boardReader interface {
 		GetBoard(ctx context.Context, projectID, boardID int) (domain.Board, error)
 	}
 	taskReader interface {
-		ListBoardColumnTasks(
-			ctx context.Context,
-			projectID, boardID, columnID int,
-			filters Filters,
-			afterRank, afterNumber *int,
-			limit int,
-		) ([]domain.Task, error)
+		ListBoardColumnTasks(ctx context.Context, query Query) ([]domain.Task, error)
 	}
 )

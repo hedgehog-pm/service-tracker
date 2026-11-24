@@ -97,20 +97,18 @@ func (r *Postgres) ListTasks(
 
 func (r *Postgres) ListBoardColumnTasks(
 	ctx context.Context,
-	projectID, boardID, columnID int,
-	filters listboardcolumntasks.Filters,
-	afterRank, afterNumber *int,
-	limit int,
+	params listboardcolumntasks.Query,
 ) ([]domain.Task, error) {
 	q := bobgen.ListBoardColumnTasks(
-		projectID,
-		boardID,
-		columnID,
-		pointerToNull(afterRank),
-		pointerToNull(afterNumber),
-		limit,
+		params.ProjectID,
+		params.BoardID,
+		params.ColumnID,
+		pointerToNull(params.AfterRank),
+		pointerToNull(params.AfterNumber),
+		params.Limit,
 	).With()
 
+	filters := params.Filters
 	for _, predicate := range taskFilterPredicates(
 		filters.StatusID,
 		filters.ModuleID,

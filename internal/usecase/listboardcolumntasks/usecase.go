@@ -48,7 +48,13 @@ func (u *Usecase) Do(ctx context.Context, params Params) (Page, error) {
 		return Page{}, err
 	}
 
-	var afterRank, afterNumber *int
+	query := Query{
+		ProjectID: params.ProjectID,
+		BoardID:   params.BoardID,
+		ColumnID:  params.ColumnID,
+		Filters:   params.Filters,
+		Limit:     params.Limit + 1,
+	}
 
 	if params.Cursor != nil {
 		rank, number, err := decodeCursor(*params.Cursor, params)
@@ -56,19 +62,10 @@ func (u *Usecase) Do(ctx context.Context, params Params) (Page, error) {
 			return Page{}, err
 		}
 
-		afterRank, afterNumber = &rank, &number
+		query.AfterRank, query.AfterNumber = &rank, &number
 	}
 
-	tasks, err := u.tasks.ListBoardColumnTasks(
-		ctx,
-		params.ProjectID,
-		params.BoardID,
-		params.ColumnID,
-		params.Filters,
-		afterRank,
-		afterNumber,
-		params.Limit+1,
-	)
+	tasks, err := u.tasks.ListBoardColumnTasks(ctx, query)
 	if err != nil {
 		return Page{}, err
 	}

@@ -473,14 +473,48 @@ x-paths:
       operationId: listBoardColumnTasks
       tags:
       - boards
-      summary: Получить задачи проекта в статусах колонки по общему rank проекта. Курсор не фиксирует снимок данных, next_cursor=null
-        завершает выдачу
+      summary: Получить задачи колонки с фильтрами по общему rank проекта. q ищет по ключу или названию без учёта регистра.
+        Курсор действует для тех же фильтров и не фиксирует снимок данных. next_cursor=null завершает выдачу
       parameters:
       - $ref: ../common/openapi.yaml#/components/parameters/ProjectID
       - $ref: '#/components/parameters/BoardID'
       - $ref: '#/components/parameters/ColumnID'
       - $ref: ../common/openapi.yaml#/components/parameters/Limit
       - $ref: '#/components/parameters/Cursor'
+      - name: q
+        in: query
+        schema:
+          type: string
+          maxLength: 200
+          pattern: '^[^\x00]*$'
+      - name: status
+        in: query
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - name: module
+        in: query
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - name: priority
+        in: query
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
+      - name: task_type
+        in: query
+        schema:
+          type: integer
+          format: int32
+          x-go-type: int
+          minimum: 1
       responses:
         '200':
           description: ''

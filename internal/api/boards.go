@@ -194,6 +194,13 @@ func (h *BoardHandler) ListBoardColumnTasks(
 		ColumnID:  request.ColumnID,
 		Limit:     *request.Params.Limit,
 		Cursor:    request.Params.Cursor,
+		Filters: listboardcolumntasks.Filters{
+			Query:      lo.FromPtr(request.Params.Q),
+			StatusID:   request.Params.Status,
+			ModuleID:   request.Params.Module,
+			PriorityID: request.Params.Priority,
+			TaskTypeID: request.Params.TaskType,
+		},
 	}
 
 	page, err := h.listColumnTasks.Do(ctx, params)

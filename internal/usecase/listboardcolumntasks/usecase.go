@@ -2,6 +2,7 @@ package listboardcolumntasks
 
 import (
 	"context"
+	"strings"
 
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 )
@@ -11,6 +12,7 @@ type (
 		ProjectID int
 		BoardID   int
 		ColumnID  int
+		Filters   Filters
 		Limit     int
 		Cursor    *string
 	}
@@ -35,6 +37,8 @@ func New(
 }
 
 func (u *Usecase) Do(ctx context.Context, params Params) (Page, error) {
+	params.Filters.Query = strings.TrimSpace(params.Filters.Query)
+
 	board, err := u.boards.GetBoard(ctx, params.ProjectID, params.BoardID)
 	if err != nil {
 		return Page{}, err
@@ -60,6 +64,7 @@ func (u *Usecase) Do(ctx context.Context, params Params) (Page, error) {
 		params.ProjectID,
 		params.BoardID,
 		params.ColumnID,
+		params.Filters,
 		afterRank,
 		afterNumber,
 		params.Limit+1,

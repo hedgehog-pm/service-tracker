@@ -14,19 +14,25 @@ import (
 // В проекте сохраняются ID схем, поэтому смена схем по умолчанию не меняет созданный проект.
 type Usecase struct {
 	projects        projectRepository
+	boards          boardRepository
 	workflowSchemes workflowSchemeReader
 	prioritySchemes prioritySchemeReader
+	transactor      transactor
 }
 
 func New(
 	projects projectRepository,
+	boards boardRepository,
 	workflowSchemes workflowSchemeReader,
 	prioritySchemes prioritySchemeReader,
+	transactor transactor,
 ) *Usecase {
 	return &Usecase{
 		projects:        projects,
+		boards:          boards,
 		workflowSchemes: workflowSchemes,
 		prioritySchemes: prioritySchemes,
+		transactor:      transactor,
 	}
 }
 
@@ -36,17 +42,39 @@ func (u *Usecase) Do(ctx context.Context, key, name string) (domain.Project, err
 		return domain.Project{}, err
 	}
 
-	var err error
+	err := u.transactor.InTx(ctx, func(ctx context.Context) error {
+		var err error
 
-	project.WorkflowSchemeID, err = u.workflowSchemes.GetDefaultWorkflowScheme(ctx)
+		project, err = u.insertProject(ctx, project)
+		if err != nil {
+			return err
+		}
+
+		return u.boards.InsertDefaultBoard(ctx, project.ID)
+	})
 	if err != nil {
 		return domain.Project{}, err
 	}
 
-	project.PrioritySchemeID, err = u.prioritySchemes.GetDefaultPriorityScheme(ctx)
+	return project, nil
+}
+
+func (u *Usecase) insertProject(
+	ctx context.Context,
+	project domain.Project,
+) (domain.Project, error) {
+	workflowSchemeID, err := u.workflowSchemes.GetDefaultWorkflowScheme(ctx)
 	if err != nil {
 		return domain.Project{}, err
 	}
+
+	prioritySchemeID, err := u.prioritySchemes.GetDefaultPriorityScheme(ctx)
+	if err != nil {
+		return domain.Project{}, err
+	}
+
+	project.WorkflowSchemeID = workflowSchemeID
+	project.PrioritySchemeID = prioritySchemeID
 
 	return u.projects.InsertProject(ctx, project)
 }

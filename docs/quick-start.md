@@ -31,6 +31,9 @@ curl http://localhost:8080/projects --json '{
 }
 ```
 
+Вместе с проектом сервис создаёт доску «Основная» с колонками «Открытые»,
+«В работе» и «Готово». Чтобы найти её, [откройте список досок](guides/boards.md#starter-board).
+
 ## Выберите тип задачи
 
 ```sh title="GET /projects/1/task-types"

@@ -15,26 +15,26 @@ import (
 )
 
 func (r *Postgres) SaveColumns(ctx context.Context, board domain.Board) (domain.Board, error) {
-	query, args, err := bob.Build(ctx, bobgen.DeleteBoardStatuses(board.ID))
+	query, args, err := bob.Build(ctx, bobgen.DeleteSchemeStatuses(board.SchemeID))
 	if err != nil {
 		return domain.Board{}, postgres.MapError(
 			ctx,
 			fmt.Errorf(
-				"build delete board statuses query: %w",
+				"build delete scheme statuses query: %w",
 				err,
 			),
 		)
 	}
 
 	if _, err := postgres.Executor(ctx, r.db).Exec(ctx, query, args...); err != nil {
-		return domain.Board{}, postgres.MapError(ctx, fmt.Errorf("delete board statuses: %w", err))
+		return domain.Board{}, postgres.MapError(ctx, fmt.Errorf("delete scheme statuses: %w", err))
 	}
 
 	ids := lo.FilterMap(board.Columns, func(column domain.BoardColumn, _ int) (string, bool) {
 		return strconv.Itoa(column.ID), column.ID != 0
 	})
 
-	query, args, err = bob.Build(ctx, bobgen.DeleteRemovedColumns(board.ID, ids))
+	query, args, err = bob.Build(ctx, bobgen.DeleteRemovedColumns(board.SchemeID, ids))
 	if err != nil {
 		return domain.Board{}, postgres.MapError(
 			ctx,
@@ -50,7 +50,7 @@ func (r *Postgres) SaveColumns(ctx context.Context, board domain.Board) (domain.
 	}
 
 	for i := range board.Columns {
-		if err := r.saveColumn(ctx, board.ID, &board.Columns[i]); err != nil {
+		if err := r.saveColumn(ctx, board.SchemeID, &board.Columns[i]); err != nil {
 			return domain.Board{}, err
 		}
 	}
@@ -58,10 +58,10 @@ func (r *Postgres) SaveColumns(ctx context.Context, board domain.Board) (domain.
 	return board, nil
 }
 
-func (r *Postgres) saveColumn(ctx context.Context, boardID int, column *domain.BoardColumn) error {
+func (r *Postgres) saveColumn(ctx context.Context, schemeID int, column *domain.BoardColumn) error {
 	if column.ID == 0 {
 		q := bobgen.InsertColumn([]bobgen.InsertColumn_Rows{{
-			BoardID:  boardID,
+			SchemeID: schemeID,
 			Name:     column.Name,
 			Position: column.Position,
 		}})
@@ -83,7 +83,7 @@ func (r *Postgres) saveColumn(ctx context.Context, boardID int, column *domain.B
 			bobgen.UpdateColumn(
 				column.Name,
 				column.Position,
-				boardID,
+				schemeID,
 				column.ID,
 			),
 		)
@@ -96,19 +96,19 @@ func (r *Postgres) saveColumn(ctx context.Context, boardID int, column *domain.B
 		}
 	}
 
-	return r.saveColumnStatuses(ctx, boardID, *column)
+	return r.saveColumnStatuses(ctx, schemeID, *column)
 }
 
 func (r *Postgres) saveColumnStatuses(
 	ctx context.Context,
-	boardID int,
+	schemeID int,
 	column domain.BoardColumn,
 ) error {
 	for _, statusID := range column.StatusIDs {
 		query, args, err := bob.Build(
 			ctx,
 			bobgen.InsertColumnStatus([]bobgen.InsertColumnStatus_Rows{{
-				BoardID:  boardID,
+				SchemeID: schemeID,
 				ColumnID: column.ID,
 				StatusID: statusID,
 			}}),

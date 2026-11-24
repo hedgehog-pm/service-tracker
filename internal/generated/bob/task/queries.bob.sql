@@ -239,10 +239,12 @@ SELECT
   t.rank
 FROM
   tasks AS t
-  JOIN board_column_statuses AS membership ON membership.status_id = t.status_id
+  JOIN boards AS b ON b.project_id = t.project_id
+  JOIN board_scheme_column_statuses AS membership ON membership.scheme_id = b.board_scheme_id
+    AND membership.status_id = t.status_id
 WHERE
   t.project_id = $1
-  AND membership.board_id = $2
+  AND b.id = $2
   AND membership.column_id = $3
   AND t.id <> $4
 ORDER BY
@@ -297,8 +299,10 @@ WHERE
   t.project_id = $1
   AND EXISTS (
     SELECT 1
-    FROM board_column_statuses AS membership
-    WHERE membership.board_id = $2
+    FROM boards AS b
+    JOIN board_scheme_column_statuses AS membership ON membership.scheme_id = b.board_scheme_id
+    WHERE b.id = $2
+      AND b.project_id = t.project_id
       AND membership.column_id = $3
       AND membership.status_id = t.status_id
   )

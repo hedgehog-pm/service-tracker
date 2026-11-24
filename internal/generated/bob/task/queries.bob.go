@@ -1321,17 +1321,17 @@ func (o getNextRank) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Dial
 	return o.subExpr(0, len(getNextRankSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var getLastColumnRankSQL = formattedQueries_queries[3106:3357]
+var getLastColumnRankSQL = formattedQueries_queries[3106:3448]
 
 type GetLastColumnRankQuery = orm.ModQuery[*dialect.SelectQuery, getLastColumnRank, int, []int, getLastColumnRankTransformer]
 
-func GetLastColumnRank(ProjectID int, BoardID int, ColumnID int, ID int) *GetLastColumnRankQuery {
+func GetLastColumnRank(ProjectID int, ID int, ColumnID int, ID2 int) *GetLastColumnRankQuery {
 	var expressionTypArgs getLastColumnRank
 
 	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
-	expressionTypArgs.BoardID = psql.Arg(BoardID)
-	expressionTypArgs.ColumnID = psql.Arg(ColumnID)
 	expressionTypArgs.ID = psql.Arg(ID)
+	expressionTypArgs.ColumnID = psql.Arg(ColumnID)
+	expressionTypArgs.ID2 = psql.Arg(ID2)
 
 	return &GetLastColumnRankQuery{
 		Query: orm.Query[getLastColumnRank, int, []int, getLastColumnRankTransformer]{
@@ -1346,10 +1346,10 @@ func GetLastColumnRank(ProjectID int, BoardID int, ColumnID int, ID int) *GetLas
 		},
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
 			q.AppendSelect(expressionTypArgs.subExpr(9, 15))
-			q.SetTable(expressionTypArgs.subExpr(23, 114))
-			q.AppendWhere(expressionTypArgs.subExpr(123, 220))
-			q.AppendOrder(expressionTypArgs.subExpr(232, 243))
-			q.SetLimit(expressionTypArgs.subExpr(250, 251))
+			q.SetTable(expressionTypArgs.subExpr(23, 220))
+			q.AppendWhere(expressionTypArgs.subExpr(229, 311))
+			q.AppendOrder(expressionTypArgs.subExpr(323, 334))
+			q.SetLimit(expressionTypArgs.subExpr(341, 342))
 		}),
 		Build: psql.Select,
 	}
@@ -1363,45 +1363,45 @@ type getLastColumnRankTransformer = bob.SliceTransformer[int, []int]
 
 type getLastColumnRank struct {
 	ProjectID bob.Expression
-	BoardID   bob.Expression
-	ColumnID  bob.Expression
 	ID        bob.Expression
+	ColumnID  bob.Expression
+	ID2       bob.Expression
 }
 
 func (o getLastColumnRank) args() iter.Seq[orm.ArgWithPosition] {
 	return func(yield func(arg orm.ArgWithPosition) bool) {
 		if !yield(orm.ArgWithPosition{
 			Name:       "projectID",
-			Start:      138,
-			Stop:       140,
+			Start:      244,
+			Stop:       246,
 			Expression: o.ProjectID,
 		}) {
 			return
 		}
 
 		if !yield(orm.ArgWithPosition{
-			Name:       "boardID",
-			Start:      169,
-			Stop:       171,
-			Expression: o.BoardID,
+			Name:       "id",
+			Start:      260,
+			Stop:       262,
+			Expression: o.ID,
 		}) {
 			return
 		}
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "columnID",
-			Start:      201,
-			Stop:       203,
+			Start:      292,
+			Stop:       294,
 			Expression: o.ColumnID,
 		}) {
 			return
 		}
 
 		if !yield(orm.ArgWithPosition{
-			Name:       "id",
-			Start:      218,
-			Stop:       220,
-			Expression: o.ID,
+			Name:       "id2",
+			Start:      309,
+			Stop:       311,
+			Expression: o.ID2,
 		}) {
 			return
 		}
@@ -1420,7 +1420,7 @@ func (o getLastColumnRank) WriteSQL(ctx context.Context, w io.StringWriter, d bo
 	return o.subExpr(0, len(getLastColumnRankSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var updateRankSQL = formattedQueries_queries[3374:3442]
+var updateRankSQL = formattedQueries_queries[3465:3533]
 
 type UpdateRankQuery = orm.ModExecQuery[*dialect.UpdateQuery, updateRank]
 
@@ -1497,7 +1497,7 @@ func (o updateRank) WriteSQL(ctx context.Context, w io.StringWriter, d bob.Diale
 	return o.subExpr(0, len(updateRankSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var updatePositionSQL = formattedQueries_queries[3463:3605]
+var updatePositionSQL = formattedQueries_queries[3554:3696]
 
 type UpdatePositionQuery = orm.ModQuery[*dialect.UpdateQuery, updatePosition, UpdatePositionRow, []UpdatePositionRow, updatePositionTransformer]
 
@@ -1616,15 +1616,15 @@ func (o updatePosition) WriteSQL(ctx context.Context, w io.StringWriter, d bob.D
 	return o.subExpr(0, len(updatePositionSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var listBoardColumnTasksSQL = formattedQueries_queries[3632:4215]
+var listBoardColumnTasksSQL = formattedQueries_queries[3723:4401]
 
 type ListBoardColumnTasksQuery = orm.ModQuery[*dialect.SelectQuery, listBoardColumnTasks, ListBoardColumnTasksRow, []ListBoardColumnTasksRow, listBoardColumnTasksTransformer]
 
-func ListBoardColumnTasks(ProjectID int, BoardID int, ColumnID int, Limit int, Offset int) *ListBoardColumnTasksQuery {
+func ListBoardColumnTasks(ProjectID int, ID int, ColumnID int, Limit int, Offset int) *ListBoardColumnTasksQuery {
 	var expressionTypArgs listBoardColumnTasks
 
 	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
-	expressionTypArgs.BoardID = psql.Arg(BoardID)
+	expressionTypArgs.ID = psql.Arg(ID)
 	expressionTypArgs.ColumnID = psql.Arg(ColumnID)
 	expressionTypArgs.Limit = psql.Arg(Limit)
 	expressionTypArgs.Offset = psql.Arg(Offset)
@@ -1666,10 +1666,10 @@ func ListBoardColumnTasks(ProjectID int, BoardID int, ColumnID int, Limit int, O
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
 			q.AppendSelect(expressionTypArgs.subExpr(9, 253))
 			q.SetTable(expressionTypArgs.subExpr(261, 315))
-			q.AppendWhere(expressionTypArgs.subExpr(324, 534))
-			q.AppendOrder(expressionTypArgs.subExpr(546, 564))
-			q.SetLimit(expressionTypArgs.subExpr(571, 573))
-			q.SetOffset(expressionTypArgs.subExpr(581, 583))
+			q.AppendWhere(expressionTypArgs.subExpr(324, 629))
+			q.AppendOrder(expressionTypArgs.subExpr(641, 659))
+			q.SetLimit(expressionTypArgs.subExpr(666, 668))
+			q.SetOffset(expressionTypArgs.subExpr(676, 678))
 		}),
 		Build: psql.Select,
 	}
@@ -1698,7 +1698,7 @@ type listBoardColumnTasksTransformer = bob.SliceTransformer[ListBoardColumnTasks
 
 type listBoardColumnTasks struct {
 	ProjectID bob.Expression
-	BoardID   bob.Expression
+	ID        bob.Expression
 	ColumnID  bob.Expression
 	Limit     bob.Expression
 	Offset    bob.Expression
@@ -1716,18 +1716,18 @@ func (o listBoardColumnTasks) args() iter.Seq[orm.ArgWithPosition] {
 		}
 
 		if !yield(orm.ArgWithPosition{
-			Name:       "boardID",
-			Start:      447,
-			Stop:       449,
-			Expression: o.BoardID,
+			Name:       "id",
+			Start:      504,
+			Stop:       506,
+			Expression: o.ID,
 		}) {
 			return
 		}
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "columnID",
-			Start:      483,
-			Stop:       485,
+			Start:      578,
+			Stop:       580,
 			Expression: o.ColumnID,
 		}) {
 			return
@@ -1735,8 +1735,8 @@ func (o listBoardColumnTasks) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "limit",
-			Start:      571,
-			Stop:       573,
+			Start:      666,
+			Stop:       668,
 			Expression: o.Limit,
 		}) {
 			return
@@ -1744,8 +1744,8 @@ func (o listBoardColumnTasks) args() iter.Seq[orm.ArgWithPosition] {
 
 		if !yield(orm.ArgWithPosition{
 			Name:       "offset",
-			Start:      581,
-			Stop:       583,
+			Start:      676,
+			Stop:       678,
 			Expression: o.Offset,
 		}) {
 			return

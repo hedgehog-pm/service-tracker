@@ -40,11 +40,7 @@ type BoardColumn struct {
 }
 
 // BoardColumnTaskList defines model for BoardColumnTaskList.
-type BoardColumnTaskList struct {
-	Items      []externalRef1.Task `json:"items"`
-	Limit      int                 `json:"limit"`
-	NextCursor *string             `json:"next_cursor"`
-}
+type BoardColumnTaskList = externalRef1.TaskList
 
 // BoardList defines model for BoardList.
 type BoardList struct {
@@ -97,9 +93,6 @@ type BoardID = int
 // ColumnID defines model for ColumnID.
 type ColumnID = int
 
-// Cursor defines model for Cursor.
-type Cursor = string
-
 // ListBoardsParams defines parameters for ListBoards.
 type ListBoardsParams struct {
 	Limit  *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
@@ -108,8 +101,13 @@ type ListBoardsParams struct {
 
 // ListBoardColumnTasksParams defines parameters for ListBoardColumnTasks.
 type ListBoardColumnTasksParams struct {
-	Limit  *externalRef0.Limit `form:"limit,omitempty" json:"limit,omitempty"`
-	Cursor *Cursor             `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit    *externalRef0.Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset   *externalRef0.Offset `form:"offset,omitempty" json:"offset,omitempty"`
+	Q        *string              `form:"q,omitempty" json:"q,omitempty"`
+	Status   *int                 `form:"status,omitempty" json:"status,omitempty"`
+	Module   *int                 `form:"module,omitempty" json:"module,omitempty"`
+	Priority *int                 `form:"priority,omitempty" json:"priority,omitempty"`
+	TaskType *int                 `form:"task_type,omitempty" json:"task_type,omitempty"`
 }
 
 // CreateBoardJSONRequestBody defines body for CreateBoard for application/json ContentType.
@@ -132,31 +130,31 @@ type ServerInterface interface {
 	// ListBoards Получить доски одного проекта
 	// (GET /projects/{project_id}/boards)
 	ListBoards(ctx *echo.Context, projectID externalRef0.ProjectID, params ListBoardsParams) error
-	// CreateBoard Создать доску проекта без колонок
+	// CreateBoard Создать доску
 	// (POST /projects/{project_id}/boards)
 	CreateBoard(ctx *echo.Context, projectID externalRef0.ProjectID) error
-	// DeleteBoard Удалить доску и её конфигурацию, сохранив задачи проекта
+	// DeleteBoard Удалить доску
 	// (DELETE /projects/{project_id}/boards/{board_id})
 	DeleteBoard(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID) error
-	// GetBoard Получить доску и её колонки в порядке position. status_ids в колонках упорядочены по возрастанию
+	// GetBoard Получить доску с колонками
 	// (GET /projects/{project_id}/boards/{board_id})
 	GetBoard(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID) error
 	// UpdateBoard Переименовать доску
 	// (PUT /projects/{project_id}/boards/{board_id})
 	UpdateBoard(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID) error
-	// CreateBoardColumn Вставить колонку в position со сдвигом следующих колонок на доске с собственной схемой. Статусы должны использоваться в workflow проекта. status_ids в ответе упорядочены по возрастанию
+	// CreateBoardColumn Добавить колонку
 	// (POST /projects/{project_id}/boards/{board_id}/columns)
 	CreateBoardColumn(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID) error
-	// DeleteBoardColumn Удалить колонку и её связи со статусами на доске с собственной схемой, сохранив задачи
+	// DeleteBoardColumn Удалить колонку
 	// (DELETE /projects/{project_id}/boards/{board_id}/columns/{column_id})
 	DeleteBoardColumn(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID, columnID ColumnID) error
-	// UpdateBoardColumn Заменить название, position и статусы колонки на доске с собственной схемой. Статус относится максимум к одной колонке доски. status_ids в ответе упорядочены по возрастанию
+	// UpdateBoardColumn Изменить колонку
 	// (PUT /projects/{project_id}/boards/{board_id}/columns/{column_id})
 	UpdateBoardColumn(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID, columnID ColumnID) error
-	// ListBoardColumnTasks Получить задачи проекта в статусах колонки по общему rank проекта. Курсор не фиксирует снимок данных, next_cursor=null завершает выдачу
+	// ListBoardColumnTasks Получить задачи колонки с фильтрами
 	// (GET /projects/{project_id}/boards/{board_id}/columns/{column_id}/tasks)
 	ListBoardColumnTasks(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID, columnID ColumnID, params ListBoardColumnTasksParams) error
-	// MoveBoardTask Атомарно переместить задачу в колонку через workflow и изменить общий rank проекта. before_task_id задаёт якорь в целевой колонке, null означает конец колонки. transition_id=null сохраняет статус. Недоступный якорь или якорь вне целевой колонки возвращает 409
+	// MoveBoardTask Переместить задачу на доске
 	// (POST /projects/{project_id}/boards/{board_id}/tasks/{task_id}/move)
 	MoveBoardTask(ctx *echo.Context, projectID externalRef0.ProjectID, boardID BoardID, taskID externalRef0.TaskID) error
 }
@@ -410,11 +408,46 @@ func (w *ServerInterfaceWrapper) ListBoardColumnTasks(ctx *echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
 	}
 
-	// ------------- Optional query parameter "cursor" -------------
+	// ------------- Optional query parameter "offset" -------------
 
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", ctx.QueryParams(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "offset", ctx.QueryParams(), &params.Offset, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter cursor: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", ctx.QueryParams(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter q: %s", err))
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", ctx.QueryParams(), &params.Status, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter status: %s", err))
+	}
+
+	// ------------- Optional query parameter "module" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "module", ctx.QueryParams(), &params.Module, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter module: %s", err))
+	}
+
+	// ------------- Optional query parameter "priority" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "priority", ctx.QueryParams(), &params.Priority, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter priority: %s", err))
+	}
+
+	// ------------- Optional query parameter "task_type" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "task_type", ctx.QueryParams(), &params.TaskType, runtime.BindQueryParameterOptions{Type: "integer", Format: "int32"})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter task_type: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -1290,31 +1323,31 @@ type StrictServerInterface interface {
 	// ListBoards Получить доски одного проекта
 	// (GET /projects/{project_id}/boards)
 	ListBoards(ctx context.Context, request ListBoardsRequestObject) (ListBoardsResponseObject, error)
-	// CreateBoard Создать доску проекта без колонок
+	// CreateBoard Создать доску
 	// (POST /projects/{project_id}/boards)
 	CreateBoard(ctx context.Context, request CreateBoardRequestObject) (CreateBoardResponseObject, error)
-	// DeleteBoard Удалить доску и её конфигурацию, сохранив задачи проекта
+	// DeleteBoard Удалить доску
 	// (DELETE /projects/{project_id}/boards/{board_id})
 	DeleteBoard(ctx context.Context, request DeleteBoardRequestObject) (DeleteBoardResponseObject, error)
-	// GetBoard Получить доску и её колонки в порядке position. status_ids в колонках упорядочены по возрастанию
+	// GetBoard Получить доску с колонками
 	// (GET /projects/{project_id}/boards/{board_id})
 	GetBoard(ctx context.Context, request GetBoardRequestObject) (GetBoardResponseObject, error)
 	// UpdateBoard Переименовать доску
 	// (PUT /projects/{project_id}/boards/{board_id})
 	UpdateBoard(ctx context.Context, request UpdateBoardRequestObject) (UpdateBoardResponseObject, error)
-	// CreateBoardColumn Вставить колонку в position со сдвигом следующих колонок на доске с собственной схемой. Статусы должны использоваться в workflow проекта. status_ids в ответе упорядочены по возрастанию
+	// CreateBoardColumn Добавить колонку
 	// (POST /projects/{project_id}/boards/{board_id}/columns)
 	CreateBoardColumn(ctx context.Context, request CreateBoardColumnRequestObject) (CreateBoardColumnResponseObject, error)
-	// DeleteBoardColumn Удалить колонку и её связи со статусами на доске с собственной схемой, сохранив задачи
+	// DeleteBoardColumn Удалить колонку
 	// (DELETE /projects/{project_id}/boards/{board_id}/columns/{column_id})
 	DeleteBoardColumn(ctx context.Context, request DeleteBoardColumnRequestObject) (DeleteBoardColumnResponseObject, error)
-	// UpdateBoardColumn Заменить название, position и статусы колонки на доске с собственной схемой. Статус относится максимум к одной колонке доски. status_ids в ответе упорядочены по возрастанию
+	// UpdateBoardColumn Изменить колонку
 	// (PUT /projects/{project_id}/boards/{board_id}/columns/{column_id})
 	UpdateBoardColumn(ctx context.Context, request UpdateBoardColumnRequestObject) (UpdateBoardColumnResponseObject, error)
-	// ListBoardColumnTasks Получить задачи проекта в статусах колонки по общему rank проекта. Курсор не фиксирует снимок данных, next_cursor=null завершает выдачу
+	// ListBoardColumnTasks Получить задачи колонки с фильтрами
 	// (GET /projects/{project_id}/boards/{board_id}/columns/{column_id}/tasks)
 	ListBoardColumnTasks(ctx context.Context, request ListBoardColumnTasksRequestObject) (ListBoardColumnTasksResponseObject, error)
-	// MoveBoardTask Атомарно переместить задачу в колонку через workflow и изменить общий rank проекта. before_task_id задаёт якорь в целевой колонке, null означает конец колонки. transition_id=null сохраняет статус. Недоступный якорь или якорь вне целевой колонки возвращает 409
+	// MoveBoardTask Переместить задачу на доске
 	// (POST /projects/{project_id}/boards/{board_id}/tasks/{task_id}/move)
 	MoveBoardTask(ctx context.Context, request MoveBoardTaskRequestObject) (MoveBoardTaskResponseObject, error)
 }
@@ -1680,48 +1713,40 @@ func (sh *strictHandler) MoveBoardTask(ctx *echo.Context, projectID externalRef0
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
+	"OCreA65DTUdeSM+3/+cA",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

@@ -188,27 +188,34 @@ func (h *BoardHandler) ListBoardColumnTasks(
 	ctx context.Context,
 	request generated.ListBoardColumnTasksRequestObject,
 ) (generated.ListBoardColumnTasksResponseObject, error) {
-	params := listboardcolumntasks.Params{
+	query := listboardcolumntasks.Query{
 		ProjectID: request.ProjectID,
 		BoardID:   request.BoardID,
 		ColumnID:  request.ColumnID,
 		Limit:     *request.Params.Limit,
-		Cursor:    request.Params.Cursor,
+		Offset:    *request.Params.Offset,
+		Filters: listboardcolumntasks.Filters{
+			Query:      lo.FromPtr(request.Params.Q),
+			StatusID:   request.Params.Status,
+			ModuleID:   request.Params.Module,
+			PriorityID: request.Params.Priority,
+			TaskTypeID: request.Params.TaskType,
+		},
 	}
 
-	page, err := h.listColumnTasks.Do(ctx, params)
+	tasks, err := h.listColumnTasks.Do(ctx, query)
 	if err != nil {
 		return nil, err
 	}
 
-	items := lo.Map(page.Tasks, func(task domain.Task, _ int) taskapi.Task {
+	items := lo.Map(tasks, func(task domain.Task, _ int) taskapi.Task {
 		return taskToAPI(task)
 	})
 
 	return generated.ListBoardColumnTasks200JSONResponse(generated.BoardColumnTaskList{
-		Items:      items,
-		Limit:      params.Limit,
-		NextCursor: page.NextCursor,
+		Items:  items,
+		Limit:  query.Limit,
+		Offset: query.Offset,
 	}), nil
 }
 

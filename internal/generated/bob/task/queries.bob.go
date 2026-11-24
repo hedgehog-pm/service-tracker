@@ -1616,19 +1616,18 @@ func (o updatePosition) WriteSQL(ctx context.Context, w io.StringWriter, d bob.D
 	return o.subExpr(0, len(updatePositionSQL)).WriteSQL(ctx, w, d, start)
 }
 
-var listBoardColumnTasksSQL = formattedQueries_queries[3723:4451]
+var listBoardColumnTasksSQL = formattedQueries_queries[3723:4401]
 
 type ListBoardColumnTasksQuery = orm.ModQuery[*dialect.SelectQuery, listBoardColumnTasks, ListBoardColumnTasksRow, []ListBoardColumnTasksRow, listBoardColumnTasksTransformer]
 
-func ListBoardColumnTasks(ProjectID int, ID int, ColumnID int, AfterRank sql.Null[int], AfterNumber sql.Null[int], Arg6 int) *ListBoardColumnTasksQuery {
+func ListBoardColumnTasks(ProjectID int, ID int, ColumnID int, Limit int, Offset int) *ListBoardColumnTasksQuery {
 	var expressionTypArgs listBoardColumnTasks
 
 	expressionTypArgs.ProjectID = psql.Arg(ProjectID)
 	expressionTypArgs.ID = psql.Arg(ID)
 	expressionTypArgs.ColumnID = psql.Arg(ColumnID)
-	expressionTypArgs.AfterRank = psql.Arg(AfterRank)
-	expressionTypArgs.AfterNumber = psql.Arg(AfterNumber)
-	expressionTypArgs.Arg6 = psql.Arg(Arg6)
+	expressionTypArgs.Limit = psql.Arg(Limit)
+	expressionTypArgs.Offset = psql.Arg(Offset)
 
 	return &ListBoardColumnTasksQuery{
 		Query: orm.Query[listBoardColumnTasks, ListBoardColumnTasksRow, []ListBoardColumnTasksRow, listBoardColumnTasksTransformer]{
@@ -1667,9 +1666,10 @@ func ListBoardColumnTasks(ProjectID int, ID int, ColumnID int, AfterRank sql.Nul
 		Mod: bob.ModFunc[*dialect.SelectQuery](func(q *dialect.SelectQuery) {
 			q.AppendSelect(expressionTypArgs.subExpr(9, 253))
 			q.SetTable(expressionTypArgs.subExpr(261, 315))
-			q.AppendWhere(expressionTypArgs.subExpr(324, 689))
-			q.AppendOrder(expressionTypArgs.subExpr(701, 719))
-			q.SetLimit(expressionTypArgs.subExpr(726, 728))
+			q.AppendWhere(expressionTypArgs.subExpr(324, 629))
+			q.AppendOrder(expressionTypArgs.subExpr(641, 659))
+			q.SetLimit(expressionTypArgs.subExpr(666, 668))
+			q.SetOffset(expressionTypArgs.subExpr(676, 678))
 		}),
 		Build: psql.Select,
 	}
@@ -1697,12 +1697,11 @@ type ListBoardColumnTasksRow = struct {
 type listBoardColumnTasksTransformer = bob.SliceTransformer[ListBoardColumnTasksRow, []ListBoardColumnTasksRow]
 
 type listBoardColumnTasks struct {
-	ProjectID   bob.Expression
-	ID          bob.Expression
-	ColumnID    bob.Expression
-	AfterRank   bob.Expression
-	AfterNumber bob.Expression
-	Arg6        bob.Expression
+	ProjectID bob.Expression
+	ID        bob.Expression
+	ColumnID  bob.Expression
+	Limit     bob.Expression
+	Offset    bob.Expression
 }
 
 func (o listBoardColumnTasks) args() iter.Seq[orm.ArgWithPosition] {
@@ -1735,37 +1734,19 @@ func (o listBoardColumnTasks) args() iter.Seq[orm.ArgWithPosition] {
 		}
 
 		if !yield(orm.ArgWithPosition{
-			Name:       "afterRank",
-			Start:      637,
-			Stop:       639,
-			Expression: o.AfterRank,
+			Name:       "limit",
+			Start:      666,
+			Stop:       668,
+			Expression: o.Limit,
 		}) {
 			return
 		}
 
 		if !yield(orm.ArgWithPosition{
-			Name:       "afterRank",
-			Start:      681,
-			Stop:       683,
-			Expression: o.AfterRank,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
-			Name:       "afterNumber",
-			Start:      685,
-			Stop:       687,
-			Expression: o.AfterNumber,
-		}) {
-			return
-		}
-
-		if !yield(orm.ArgWithPosition{
-			Name:       "arg6",
-			Start:      726,
-			Stop:       728,
-			Expression: o.Arg6,
+			Name:       "offset",
+			Start:      676,
+			Stop:       678,
+			Expression: o.Offset,
 		}) {
 			return
 		}

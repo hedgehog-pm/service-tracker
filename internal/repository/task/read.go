@@ -15,6 +15,7 @@ import (
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 	bobgen "github.com/hedgehog-pm/service-tracker/internal/generated/bob/task"
 	"github.com/hedgehog-pm/service-tracker/internal/storage/postgres"
+	"github.com/hedgehog-pm/service-tracker/internal/usecase/listboardcolumntasks"
 )
 
 func (r *Postgres) GetTask(ctx context.Context, projectID, taskID int) (domain.Task, error) {
@@ -73,20 +74,8 @@ func (r *Postgres) ListTasks(
 		sm.Limit(psql.Arg(limit)), sm.Offset(psql.Arg(offset)),
 	)
 
-	if statusID != nil {
-		q.Apply(sm.Where(psql.Quote("t", "status_id").EQ(psql.Arg(*statusID))))
-	}
-
-	if moduleID != nil {
-		q.Apply(sm.Where(psql.Quote("t", "module_id").EQ(psql.Arg(*moduleID))))
-	}
-
-	if taskTypeID != nil {
-		q.Apply(sm.Where(psql.Quote("t", "task_type_id").EQ(psql.Arg(*taskTypeID))))
-	}
-
-	if priorityID != nil {
-		q.Apply(sm.Where(psql.Quote("t", "priority_id").EQ(psql.Arg(*priorityID))))
+	for _, predicate := range taskFilterPredicates(statusID, moduleID, taskTypeID, priorityID) {
+		q.Apply(sm.Where(predicate))
 	}
 
 	query, args, err := q.Build(ctx)
@@ -106,10 +95,38 @@ func (r *Postgres) ListTasks(
 	return tasks, nil
 }
 
-func (r *Postgres) ListBoardColumnTasks(ctx context.Context, projectID, boardID, columnID int, afterRank, afterNumber *int, limit int) ([]domain.Task, error) {
-	q := bobgen.ListBoardColumnTasks(projectID, boardID, columnID, pointerToNull(afterRank), pointerToNull(afterNumber), limit)
+func (r *Postgres) ListBoardColumnTasks(
+	ctx context.Context,
+	params listboardcolumntasks.Query,
+) ([]domain.Task, error) {
+	q := bobgen.ListBoardColumnTasks(
+		params.ProjectID,
+		params.BoardID,
+		params.ColumnID,
+		params.Limit,
+		params.Offset,
+	).With()
 
-	query, args, err := bob.Build(ctx, q)
+	filters := params.Filters
+	for _, predicate := range taskFilterPredicates(
+		filters.StatusID,
+		filters.ModuleID,
+		filters.TaskTypeID,
+		filters.PriorityID,
+	) {
+		q.Apply(sm.Where(predicate))
+	}
+
+	if filters.Query != "" {
+		q.Apply(sm.Where(psql.Raw(
+			`(strpos(lower(t.title), lower(?)) > 0
+			OR strpos(lower(p.key || '-' || t.number::text), lower(?)) > 0)`,
+			filters.Query,
+			filters.Query,
+		)))
+	}
+
+	query, args, err := q.Build(ctx)
 	if err != nil {
 		return nil, postgres.MapError(ctx, fmt.Errorf("build column tasks query: %w", err))
 	}
@@ -124,4 +141,27 @@ func (r *Postgres) ListBoardColumnTasks(ctx context.Context, projectID, boardID,
 	})
 
 	return tasks, nil
+}
+
+func taskFilterPredicates(statusID, moduleID, taskTypeID, priorityID *int) []bob.Expression {
+	var predicates []bob.Expression
+
+	for _, filter := range [...]struct {
+		column string
+		id     *int
+	}{
+		{column: "status_id", id: statusID},
+		{column: "module_id", id: moduleID},
+		{column: "task_type_id", id: taskTypeID},
+		{column: "priority_id", id: priorityID},
+	} {
+		if filter.id != nil {
+			predicates = append(
+				predicates,
+				psql.Quote("t", filter.column).EQ(psql.Arg(*filter.id)),
+			)
+		}
+	}
+
+	return predicates
 }

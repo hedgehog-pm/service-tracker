@@ -254,8 +254,8 @@ func (c Column) Tasks(
 		query.Set("limit", strconv.Itoa(*params.Limit))
 	}
 
-	if params.Cursor != nil {
-		query.Set("cursor", *params.Cursor)
+	if params.Offset != nil {
+		query.Set("offset", strconv.Itoa(*params.Offset))
 	}
 
 	path := c.path + "/tasks"

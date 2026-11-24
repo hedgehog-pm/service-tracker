@@ -2,27 +2,15 @@ package listboardcolumntasks
 
 import (
 	"context"
+	"strings"
 
 	"github.com/hedgehog-pm/service-tracker/internal/domain"
 )
 
-type (
-	Params struct {
-		ProjectID int
-		BoardID   int
-		ColumnID  int
-		Limit     int
-		Cursor    *string
-	}
-	Page struct {
-		Tasks      []domain.Task
-		NextCursor *string
-	}
-	Usecase struct {
-		boards boardReader
-		tasks  taskReader
-	}
-)
+type Usecase struct {
+	boards boardReader
+	tasks  taskReader
+}
 
 func New(
 	boards boardReader,
@@ -34,46 +22,17 @@ func New(
 	}
 }
 
-func (u *Usecase) Do(ctx context.Context, params Params) (Page, error) {
-	board, err := u.boards.GetBoard(ctx, params.ProjectID, params.BoardID)
+func (u *Usecase) Do(ctx context.Context, query Query) ([]domain.Task, error) {
+	board, err := u.boards.GetBoard(ctx, query.ProjectID, query.BoardID)
 	if err != nil {
-		return Page{}, err
+		return nil, err
 	}
 
-	if _, err := board.Column(params.ColumnID); err != nil {
-		return Page{}, err
+	if _, err := board.Column(query.ColumnID); err != nil {
+		return nil, err
 	}
 
-	var afterRank, afterNumber *int
+	query.Filters.Query = strings.TrimSpace(query.Filters.Query)
 
-	if params.Cursor != nil {
-		rank, number, err := decodeCursor(*params.Cursor, params)
-		if err != nil {
-			return Page{}, err
-		}
-
-		afterRank, afterNumber = &rank, &number
-	}
-
-	tasks, err := u.tasks.ListBoardColumnTasks(
-		ctx,
-		params.ProjectID,
-		params.BoardID,
-		params.ColumnID,
-		afterRank,
-		afterNumber,
-		params.Limit+1,
-	)
-	if err != nil {
-		return Page{}, err
-	}
-
-	page := Page{Tasks: tasks}
-	if len(tasks) > params.Limit {
-		page.Tasks = tasks[:params.Limit]
-		last := page.Tasks[len(page.Tasks)-1]
-		page.NextCursor = new(encodeCursor(params, last))
-	}
-
-	return page, nil
+	return u.tasks.ListBoardColumnTasks(ctx, query)
 }

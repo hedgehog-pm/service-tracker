@@ -304,8 +304,8 @@ WHERE
       AND membership.column_id = $3
       AND membership.status_id = t.status_id
   )
-  AND ($4::BIGINT IS NULL OR (t.rank, t.number) > ($4/* after_rank::null */, $5/* after_number::null */))
 ORDER BY
   t.rank,
   t.number
-LIMIT $6;
+LIMIT $4/* limit */
+OFFSET $5/* offset */;

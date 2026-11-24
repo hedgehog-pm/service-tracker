@@ -157,7 +157,10 @@ func taskFilterPredicates(statusID, moduleID, taskTypeID, priorityID *int) []bob
 		{column: "priority_id", id: priorityID},
 	} {
 		if filter.id != nil {
-			predicates = append(predicates, psql.Quote("t", filter.column).EQ(psql.Arg(*filter.id)))
+			predicates = append(
+				predicates,
+				psql.Quote("t", filter.column).EQ(psql.Arg(*filter.id)),
+			)
 		}
 	}
 
